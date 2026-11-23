@@ -425,7 +425,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <div class="card">
   <button class="btn sm alt" id="verBack">← Back</button>
   <h2 style="margin-top:10px">Version history</h2>
-  <div class="btns"><button class="btn sm" id="updCheckBtn">Check for updates</button><a class="btn sm alt" href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Download page (share this)</a></div>
+  <div class="btns" id="updBtns"><button class="btn sm" id="updCheckBtn">Check for updates</button><a class="btn sm alt" href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Download page (share this)</a></div>
   <div id="updMsg" class="mut small" style="margin-top:6px"></div>
  </div>
  <div class="card" id="sugCard">
@@ -796,11 +796,11 @@ setInterval(function(){if(curTab=="cond")obLoad(false)},5*60000+5000);
 function vnum(s){return String(s).replace(/^[^0-9]*/,"").split(".").map(function(x){return parseInt(x,10)||0})}
 function newer(a,b){a=vnum(a);b=vnum(b);for(var i=0;i<Math.max(a.length,b.length);i++){var x=a[i]||0,y=b[i]||0;if(x!=y)return x>y}return false}
 var UPD=loadJSON("upd_info",null);
-function updShow(manual){var u=UPD;if(!u||!newer(u.tag,APP_VERSION)){$("updBanner").hidden=true;if(manual)$("updMsg").textContent="You're up to date (v"+APP_VERSION+").";return}
+function updShow(manual){if(WEB){$("updBanner").hidden=true;return}var u=UPD;if(!u||!newer(u.tag,APP_VERSION)){$("updBanner").hidden=true;if(manual)$("updMsg").textContent="You're up to date (v"+APP_VERSION+").";return}
  if(manual)$("updMsg").textContent="Version "+u.tag.replace(/^v/,"")+" is available – see the green banner at the top.";
  if(!manual&&store("upd_later")==u.tag)return;
  $("updTitle").textContent="Version "+u.tag.replace(/^v/i,"")+" is available (you have "+APP_VERSION+")";$("updBody").textContent=u.body||"";$("updGo").href=WEB?"javascript:location.reload()":(u.apk||u.page);if(WEB)$("updGo").textContent="Reload to update";$("updBanner").hidden=false}
-function updCheck(manual){if(!manual&&Date.now()-(+store("upd_t")||0)<6*3600000){updShow(false);return}
+function updCheck(manual){if(WEB)return;if(!manual&&Date.now()-(+store("upd_t")||0)<6*3600000){updShow(false);return}
  if(manual)$("updMsg").textContent="Checking…";var x=new XMLHttpRequest();x.open("GET","https://api.github.com/repos/"+REPO+"/releases/latest");x.timeout=15000;
  x.onload=function(){try{var d=JSON.parse(x.responseText);if(!d.tag_name)throw 1;var apk=(d.assets||[]).filter(function(a){return/\.apk$/i.test(a.name)})[0];
    UPD={tag:d.tag_name,body:d.body||"",page:d.html_url,apk:apk?apk.browser_download_url:null};store("upd_info",JSON.stringify(UPD));store("upd_t",String(Date.now()));updShow(manual)}catch(e){if(manual)$("updMsg").textContent="Couldn't check for updates right now."}};
@@ -808,6 +808,8 @@ function updCheck(manual){if(!manual&&Date.now()-(+store("upd_t")||0)<6*3600000)
 $("updNotes").onclick=function(){$("updBody").hidden=!$("updBody").hidden};
 $("updLater").onclick=function(){if(UPD)store("upd_later",UPD.tag);$("updBanner").hidden=true};
 $("updCheckBtn").onclick=function(){store("upd_later","");updCheck(true)};
+/* web version: no update checks - it always loads the newest version when opened */
+if(WEB){$("updBtns").style.display="none";$("updMsg").innerHTML='This is version '+APP_VERSION+'. The web version updates itself – it always opens the newest version. Using an Android phone? <a href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Get the Android app</a>.'}
 setInterval(function(){updCheck(false)},30*60000);
 
 /* --- feature suggestions --- */
