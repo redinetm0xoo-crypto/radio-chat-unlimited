@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radio Chat Unlimited M0XOO</title>
+<meta name="theme-color" content="#0f1a30">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+:root{--bg:#0b1220;--card:#131c2e;--line:#24314a;--tx:#e6edf7;--mut:#93a3bd;--acc:#f5a524;
+--cw:#f59e0b;--nb:#22c55e;--all:#3b82f6;--bcn:#ec4899;--fm:#a855f7;--sat:#14b8a6;--gap:#475569;
+--good:#22c55e;--fair:#eab308;--poor:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+@media(min-width:820px){body{max-width:780px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}}
+a{color:var(--acc)}
+header{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#0f1a30;border-bottom:1px solid var(--line)}
+header img{width:44px;height:44px;border-radius:10px}
+header h1{font-size:17px;margin:0;line-height:1.15}
+header small{color:var(--acc);font-weight:700;letter-spacing:.5px}
+#distBtn{margin-left:auto;display:flex;align-items:center;gap:5px;background:#0b1424;border:1px solid var(--line);color:var(--tx);border-radius:20px;padding:6px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+#distBtn svg{width:18px;height:18px;flex:none}
+nav{display:flex;overflow-x:auto;background:#0f1a30;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:1 0 auto;background:none;border:0;color:var(--mut);padding:12px 13px;font-size:14px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{color:var(--tx);border-color:var(--acc)}
+main{padding:12px;max-width:900px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+h2{font-size:16px;margin:0 0 8px}
+h3{font-size:13px;margin:12px 0 6px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+select,input{width:100%;background:#0b1424;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:16px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.big{font-size:22px;font-weight:700}
+.mut{color:var(--mut)}.small{font-size:12px}
+.bar{position:relative;height:26px;border-radius:6px;background:#1e293b;overflow:hidden;margin:6px 0 2px}
+.bar div{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.35)}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase}
+.f{font-variant-numeric:tabular-nums;white-space:nowrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mut);margin-top:6px}
+ul{margin:4px 0;padding-left:18px}li{margin:3px 0}
+.res{margin-top:8px;padding:10px;border-radius:10px;background:#0b1424;border:1px solid var(--line)}
+.ok{border-color:#22c55e}.bad{border-color:#ef4444}
+.btn{display:inline-block;background:var(--acc);color:#111;border:0;border-radius:10px;padding:11px 14px;font-weight:700;font-size:15px;text-decoration:none;text-align:center}
+.btn.alt{background:#24314a;color:var(--tx)}
+.btn.sm{padding:8px 10px;font-size:13px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+.kv b{color:var(--mut);font-weight:600}
+.x{background:none;border:0;color:#ef4444;font-size:18px;padding:0 6px}
+.hl td{background:rgba(245,165,36,.12)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:8px}
+.tile .v{font-size:18px;font-weight:700}.tile .k{font-size:11px;color:var(--mut);text-transform:uppercase}
+.Good{color:var(--good);font-weight:700}.Fair{color:var(--fair);font-weight:700}.Poor{color:var(--poor);font-weight:700}
+.closed{color:var(--poor)}.open{color:var(--good);font-weight:700}
+canvas{width:100%;border-radius:8px;display:block;background:#0a2742}
+.banner{width:100%;max-width:460px;display:block;margin:0 auto;border-radius:8px}
+footer{text-align:center;font-size:13px;color:var(--mut);padding:14px 0 24px}
+footer button{background:none;border:0;color:var(--acc);font-size:13px;text-decoration:underline;padding:0}
+.warn{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+.info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+.seg{display:flex;background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;background:none;border:0;color:var(--mut);padding:9px;border-radius:8px;font-weight:700;font-size:14px}
+.seg button.on{background:var(--acc);color:#111}
+.rp{border-bottom:1px solid var(--line);padding:9px 2px}
+.rp .top{display:flex;align-items:center;gap:8px}
+.rp .cs{font-weight:800;font-size:16px}
+.rp .dist{margin-left:auto;display:flex;align-items:center;gap:5px;font-weight:700;white-space:nowrap}
+.rp .dist svg{width:16px;height:16px}
+.rp .fq{font-variant-numeric:tabular-nums;font-size:14px;margin-top:3px}
+.chip{display:inline-block;font-size:11px;padding:2px 6px;border-radius:6px;background:#24314a;margin:2px 3px 0 0}
+.chip.bad{background:rgba(239,68,68,.25);color:#fca5a5}.chip.warn{background:rgba(234,179,8,.25);color:#fde68a}
+.star{background:none;border:0;font-size:20px;color:#475569;padding:0 2px}.star.on{color:#f5a524}
+.rdet{background:#0b1424;border-radius:8px;padding:8px;margin-top:6px;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips button{border:1px solid var(--line);background:#0b1424;color:var(--tx);border-radius:16px;padding:5px 10px;font-size:13px;font-weight:600}
+.chips button.on{border-color:var(--acc);color:var(--acc)}
+#updBanner{background:#1d3a1f;border-bottom:1px solid #2f6b34;padding:10px 12px;font-size:14px}
+#updBanner .btns{margin-top:6px}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}.chk input{width:auto}
+#meBtn{display:block;margin-top:3px;background:#0b1424;border:1px solid var(--line);color:var(--tx);border-radius:14px;padding:2px 9px;font-size:12px;font-weight:700}
+#meBtn b{color:var(--acc)}
+#meBtn[hidden]{display:none}
+#callModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+#callModal .card{width:100%;max-width:420px}
+#callModal[hidden]{display:none}
+#lsBtn{transition:background .2s,box-shadow .2s;background:#24314a;color:var(--tx)}
+#xoListen.on,#lsBtn.on{background:#22c55e;color:#06210f;box-shadow:0 0 18px 4px rgba(34,197,94,.65)}
+#lsCalls .lc{display:flex;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+#lsCalls .lc b{font-size:17px}
+#lsCalls .lc .nm{color:var(--acc)}
+#lsCalls{max-height:calc(5 * 40px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-top:1px solid var(--line)}
+#lsCalls .lc{min-height:40px;align-items:center;box-sizing:border-box}
+#xoListen{width:100%;font-size:21px;padding:16px;margin-bottom:10px;transition:background .2s,box-shadow .2s}
+#locHdr{display:block;font-size:11px;color:#f5a524;font-weight:700;letter-spacing:.5px}
+.lgrid{display:grid;grid-template-columns:1fr 1.4fr 1fr;grid-template-rows:64px 110px 64px;gap:3px;border-radius:10px;overflow:hidden}
+.lgrid div{background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-weight:700;color:#dbeafe;position:relative}
+.lgrid div.me{background:#38bdf8;color:#0c4a6e;font-size:22px}
+.ldot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;background:#ef4444;border:2px solid #fff;border-radius:50%}
+#locMap img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
+#locMap .box{position:absolute;border:2px solid #ef4444;background:rgba(239,68,68,.12);pointer-events:none}
+#locMap .lab{position:absolute;color:#b91c1c;font-weight:800;font-size:13px;background:rgba(255,255,255,.75);padding:1px 4px;border-radius:4px;pointer-events:none}
+#locMap .attr{position:absolute;right:0;bottom:0;background:rgba(255,255,255,.85);color:#333;font-size:10px;padding:1px 5px}
+#locMap .attr a{color:#1d4ed8}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chips button{background:#0b1424;border:1px solid var(--line);color:var(--tx);border-radius:16px;padding:6px 12px;font-size:14px}
+.chips button.on{background:#f5a524;border-color:#f5a524;color:#111;font-weight:700}
+.ta{width:100%;margin-top:8px;background:#0b1424;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:16px;font-family:inherit}
+.post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.post h3{margin:0 0 4px;font-size:18px;text-transform:none;letter-spacing:0;color:var(--tx)}.post .by{font-size:12px;color:#94a3b8;margin-top:6px}
+.post .del{float:right;background:none;border:1px solid #ef4444;color:#ef4444;border-radius:8px;padding:3px 9px;font-size:12px}
+.fs{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.fs img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:#0b1424;flex:none}
+.fs .pr{color:#f5a524;font-weight:800;font-size:17px}
+#tabs button .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:5px;vertical-align:middle}
+</style></head>
+<body>
+<header>
+ <img src="icon.png" alt="">
+ <div><h1>Radio Chat Unlimited</h1><small>M0XOO</small><button id="meBtn" hidden>You: <b id="meCall"></b></button></div>
+ <button id="distBtn" title="Distance from Redditch centre">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#f5a524" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#f5a524"/></svg>
+  <span id="dist">…</span>
+  <span id="locHdr" hidden></span>
+ </button>
+</header>
+<div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
+<nav id="tabs">
+<button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="adm" hidden>Admin</button>
+</nav>
+<div id="callModal" hidden><div class="card">
+ <h2>Welcome! What's your callsign?</h2>
+ <div class="mut small">It's shown at the top of the app, used for your QRZ logging, and ignored when the app listens for callsigns (that's you!). It's the same callsign as in QRZ › Settings.</div>
+ <input id="cmCall" placeholder="Your callsign" autocapitalize="characters" style="text-transform:uppercase;margin-top:10px;font-size:20px">
+ <div id="cmMsg" class="small" style="color:#fca5a5;margin-top:6px"></div>
+ <div class="btns"><button class="btn" id="cmSave">Save</button><button class="btn alt" id="cmSkip">Not licensed / skip for now</button></div>
+ <div id="cmConsent" hidden style="margin-top:12px;border:1px solid #f5a524;border-radius:12px;padding:12px;background:#1c1405">
+  <b>Your information</b>
+  <div class="small" style="margin-top:4px">By saving your callsign you accept that the app stores your <b>callsign</b>, your name (if you add one) and <b>when you last opened the app</b> in its online database. Only the app admins (M0PTN and M7VPE) can see this.</div>
+  <div class="btns"><button class="btn" id="cmAccept">I accept</button><button class="btn alt" id="cmDecline">Cancel</button></div>
+ </div>
+</div></div>
+<main>
+<div id="distInfo" class="info" hidden></div>
+
+<section id="band">
+ <div class="card">
+  <h2>Select your band</h2>
+  <select id="bandSel"></select>
+  <div id="bandOut"></div>
+ </div>
+ <div class="card">
+  <h2>Check a frequency</h2>
+  <input id="chk" inputmode="decimal" placeholder="e.g. 14.074 MHz or 7074 kHz">
+  <div id="chkOut"></div>
+ </div>
+ <div class="mut small" style="text-align:center">Source: RSGB Band Plan 2026 (rsgb.org/bandplans). Always operate within your Ofcom licence conditions.</div>
+</section>
+
+<section id="cond" hidden>
+ <div class="card">
+  <h2>Solar-terrestrial data</h2>
+  <a href="https://www.hamqsl.com/solar.html"><img id="banner" class="banner" alt="N0NBH solar-terrestrial banner (needs internet)"></a>
+  <div class="mut small" style="text-align:center;margin-top:4px">Solar-Terrestrial Data provided by <a href="https://www.hamqsl.com/solar.html">N0NBH (hamqsl.com)</a></div>
+  <div class="btns"><button class="btn sm" id="condRefresh">Refresh</button></div>
+  <div id="condStatus" class="mut small" style="margin-top:6px"></div>
+  <div id="condData"></div>
+ </div>
+ <div class="card">
+  <h2>World day / night &amp; open bands</h2>
+  <div class="chips" id="obChips"></div>
+  <canvas id="map" width="720" height="360"></canvas>
+  <div class="legend"><span><i class="dot" style="background:#3a7d44"></i>Land (day)</span><span><i class="dot" style="background:#e0a040"></i>Grey line (twilight)</span><span><i class="dot" style="background:#0c1426"></i>Night</span><span><i class="dot" style="background:#ffd23f;border-radius:50%"></i>Sun overhead</span><span><i class="dot" style="background:#ef4444;border-radius:50%"></i>Redditch</span></div>
+  <div class="row" style="margin-top:8px"><div><div class="mut small">UTC</div><div class="big f" id="utc"></div></div><div><div class="mut small">Local</div><div class="big f" id="loc"></div></div></div>
+  <div class="mut small" style="margin-top:6px" id="sunTxt"></div>
+  <div class="mut small" style="margin-top:4px">Day/night calculated on your phone – works offline. Simplified coastline.</div>
+ </div>
+ <div class="card">
+  <h2>Open bands near you</h2>
+  <div id="obStatus" class="mut small"></div>
+  <div class="btns"><button class="btn sm" id="obRefresh">Refresh spots</button></div>
+  <div id="obSum"></div>
+  <div class="mut small" style="margin-top:8px">Lines on the map show stations heard by, or hearing, stations in your grid square in the last 15–30 minutes (FT8/FT4 etc. from PSK Reporter, WSPR from wspr.live). Guide from signal reports: best SNR &gt; 10 dB = SSB likely, &gt; −1 dB = CW, otherwise digital modes only. No spots doesn't always mean closed – it may just be quiet. Data: <a href="https://pskreporter.info">PSK Reporter</a> (Philip Gladstone, N1DQ) and <a href="https://wspr.live">wspr.live</a>. Refreshes at most every 5 minutes.</div>
+ </div>
+ <div class="card">
+  <h2>What the numbers mean</h2>
+  <ul class="small">
+   <li><b>SFI</b> (solar flux): higher is better for HF – 70 poor, 100+ good, 150+ excellent.</li>
+   <li><b>SN</b> (sunspot number): more sunspots = better upper-HF propagation.</li>
+   <li><b>A / K index</b>: geomagnetic activity – lower is better. K 0–2 quiet, 3–4 unsettled, 5+ storm.</li>
+   <li><b>X-ray</b>: flare class A/B/C quiet, M/X can cause HF blackouts on the daylit side.</li>
+   <li><b>Solar wind / Bz</b>: fast wind (&gt;500 km/s) with negative Bz = more disturbance and aurora.</li>
+   <li><b>Aurora / Aur Lat</b>: activity level and the lowest latitude the aurora reaches.</li>
+   <li><b>Sig noise</b>: expected background noise in S-units.</li>
+   <li><b>Grey line</b>: the twilight band – low-band DX often peaks along it.</li>
+  </ul>
+ </div>
+</section>
+
+<section id="rep" hidden>
+ <div class="seg" id="repSeg"><button data-v="near" class="on">Nearby repeaters</button><button data-v="plan">Channel plan</button></div>
+ <div id="repNear">
+  <div class="card">
+   <div class="mut small">Bands</div><div class="chips" id="rnBandC"></div>
+   <div class="mut small" style="margin-top:6px">Modes</div><div class="chips" id="rnModeC"></div>
+   <input id="rnSearch" placeholder="Search callsign or town" style="margin-top:8px">
+   <label class="chk"><input type="checkbox" id="rnGw"> Include gateways &amp; simplex nodes</label>
+   <label class="chk"><input type="checkbox" id="rnFav"> ★ Favourites only</label>
+   <div id="rnFrom" class="mut small" style="margin-top:8px"></div>
+  </div>
+  <div class="card" style="padding:4px 10px"><div id="rnList"></div><button class="btn alt" id="rnMore" style="width:100%;margin:8px 0" hidden>Show more</button></div>
+  <div class="mut small" style="text-align:center" id="rnSrc"></div>
+ </div>
+ <div id="repPlan" hidden>
+ <div class="card">
+  <h2>UK repeater channels</h2>
+  <select id="repSel"></select>
+  <div class="info"><b>Repeater TX</b> = the repeater transmits here (you listen). <b>Repeater RX</b> = the repeater listens here (you transmit).</div>
+  <div id="repOut"></div>
+ </div>
+ <div class="mut small" style="text-align:center" id="repSrc"></div>
+ </div>
+</section>
+
+<section id="gb3xo" hidden>
+ <button class="btn" id="xoListen">🔊 Listen</button>
+ <div id="xoListenTx" class="mut small" style="margin:-4px 0 10px;text-align:center" hidden></div>
+ <div class="card">
+  <h2>GB3XO – Redditch 70cm Analogue Repeater</h2>
+  <div class="row" style="margin:10px 0">
+   <div><div class="mut">Repeater TX (listen)</div><div class="big f" id="xoDn"></div></div>
+   <div><div class="mut">Repeater RX (transmit)</div><div class="big f" id="xoUp"></div></div>
+  </div>
+  <div class="kv" id="xoKv"></div>
+ </div>
+ <div class="card" id="xoLive">
+  <h2><span id="xoDot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#64748b;margin-right:8px;vertical-align:middle"></span>Live status <span class="mut small">(AllStar node 63824)</span></h2>
+  <div id="xoSt" class="big" style="font-size:18px">Checking…</div>
+  <div id="xoInfo" class="kv" style="margin-top:8px"></div>
+  <div id="xoLinks" style="margin-top:8px"></div>
+  <div class="mut small" id="xoUpd" style="margin-top:8px"></div>
+ </div>
+ <div class="card"><h2>Radio set-up</h2><div id="xoSet"></div></div>
+ <a class="btn" style="display:block" id="xoQrz">Open GB3XO on QRZ.com</a>
+</section>
+
+<section id="qth" hidden>
+ <div class="card">
+  <h2>Your QTH locator</h2>
+  <div id="locBig" class="f" style="font-size:44px;font-weight:800;letter-spacing:2px;text-align:center;margin:6px 0">…</div>
+  <div id="locSub" class="mut small" style="text-align:center;margin-bottom:8px">Finding your location…</div>
+  <div class="kv" id="locKv"></div>
+  <div class="btns"><button class="btn" id="locCopy">Copy</button><button class="btn alt" id="locShare">Share</button><button class="btn alt" id="locRef">Refresh location</button></div>
+  <div id="locMsg" class="small" style="margin-top:6px"></div>
+ </div>
+ <div class="card"><h2>Grid squares around you</h2><div id="locGrid"></div><div class="mut small" style="margin-top:6px">Red dot = you. Your square is in the middle.</div></div>
+ <div class="card"><h2>Map</h2>
+  <div class="btns" style="margin-top:0"><button class="btn sm" id="locZ1">Square</button><button class="btn sm alt" id="locZ2">Sub-square</button></div>
+  <div id="locMap" style="position:relative;height:300px;overflow:hidden;border-radius:10px;background:#0b1424;margin-top:8px"></div>
+  <div class="mut small" style="margin-top:6px">The locator is worked out on your phone and isn't sent anywhere. The map needs internet.</div>
+ </div>
+</section>
+
+<section id="adm" hidden>
+ <div class="card">
+  <h2>App users</h2>
+  <div class="mut small">Everyone who has set a callsign and opened the app (only admin phones can see this).</div>
+  <div class="row" style="margin-top:8px"><input id="adSearch" placeholder="Search callsign or name"><button class="btn sm" id="adRef" style="flex:none">Refresh</button></div>
+  <div id="adCount" class="small" style="margin-top:8px"></div>
+ </div>
+ <div class="card" style="padding:4px 10px"><div id="adList"></div></div>
+</section>
+
+<section id="emerg" hidden>
+ <div class="card">
+  <h2>Redditch Emergency Frequencies</h2>
+  <table><thead><tr><th>Name</th><th>MHz</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="emBody"></tbody></table>
+  <div class="info">PMR446 Channel 6 (446.06875 MHz) is used across the UK for nets – may be active.</div>
+  <h3>Add frequency</h3>
+  <div class="row"><input id="emL" placeholder="Name"><input id="emF" inputmode="decimal" placeholder="MHz"></div>
+  <div class="row" style="margin-top:8px"><select id="emM"><option>FM</option><option>USB</option><option>LSB</option><option>FM/USB</option><option>AM</option><option>CW</option><option>DMR</option><option>DV</option><option>Data</option></select><input id="emN" placeholder="Notes (tone, CC/TG/TS)"></div>
+  <div class="btns"><button class="btn" id="emAdd">Add</button></div>
+  <div id="emMsg" class="mut" style="margin-top:8px"></div>
+  <div class="mut small" style="margin-top:6px">The Redditch emergency frequencies are fixed. Frequencies you add yourself can be removed with ✕.</div>
+ </div>
+ <div class="card" style="border-color:#f5a524">
+  <h2>🕖 Standard / emergency listening time</h2>
+  <div class="big" style="font-size:22px;font-weight:800">7 pm every day</div>
+  <div style="margin-top:4px">Everyone will try to be available at 7 pm.</div>
+ </div>
+</section>
+
+<section id="ann" hidden>
+ <button class="btn" id="anNew" style="width:100%;font-size:18px;padding:13px;margin-bottom:10px">＋ Post an announcement</button>
+ <div class="card" id="anForm" hidden>
+  <h2>New announcement</h2>
+  <input id="anTitle" maxlength="100" placeholder="Title, e.g. Christmas drinks at Pete's">
+  <textarea id="anBody" maxlength="2000" rows="4" class="ta" placeholder="Details (optional)"></textarea>
+  <div class="row" style="margin-top:8px"><input id="anWhen" maxlength="100" placeholder="When, e.g. Sat 28 Nov, 7 pm"><input id="anWhere" maxlength="120" placeholder="Where / postcode"></div>
+  <input id="anName" maxlength="60" placeholder="Your name" style="margin-top:8px">
+  <div class="mut small" id="anWho" style="margin-top:6px"></div>
+  <div class="btns"><button class="btn" id="anPost">Post</button><button class="btn alt" id="anCancel">Cancel</button></div>
+  <div id="anMsg" class="small" style="margin-top:6px"></div>
+ </div>
+ <div id="anList"></div>
+ <div class="mut small" style="text-align:center;margin:8px 0" id="anSrc"></div>
+</section>
+
+<section id="sale" hidden>
+ <button class="btn" id="fsNew" style="width:100%;font-size:18px;padding:13px;margin-bottom:10px">＋ Add a listing</button>
+ <div class="card" id="fsForm" hidden>
+  <h2>New listing</h2>
+  <label class="btn alt sm" style="display:inline-block">📷 Choose photo<input type="file" id="fsPhoto" accept="image/*" hidden></label>
+  <img id="fsPrev" alt="" style="display:none;max-width:100%;max-height:220px;border-radius:10px;margin-top:8px">
+  <input id="fsTitle" maxlength="100" placeholder="Title, e.g. Yaesu FT-65 handheld" style="margin-top:8px">
+  <textarea id="fsDesc" maxlength="2000" rows="4" class="ta" placeholder="Description"></textarea>
+  <div class="row" style="margin-top:8px"><input id="fsPrice" maxlength="30" placeholder="Price, e.g. £50 or Free"><input id="fsName" maxlength="60" placeholder="Your name"></div>
+  <div class="mut small" id="fsWho" style="margin-top:6px"></div>
+  <div class="btns"><button class="btn" id="fsPost">List it</button><button class="btn alt" id="fsCancel">Cancel</button></div>
+  <div id="fsMsg" class="small" style="margin-top:6px"></div>
+ </div>
+ <div id="fsList"></div>
+ <div class="mut small" style="text-align:center;margin:8px 0">Contact sellers directly (e.g. on air or via QRZ). The app doesn't handle payments.</div>
+</section>
+
+<section id="scan" hidden>
+ <div class="card">
+  <h2>Scanner</h2>
+  <input id="scSearch" placeholder="Search all lists (frequency or name)">
+  <div id="scSearchOut"></div>
+ </div>
+ <div class="card">
+  <select id="scSel"></select>
+  <div class="btns"><button class="btn sm" id="scNew">+ New list</button><button class="btn sm alt" id="scRen" hidden>Rename</button><button class="btn sm alt" id="scDel" hidden>Delete list</button></div>
+  <div id="scNote"></div>
+  <input id="scFilter" placeholder="Filter this list" style="margin-top:8px">
+  <table style="margin-top:6px"><thead><tr><th>MHz</th><th>Name</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="scBody"></tbody></table>
+  <div id="scAdd" hidden>
+   <h3>Add frequency to this list</h3>
+   <div class="row"><input id="scF" inputmode="decimal" placeholder="MHz"><input id="scN" placeholder="Name"></div>
+   <div class="row" style="margin-top:8px"><select id="scM"><option>FM</option><option>NFM</option><option>AM</option><option>USB</option><option>LSB</option><option>DMR</option><option>DV</option><option>Data</option></select><input id="scX" placeholder="Notes"></div>
+   <div class="btns"><button class="btn" id="scAddBtn">Add</button></div>
+  </div>
+  <div id="scMsg" class="mut small" style="margin-top:6px"></div>
+ </div>
+ <div class="warn">UK law: you may freely listen to amateur, CB and broadcast stations. Listening to other transmissions not intended for you (e.g. airband, marine, emergency services) without authority can be an offence under the Wireless Telegraphy Act 2006. Only transmit where you are licensed.</div>
+</section>
+
+<section id="qrz" hidden>
+ <div class="seg" id="qzSeg"><button data-v="look" class="on">Lookup</button><button data-v="log">Log QSO</button><button data-v="set">Settings</button></div>
+ <div id="qzLook">
+  <div class="card">
+   <button class="btn" id="lsBtn" style="width:100%;font-size:18px;padding:14px">🎤 Listen for callsigns</button>
+   <div id="lsMeter" hidden style="margin-top:6px"><div style="height:10px;background:#0b1424;border:1px solid var(--line);border-radius:5px;overflow:hidden"><div id="lsLvl" style="height:100%;width:0;background:#22c55e;transition:width .15s,background .3s"></div></div><div id="lsLvlTx" class="mut small" style="margin-top:2px"></div></div>
+   <div class="mut small" style="margin-top:6px">Tap to start – the button lights up while it's listening. Tap again (or leave this page) to stop.</div>
+   <div id="lsCalls"></div>
+   <pre id="lsDiag" hidden style="font-size:11px;max-height:150px;overflow-y:auto;background:#0b1424;border:1px solid var(--line);border-radius:8px;padding:6px;margin-top:8px;white-space:pre-wrap"></pre>
+   <div id="lsOut"></div>
+  </div>
+  <div class="card">
+   <div class="row"><input id="qlCall" placeholder="Callsign e.g. M0PTN" autocapitalize="characters" style="text-transform:uppercase"><button class="btn" id="qlGo" style="flex:0 0 auto">Look up</button></div>
+   <div id="qlOut"></div>
+  </div>
+ <div class="card" id="hdCard">
+   <h2>Stations heard</h2>
+   <canvas id="hdMap" width="720" height="480"></canvas>
+   <div class="mut small" style="margin-top:4px">Red = you (your own callsign is never counted as heard). Stations appear on the map when their locator is known (from your QRZ lookup).</div>
+   <div id="hdList"></div>
+   <div class="btns"><button class="btn sm alt" id="hdClear">Clear heard list</button></div>
+  </div>
+ </div>
+ <div id="qzLog" hidden>
+  <div class="card">
+   <h2>Log a QSO to QRZ</h2>
+   <div class="row"><input id="lgCall" placeholder="Their callsign" autocapitalize="characters" style="text-transform:uppercase"><input id="lgFreq" inputmode="decimal" placeholder="Freq MHz"></div>
+   <div class="row" style="margin-top:8px"><select id="lgBand"></select><select id="lgMode"></select></div>
+   <div class="row" style="margin-top:8px"><input id="lgRstS" placeholder="RST sent" value="59"><input id="lgRstR" placeholder="RST rcvd" value="59"></div>
+   <div class="row" style="margin-top:8px"><input id="lgDate" placeholder="Date UTC YYYY-MM-DD"><input id="lgTime" placeholder="Time UTC HH:MM"></div>
+   <div class="row" style="margin-top:8px"><input id="lgName" placeholder="Name (optional)"><input id="lgGrid" placeholder="Their locator (optional)"></div>
+   <input id="lgCmt" placeholder="Comment (optional)" style="margin-top:8px">
+   <label class="chk"><input type="checkbox" id="lgMyGrid"> Add my locator to the log (<span id="lgMyGridTx">needs location</span>)</label>
+   <div class="btns"><button class="btn" id="lgSave">Log QSO</button><button class="btn alt" id="lgNow">Time = now</button></div>
+   <div id="lgMsg" class="small" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+   <h2>Recent QSOs (this phone)</h2>
+   <div class="btns" style="margin-top:0"><button class="btn sm alt" id="lgRetry">Send pending now</button><button class="btn sm alt" id="lgClear">Clear sent from list</button></div>
+   <div id="lgList"></div>
+  </div>
+ </div>
+ <div id="qzSet" hidden>
+  <div class="card">
+   <h2>QRZ settings</h2>
+   <div class="mut small">Stored only on this phone and sent only to qrz.com. Not encrypted on the phone – if you share the phone, don't save your password.</div>
+   <h3>My station</h3>
+   <input id="stCall" placeholder="My callsign (used across the app)" autocapitalize="characters" style="text-transform:uppercase">
+   <h3>Callsign lookups</h3>
+   <input id="stUser" placeholder="QRZ username (your callsign)" autocapitalize="characters">
+   <input id="stPass" type="password" placeholder="QRZ password" style="margin-top:8px">
+   <div class="mut small" style="margin-top:4px">Any QRZ account can log in; full details (name, address, locator) need a QRZ XML subscription.</div>
+   <h3>Logbook</h3>
+   <input id="stKey" placeholder="QRZ Logbook API key (XXXX-XXXX-XXXX-XXXX)" autocapitalize="characters">
+   <div class="mut small" style="margin-top:4px">Find it at qrz.com › My Logbook › Settings › API key. Logging via the API needs a QRZ subscription at XML level or higher. Treat the key like a password.</div>
+   <h3>Listening</h3>
+   <label class="chk" id="stBoostRow"><input type="checkbox" id="stBoost"> Boost quiet audio (automatic gain) – experimental, needs Android 13 or newer. Also keeps one continuous listening session instead of restarting. Turn off if callsigns stop appearing.</label>
+   <div id="stBoostNote" class="mut small"></div>
+   <label class="chk"><input type="checkbox" id="stDiag"> Show listening diagnostics (a log of what the recogniser is doing – for troubleshooting)</label>
+   <div class="btns"><button class="btn" id="stSave">Save</button><button class="btn alt" id="stTest">Test</button><button class="btn alt" id="stWipe">Remove login &amp; key</button></div>
+   <div id="stMsg" class="small" style="margin-top:8px"></div>
+  </div>
+ </div>
+</section>
+
+<section id="ver" hidden>
+ <div class="card">
+  <button class="btn sm alt" id="verBack">← Back</button>
+  <h2 style="margin-top:10px">Version history</h2>
+  <div class="btns"><button class="btn sm" id="updCheckBtn">Check for updates</button><a class="btn sm alt" href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Download page (share this)</a></div>
+  <div id="updMsg" class="mut small" style="margin-top:6px"></div>
+ </div>
+ <div class="card" id="sugCard">
+  <h2>Suggest a feature</h2>
+  <input id="sgTitle" placeholder="Short title, e.g. Add 4m repeaters">
+  <textarea id="sgBody" rows="4" placeholder="Describe the idea" style="width:100%;margin-top:8px;background:#0b1424;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:16px;font-family:inherit"></textarea>
+  <input id="sgCall" placeholder="Your callsign (optional)" style="margin-top:8px" autocapitalize="characters">
+  <div class="btns"><button class="btn" id="sgSend">Send suggestion</button></div>
+  <div class="mut small" style="margin-top:6px">Sent straight to the app's online database – no login needed. Suggestions are collected for the next version.</div>
+  <div id="verOut"></div>
+ </div>
+ <div class="card" id="sgAdm" hidden>
+  <h2>All suggestions <span class="mut small">(admins only)</span></h2>
+  <div class="chips" id="sgF"><button data-f="" class="on">All</button><button data-f="new">New</button><button data-f="accepted">Accepted</button><button data-f="rejected">Rejected</button></div>
+  <div id="sgCount" class="small" style="margin-top:8px"></div>
+  <div id="sgList" style="margin-top:6px"></div>
+  <div class="mut small" style="margin-top:6px">Suggestions are never deleted – accepted ones go into the next version.</div>
+ </div>
+</section>
+
+<footer>Built by <a href="https://www.qrz.com/db/M0PTN">M0PTN</a> &nbsp;|&nbsp; <button id="verBtn"></button> &nbsp;|&nbsp; <button id="sugBtn">Suggest a feature</button></footer>
+</main>
+
+<script>
+/* --- v2.7: web version (same page runs as the Android app and as a web app on GitHub Pages) --- */
+var WEB=!/RadioChatUnlimited\//.test(navigator.userAgent),RELAY="https://script.google.com/macros/s/AKfycbzIX4uGGMnfXtpO0d1urHHx84aHLsHf4ru-Pqm50xtnlxX_awxO_ogGO4DfPa9UF32UFQ/exec";
+if(WEB){
+ /* sites that block requests from web pages go through the M0PTN relay (Google Apps Script) */
+ (function(){var RX=/^https:\/\/(logbook\.qrz\.com\/api$|www\.hamqsl\.com\/solarxml\.php|retrieve\.pskreporter\.info\/query\?)/,o=XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open=function(m,u){if(RX.test(String(u)))arguments[1]=RELAY+"?u="+encodeURIComponent(u);return o.apply(this,arguments)}})();
+ /* browser versions of the app's native commands */
+ (function(){var np=window.prompt.bind(window),SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,want=false,hose=null;
+  function srStart(){if(!SR)return"nohandler";want=true;if(rec)return"ok";var r=new SR();rec=r;r.lang="en-GB";r.continuous=true;r.interimResults=true;r.maxAlternatives=3;
+   r.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){var x=e.results[i],a=[];for(var j=0;j<x.length;j++)a.push(x[j].transcript.trim());
+    var t=encodeURIComponent(a.join("|"));if(x.isFinal){if(window.onSpeechC)window.onSpeechC(t)}else if(window.onSpeechP)window.onSpeechP(t)}};
+   r.onerror=function(e){if(window.onEarEv)window.onEarEv("error ("+e.error+")");
+    if(e.error=="not-allowed"||e.error=="service-not-allowed"||e.error=="audio-capture"){want=false;if(window.onListenStopped)window.onListenStopped();
+     if(window.lsMsg)lsMsg(e.error=="audio-capture"?"No microphone found.":"Allow the microphone for this site (padlock icon by the address), then tap Listen again.")}};
+   r.onend=function(){if(rec===r)rec=null;if(want)setTimeout(function(){if(want&&!rec)srStart()},250)};
+   try{r.start()}catch(e){}return"ok"}
+  function hoseOn(){if(hose)return"ok";hose=document.createElement("iframe");hose.allow="autoplay";hose.title="GB3XO audio";
+   hose.style.cssText="position:fixed;left:-10px;top:-10px;width:1px;height:1px;border:0;opacity:0";hose.src="https://hose.brandmeister.network/?subscribe=23589";document.body.appendChild(hose);return"ok"}
+  function hoseOff(){if(hose){hose.remove();hose=null}return"ok"}
+  window.prompt=function(m,d){m=String(m);if(m.indexOf("rcu:")!=0)return np(m,d);
+   if(m=="rcu:start"||m=="rcu:startb"||m=="rcu:listen")return srStart();
+   if(m=="rcu:stop"){want=false;if(rec){try{rec.stop()}catch(e){}}rec=null;return"ok"}
+   if(m=="rcu:xon")return hoseOn();if(m=="rcu:xoff")return hoseOff();if(m=="rcu:xstate")return hose?"on":"off";
+   return""}})();
+ /* links to other sites open in a new tab so the app stays open */
+ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.target)return;var h=a.getAttribute("href")||"";
+  if(/^https?:/i.test(h)&&a.host!=location.host){e.preventDefault();window.open(a.href,"_blank","noopener")}},true);
+ /* installable web app: manifest + service worker (always fetches fresh, offline falls back to the last copy) */
+ (function(){var l=document.createElement("link");l.rel="manifest";l.href="manifest.webmanifest";document.head.appendChild(l);
+  if("serviceWorker" in navigator&&location.protocol=="https:")window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})})();
+}
+</script>
+<script src="data.js"></script>
+<script src="scanner.js"></script>
+<script src="repeaters.js"></script>
+<script src="repeaters_db.js"></script>
+<script src="world.js"></script>
+<script>
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function loadJSON(k,d){try{var v=JSON.parse(store(k));return v==null?d:v}catch(e){return d}}
+var CATS={cw:"CW",nb:"Narrowband / data",all:"All modes / phone",bcn:"Beacons",fm:"FM / repeaters",sat:"Satellite",gap:"Guard"};
+function fmt(mhz){return mhz<30?(mhz*1000).toFixed(mhz*1000%1?1:0)+" kHz":mhz.toFixed(4).replace(/0+$/,"").replace(/\.$/,"")+" MHz"}
+function rng(a,b){return a<30?fmt(a).replace(" kHz","")+"–"+fmt(b):fmt(a).replace(" MHz","")+"–"+fmt(b)}
+
+/* ---------- tabs ---------- */
+var curTab="band";
+function showTab(t){var b=document.querySelectorAll("#tabs button");for(var i=0;i<b.length;i++){b[i].className=b[i].dataset.t==t?"on":"";$(b[i].dataset.t).hidden=b[i].dataset.t!=t}
+ $("ver").hidden=true;curTab=t;store("tab",t);window.scrollTo(0,0);if(t=="cond")condShow()}
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+
+/* ---------- version / footer ---------- */
+$("verBtn").textContent="v"+APP_VERSION;
+$("verBtn").onclick=function(){var s=document.querySelectorAll("main>section");for(var i=0;i<s.length;i++)s[i].hidden=s[i].id!="ver";window.scrollTo(0,0)};
+$("verBack").onclick=function(){showTab(curTab)};
+$("verOut").innerHTML=VERSIONS.map(function(v){return'<h3>v'+v.v+' – '+v.date+'</h3><ul>'+v.items.map(function(i){return'<li>'+esc(i)+'</li>'}).join("")+'</ul>'}).join("");
+
+/* ---------- distance from Redditch ---------- */
+function miles(a,b,c,d){var R=3958.8,r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2);var h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*R*Math.asin(Math.min(1,Math.sqrt(h)))}
+var distState="";
+function locate(){
+ if(!navigator.geolocation){setDist(null,"Location not available on this device");return}
+ navigator.geolocation.getCurrentPosition(function(p){var m=miles(REDDITCH.lat,REDDITCH.lon,p.coords.latitude,p.coords.longitude);
+   setDist(m<10?m.toFixed(1):Math.round(m).toLocaleString(),null,p.coords.accuracy)},
+  function(e){setDist(null,e.code==1?(WEB?"Location permission is off – allow location for this site (padlock icon by the address) and reload.":"Location permission is off. Allow location for this app in Android Settings › Apps › Radio Chat Unlimited › Permissions."):"Couldn't get your location yet – make sure Location is on.")},
+  {enableHighAccuracy:false,timeout:20000,maximumAge:60000});
+}
+function setDist(m,err,acc){
+ if(m!=null){$("dist").textContent=m+" mi";distState="Straight-line distance from Redditch town centre: "+m+" miles"+(acc?" (accuracy ±"+Math.round(acc)+" m)":"")+". Updates every 30 seconds while the app is open."}
+ else{$("dist").textContent="Location off";distState=err}
+ if(!$("distInfo").hidden)$("distInfo").textContent=distState;
+}
+$("distBtn").onclick=function(){var d=$("distInfo");d.hidden=!d.hidden;d.textContent=distState||"Finding your location…";if(!d.hidden)locate()};
+locate();setInterval(locate,30000);
+
+/* ---------- band plan ---------- */
+var sel=$("bandSel");
+BANDS.forEach(function(b){var o=document.createElement("option");o.value=b.id;o.textContent=b.name+"  ("+rng(b.lo,b.hi)+")";sel.appendChild(o)});
+function renderBand(id){
+ var b=BANDS.filter(function(x){return x.id==id})[0]||BANDS[0];var span=b.hi-b.lo,h="";
+ h+='<h3>UK allocation</h3><div class="big f">'+rng(b.lo,b.hi)+'</div><div class="bar">';
+ b.seg.forEach(function(s){h+='<div style="left:'+((s[0]-b.lo)/span*100)+'%;width:'+((s[1]-s[0])/span*100)+'%;background:var(--'+s[3]+')"></div>'});
+ h+='</div><div class="scale"><span>'+fmt(b.lo)+'</span><span>'+fmt(b.hi)+'</span></div><div class="legend">';
+ var used={};b.seg.forEach(function(s){used[s[3]]=1});for(var c in CATS)if(used[c])h+='<span><i class="dot" style="background:var(--'+c+')"></i>'+CATS[c]+'</span>';
+ h+='</div><h3>'+(b.gaps?'Permitted blocks':'Sub-bands')+'</h3><table><tr><th>Frequency</th><th>Max BW</th><th>Usage</th></tr>';
+ b.seg.forEach(function(s){h+='<tr><td class="f"><i class="dot" style="background:var(--'+s[3]+')"></i>'+rng(s[0],s[1])+'</td><td class="f">'+s[2]+'</td><td>'+esc(s[4])+'</td></tr>'});
+ h+='</table>';
+ if(b.coa.length){h+='<h3>Centres of activity</h3><table>';b.coa.forEach(function(c){h+='<tr><td class="f">'+fmt(c[0])+'</td><td>'+esc(c[1])+'</td></tr>'});h+='</table>'}
+ h+='<h3>Notes</h3><ul>'+b.notes.map(function(n){return'<li>'+esc(n)+'</li>'}).join("")+'</ul>';
+ $("bandOut").innerHTML=h;store("band",b.id);
+}
+sel.onchange=function(){renderBand(sel.value)};
+$("chk").oninput=function(){
+ var v=parseFloat(this.value.replace(",","."));var o=$("chkOut");if(!(v>0)){o.innerHTML="";return}
+ var mhz=v>=1000&&v<1000000?v/1000:v,hit=null;BANDS.forEach(function(b){if(mhz>=b.lo&&mhz<=b.hi)hit=b});
+ if(!hit){o.innerHTML='<div class="res bad"><b>'+fmt(mhz)+'</b> is outside the UK amateur allocations listed in this app.</div>';return}
+ var segs=hit.seg.filter(function(s){return mhz>=s[0]&&mhz<=s[1]});
+ if(!segs.length){o.innerHTML='<div class="res bad"><b>'+fmt(mhz)+'</b> is in the '+hit.name+' range but <b>not inside a permitted block</b>.</div>';return}
+ var near=hit.coa.filter(function(c){return Math.abs(c[0]-mhz)<=0.0025});
+ o.innerHTML='<div class="res ok"><b>'+fmt(mhz)+'</b> – '+hit.name+'<br>'+segs.map(function(s){return'<i class="dot" style="background:var(--'+s[3]+')"></i>'+rng(s[0],s[1])+' · max BW '+s[2]+' · '+esc(s[4])}).join("<br>")+(near.length?'<br><span class="mut">Near: '+near.map(function(c){return fmt(c[0])+' '+esc(c[1])}).join(", ")+'</span>':'')+'</div>';
+ if(sel.value!=hit.id){sel.value=hit.id;renderBand(hit.id)}
+};
+
+/* ---------- repeaters ---------- */
+var RB=["10m","6m","2m","70cm","23cm"].filter(function(b){return REPEATERS[b]});
+RB.forEach(function(b){var o=document.createElement("option");var n=REPEATERS[b].reduce(function(a,g){return a+g.rows.length},0);o.value=b;o.textContent=b+"  ("+n+" channels)";$("repSel").appendChild(o)});
+function renderRep(b){var h="";REPEATERS[b].forEach(function(g){
+  h+='<h3>'+esc(g.name)+'</h3><table><tr><th>Channel</th><th>Repeater TX</th><th>Repeater RX</th><th>Shift</th></tr>';
+  g.rows.forEach(function(r){var sh=(parseFloat(r[2])-parseFloat(r[1]));var s=sh==0?"simplex":(sh>0?"+":"−")+Math.abs(sh).toFixed(3);
+   var xo=r[0]=="RBW02";h+='<tr'+(xo?' class="hl"':'')+'><td>'+esc(r[0])+(xo?' <span class="mut small">(GB3XO)</span>':'')+'</td><td class="f">'+r[1]+'</td><td class="f">'+r[2]+'</td><td class="f">'+s+'</td></tr>'});
+  h+='</table>'});
+ $("repOut").innerHTML=h;store("repband",b)}
+$("repSel").onchange=function(){renderRep(this.value)};
+$("repSrc").textContent="Source: "+REPEATERS_SRC+". Channels not listed there (e.g. DVU44) are not shown.";
+
+/* ---------- GB3XO ---------- */
+$("xoDn").textContent=GB3XO.downlink;$("xoUp").textContent=GB3XO.uplink;
+$("xoKv").innerHTML=[["Channel","RBW02 (5 MHz split)"],["Offset",GB3XO.offset],["CTCSS",GB3XO.ctcss],["Mode",GB3XO.mode],["Location",GB3XO.location],["EchoLink",GB3XO.echolink],["AllStar",GB3XO.allstar]].map(function(r){return"<b>"+r[0]+"</b><span>"+esc(r[1])+"</span>"}).join("");
+$("xoSet").innerHTML='<ul><li>RX: <b class="f">'+GB3XO.downlink+' MHz</b></li><li>TX: <b class="f">'+GB3XO.uplink+' MHz</b> (shift '+GB3XO.offset+')</li><li>CTCSS encode: <b>'+GB3XO.ctcss+'</b></li><li>FM narrow (12.5 kHz)</li></ul>';
+$("xoQrz").href=GB3XO.qrz;
+
+/* ---------- Redditch emergency ---------- */
+function emLoad(){
+ var s=loadJSON("emerg2",null);if(s&&s.length!==undefined)return s;
+ var list=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes}});
+ var old=loadJSON("emerg",null); // carry over anything the user added in v1.0
+ if(old&&old.length)old.forEach(function(r){if(EMERG_V10_DEFAULTS.indexOf(r.f+"|"+r.mode)<0)list.push({label:r.label||"",f:r.f,mode:r.mode,notes:""})});
+ store("emerg2",JSON.stringify(list));return list}
+var EM=emLoad();
+/* v2.4: built-in Redditch frequencies can't be deleted - put back any that were removed, keep the user's own after them */
+(function(){var key=function(r){return r.f+"|"+r.mode},dk=EMERG_DEFAULTS.map(key);
+ var own=EM.filter(function(r){return dk.indexOf(key(r))<0}).map(function(r){r.own=1;return r});
+ EM=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes}}).concat(own);store("emerg2",JSON.stringify(EM))})();
+function emSave(){store("emerg2",JSON.stringify(EM))}
+function emRender(){$("emBody").innerHTML=EM.map(function(r,i){return'<tr><td>'+esc(r.label)+'</td><td class="f">'+esc(r.f)+'</td><td>'+esc(r.mode)+'</td><td class="small">'+esc(r.notes)+'</td><td>'+(r.own?'<button class="x" data-i="'+i+'">✕</button>':'')+'</td></tr>'}).join("")}
+$("emBody").onclick=function(e){var i=e.target.dataset.i;if(i!==undefined&&EM[+i]&&EM[+i].own){EM.splice(+i,1);emSave();emRender()}};
+$("emAdd").onclick=function(){var v=parseFloat($("emF").value.replace(",","."));if(!(v>0)){$("emMsg").textContent="Enter a frequency in MHz.";return}
+ EM.push({label:$("emL").value||"",f:String(v),mode:$("emM").value,notes:$("emN").value||"",own:1});emSave();emRender();$("emF").value=$("emL").value=$("emN").value="";$("emMsg").textContent="Added."};
+
+/* ---------- scanner ---------- */
+var SC=loadJSON("scan_custom",[]);
+function scSave(){store("scan_custom",JSON.stringify(SC))}
+function scAll(){return SCAN_BUILTIN.map(function(l){return{id:l.id,name:l.name,note:l.note,rows:l.rows,custom:false}}).concat(SC.map(function(l){return{id:l.id,name:l.name,note:"",rows:l.rows.map(function(r){return[r.f,r.n,r.m,r.x]}),custom:true}}))}
+function scFill(selId){var s=$("scSel"),h='<optgroup label="Built-in lists">';
+ SCAN_BUILTIN.forEach(function(l){h+='<option value="'+l.id+'">'+esc(l.name)+' ('+l.rows.length+')</option>'});
+ h+='</optgroup><optgroup label="My lists">'+(SC.length?SC.map(function(l){return'<option value="'+l.id+'">'+esc(l.name)+' ('+l.rows.length+')</option>'}).join(""):'<option disabled>(none yet – tap + New list)</option>')+'</optgroup>';
+ s.innerHTML=h;s.value=selId||store("scan_sel")||"cb_uk";if(!s.value)s.value="cb_uk";scRender()}
+function scCur(){var id=$("scSel").value;return scAll().filter(function(l){return l.id==id})[0]}
+function scRender(){var l=scCur();if(!l)return;store("scan_sel",l.id);
+ $("scRen").hidden=$("scDel").hidden=$("scAdd").hidden=!l.custom;
+ $("scNote").innerHTML=l.note?'<div class="info">'+esc(l.note)+'</div>':'';
+ var q=$("scFilter").value.toLowerCase();
+ $("scBody").innerHTML=l.rows.map(function(r,i){if(q&&(r.join(" ").toLowerCase().indexOf(q)<0))return"";
+   return'<tr><td class="f">'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td class="small">'+esc(r[3])+'</td><td>'+(l.custom?'<button class="x" data-i="'+i+'">✕</button>':'')+'</td></tr>'}).join("")||'<tr><td colspan="5" class="mut">No frequencies'+(l.custom?' yet – add one below.':'.')+'</td></tr>';
+ $("scMsg").textContent=""}
+$("scSel").onchange=function(){$("scFilter").value="";scRender()};
+$("scFilter").oninput=scRender;
+$("scNew").onclick=function(){var n=prompt("Name for your new list:","My list");if(!n)return;var id="u"+Date.now();SC.push({id:id,name:n.trim()||"My list",rows:[]});scSave();scFill(id);$("scMsg").textContent="List created – add frequencies below."};
+$("scRen").onclick=function(){var l=SC.filter(function(x){return x.id==$("scSel").value})[0];if(!l)return;var n=prompt("Rename list:",l.name);if(!n)return;l.name=n.trim()||l.name;scSave();scFill(l.id)};
+$("scDel").onclick=function(){var id=$("scSel").value,l=SC.filter(function(x){return x.id==id})[0];if(!l)return;if(!confirm('Delete the list "'+l.name+'" and all its frequencies?'))return;SC=SC.filter(function(x){return x.id!=id});scSave();scFill("cb_uk")};
+$("scBody").onclick=function(e){var i=e.target.dataset.i;if(i===undefined)return;var l=SC.filter(function(x){return x.id==$("scSel").value})[0];if(!l)return;l.rows.splice(+i,1);scSave();scFill(l.id)};
+$("scAddBtn").onclick=function(){var l=SC.filter(function(x){return x.id==$("scSel").value})[0];if(!l)return;var v=parseFloat($("scF").value.replace(",","."));
+ if(!(v>0)){$("scMsg").textContent="Enter a frequency in MHz.";return}
+ l.rows.push({f:String(v),n:$("scN").value||"",m:$("scM").value,x:$("scX").value||""});scSave();$("scF").value=$("scN").value=$("scX").value="";scFill(l.id);$("scMsg").textContent="Added."};
+$("scSearch").oninput=function(){var q=this.value.trim().toLowerCase(),o=$("scSearchOut");if(q.length<2){o.innerHTML="";return}
+ var hits=[];scAll().forEach(function(l){l.rows.forEach(function(r){if(r.join(" ").toLowerCase().indexOf(q)>=0)hits.push([l.name].concat(r))})});
+ o.innerHTML='<div class="mut small" style="margin-top:6px">'+hits.length+' match'+(hits.length==1?'':'es')+(hits.length>100?' (first 100 shown)':'')+'</div><table>'+hits.slice(0,100).map(function(h){return'<tr><td class="f">'+esc(h[1])+'</td><td>'+esc(h[2])+'<div class="mut small">'+esc(h[0])+(h[4]?' · '+esc(h[4]):'')+'</div></td><td>'+esc(h[3])+'</td></tr>'}).join("")+'</table>'};
+
+/* ---------- band conditions ---------- */
+$("condRefresh").onclick=function(){condLoad(true)};
+var condLoaded=0;
+function condShow(){drawMap();if(Date.now()-condLoaded>15*60000)condLoad(false)}
+function txt(x,t){var e=x.getElementsByTagName(t)[0];return e?e.textContent.trim():""}
+function condRender(xmlStr,when,cached){
+ var x;try{x=new DOMParser().parseFromString(xmlStr,"text/xml");if(!x.getElementsByTagName("solardata").length)throw 1}catch(e){$("condData").innerHTML="";return false}
+ var t=[["SFI",txt(x,"solarflux")],["SN",txt(x,"sunspots")],["A index",txt(x,"aindex")],["K index",txt(x,"kindex")],["X-ray",txt(x,"xray")],["Solar wind",txt(x,"solarwind")+" km/s"],
+  ["Bz",txt(x,"magneticfield")],["Aurora",txt(x,"aurora")],["Aur lat",txt(x,"latdegree")+"°"],["Geomag field",txt(x,"geomagfield")],["Sig noise",txt(x,"signalnoise")],["Proton flux",txt(x,"protonflux")]];
+ var h='<div class="mut small" style="margin:8px 0">Updated: '+esc(txt(x,"updated"))+(cached?' (saved copy – '+esc(when)+')':'')+'</div><div class="tiles">'+t.map(function(r){return'<div class="tile"><div class="k">'+r[0]+'</div><div class="v">'+esc(r[1]||"–")+'</div></div>'}).join("")+'</div>';
+ var bands={};var b=x.getElementsByTagName("band");for(var i=0;i<b.length;i++){var n=b[i].getAttribute("name"),tm=b[i].getAttribute("time");bands[n]=bands[n]||{};bands[n][tm]=b[i].textContent.trim()}
+ h+='<h3>HF conditions</h3><table><tr><th>Band</th><th>Day</th><th>Night</th></tr>';
+ for(var k in bands)h+='<tr><td>'+esc(k)+'</td><td class="'+esc(bands[k].day)+'">'+esc(bands[k].day||"–")+'</td><td class="'+esc(bands[k].night)+'">'+esc(bands[k].night||"–")+'</td></tr>';
+ h+='</table><h3>VHF conditions</h3><table>';var p=x.getElementsByTagName("phenomenon");
+ for(i=0;i<p.length;i++){var v=p[i].textContent.trim();h+='<tr><td>'+esc(p[i].getAttribute("name"))+' <span class="mut small">'+esc((p[i].getAttribute("location")||"").replace(/_/g," "))+'</span></td><td class="'+(/closed/i.test(v)?'closed':'open')+'">'+esc(v)+'</td></tr>'}
+ h+='</table>';$("condData").innerHTML=h;return true}
+function condLoad(force){
+ $("banner").src="https://www.hamqsl.com/solar101vhf.php?t="+Date.now();
+ $("condStatus").textContent="Loading live data…";
+ var r=new XMLHttpRequest();
+ try{r.open("GET","https://www.hamqsl.com/solarxml.php?t="+Date.now(),true);r.timeout=15000}catch(e){condFail();return}
+ r.onload=function(){if(r.status==200&&condRender(r.responseText)){condLoaded=Date.now();var w=new Date().toUTCString().slice(5,22)+" UTC";store("cond_xml",r.responseText);store("cond_when",w);$("condStatus").textContent="Live data loaded "+w+"."}else condFail()};
+ r.onerror=r.ontimeout=condFail;r.send();
+}
+function condFail(){var c=store("cond_xml");if(c&&condRender(c,store("cond_when"),true))$("condStatus").textContent="Offline – showing last saved data from "+store("cond_when")+".";
+ else{$("condStatus").textContent="Couldn't load live data – check your internet connection. The banner above shows when online.";$("condData").innerHTML=""}}
+
+/* ---------- day/night map ---------- */
+function sunPos(d){var D=d.getTime()/86400000+2440587.5-2451545.0,r=Math.PI/180;
+ var g=(357.529+0.98560028*D)*r,q=280.459+0.98564736*D,L=(q+1.915*Math.sin(g)+0.020*Math.sin(2*g))*r,e=(23.439-0.00000036*D)*r;
+ var ra=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L))/r,dec=Math.asin(Math.sin(e)*Math.sin(L))/r;
+ var gmst=(18.697374558+24.06570982441908*D)%24;var lon=ra-gmst*15;lon=((lon+180)%360+360)%360-180;return{lat:dec,lon:lon}}
+var landCanvas=null;
+function drawMap(){
+ var c=$("map"),W=c.width,H=c.height,ctx=c.getContext("2d");
+ if(!landCanvas){landCanvas=document.createElement("canvas");landCanvas.width=W;landCanvas.height=H;var lc=landCanvas.getContext("2d");
+  lc.fillStyle="#0a2742";lc.fillRect(0,0,W,H);lc.fillStyle="#3a7d44";lc.strokeStyle="#5fa46a";lc.lineWidth=1;
+  WORLD.forEach(function(p){lc.beginPath();p.forEach(function(pt,i){var x=(pt[0]+180)/360*W,y=(90-pt[1])/180*H;if(i)lc.lineTo(x,y);else lc.moveTo(x,y)});lc.closePath();lc.fill();lc.stroke()});
+  lc.strokeStyle="rgba(255,255,255,.08)";for(var gx=-150;gx<=150;gx+=30){lc.beginPath();lc.moveTo((gx+180)/360*W,0);lc.lineTo((gx+180)/360*W,H);lc.stroke()}
+  for(var gy=-60;gy<=60;gy+=30){lc.beginPath();lc.moveTo(0,(90-gy)/180*H);lc.lineTo(W,(90-gy)/180*H);lc.stroke()}}
+ ctx.drawImage(landCanvas,0,0);
+ var now=new Date(),s=sunPos(now),r=Math.PI/180,sw=180,shh=90,img=ctx.createImageData(sw,shh);
+ var sd=Math.sin(s.lat*r),cd=Math.cos(s.lat*r);
+ for(var j=0;j<shh;j++){var lat=90-(j+.5)*180/shh,sl=Math.sin(lat*r),cl=Math.cos(lat*r);
+  for(var i=0;i<sw;i++){var lon=-180+(i+.5)*360/sw,alt=Math.asin(sl*sd+cl*cd*Math.cos((lon-s.lon)*r))/r,k=(j*sw+i)*4;
+   if(alt>0){img.data[k+3]=0}
+   else if(alt>-6){img.data[k]=224;img.data[k+1]=160;img.data[k+2]=64;img.data[k+3]=90}
+   else{var a=Math.min(1,(-alt-6)/6);img.data[k]=6;img.data[k+1]=10;img.data[k+2]=24;img.data[k+3]=Math.round(120+80*a)}}}
+ var oc=document.createElement("canvas");oc.width=sw;oc.height=shh;oc.getContext("2d").putImageData(img,0,0);
+ ctx.imageSmoothingEnabled=true;ctx.drawImage(oc,0,0,W,H);
+ var sx=(s.lon+180)/360*W,sy=(90-s.lat)/180*H;ctx.fillStyle="#ffd23f";ctx.beginPath();ctx.arc(sx,sy,8,0,7);ctx.fill();
+ var rx=(REDDITCH.lon+180)/360*W,ry=(90-REDDITCH.lat)/180*H;ctx.fillStyle="#ef4444";ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.beginPath();ctx.arc(rx,ry,5,0,7);ctx.fill();ctx.stroke();
+ function p2(n){return(n<10?"0":"")+n}
+ $("utc").textContent=p2(now.getUTCHours())+":"+p2(now.getUTCMinutes());$("loc").textContent=p2(now.getHours())+":"+p2(now.getMinutes());
+ var ra=Math.asin(Math.sin(REDDITCH.lat*r)*sd+Math.cos(REDDITCH.lat*r)*cd*Math.cos((REDDITCH.lon-s.lon)*r))/r;
+ $("sunTxt").textContent="Sun overhead at "+Math.abs(s.lat).toFixed(1)+"°"+(s.lat>=0?"N":"S")+", "+Math.abs(s.lon).toFixed(1)+"°"+(s.lon>=0?"E":"W")+". Redditch: "+(ra>0?"daylight":ra>-6?"grey line (twilight)":"night")+" (sun "+ra.toFixed(1)+"°).";
+}
+setInterval(function(){if(curTab=="cond")drawMap()},60000);
+
+
+/* ================= v1.2 additions ================= */
+var REPO="redinetm0xoo-crypto/radio-chat-unlimited";
+var lastPos=null;
+function toGrid(lat,lon){var A="ABCDEFGHIJKLMNOPQR",x=lon+180,y=lat+90;return A[Math.floor(x/20)]+A[Math.floor(y/10)]+Math.floor((x%20)/2)+Math.floor(y%10)}
+function loc2ll(l){l=(l||"").trim().toUpperCase();if(!/^[A-R]{2}[0-9]{2}([A-X]{2})?/.test(l))return null;
+ var lon=(l.charCodeAt(0)-65)*20-180+(+l[2])*2,lat=(l.charCodeAt(1)-65)*10-90+(+l[3]),dlon=2,dlat=1;
+ if(/^[A-R]{2}[0-9]{2}[A-X]{2}/.test(l)){lon+=(l.charCodeAt(4)-65)*2/24;lat+=(l.charCodeAt(5)-65)/24;dlon=2/24;dlat=1/24}
+ return{lat:lat+dlat/2,lon:lon+dlon/2}}
+function bearing(a,b,c,d){var r=Math.PI/180,y=Math.sin((d-b)*r)*Math.cos(c*r),x=Math.cos(a*r)*Math.sin(c*r)-Math.sin(a*r)*Math.cos(c*r)*Math.cos((d-b)*r);return(Math.atan2(y,x)/r+360)%360}
+function compass(b){return["N","NE","E","SE","S","SW","W","NW"][Math.round(b/45)%8]}
+function arrow(b){return'<svg viewBox="0 0 24 24" style="transform:rotate('+Math.round(b)+'deg)"><path d="M12 2 L18 20 L12 16 L6 20 Z" fill="#f5a524"/></svg>'}
+function homePos(){return lastPos||{lat:REDDITCH.lat,lon:REDDITCH.lon,fallback:true}}
+
+/* --- hook into location updates --- */
+var _setDist=setDist;
+setDist=function(m,err,acc){_setDist(m,err,acc)};
+navigator.geolocation&&setInterval(function(){},1e9);
+var _locate=locate;
+locate=function(){if(!navigator.geolocation){_locate();return}
+ navigator.geolocation.getCurrentPosition(function(p){lastPos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
+   var m=miles(REDDITCH.lat,REDDITCH.lon,lastPos.lat,lastPos.lon);setDist(m<10?m.toFixed(1):Math.round(m).toLocaleString(),null,lastPos.acc);
+   if(curTab=="rep"&&repView=="near")rnRender(true)},
+  function(e){setDist(null,e.code==1?(WEB?"Location permission is off – allow location for this site (padlock icon by the address) and reload.":"Location permission is off. Allow location for this app in Android Settings › Apps › Radio Chat Unlimited › Permissions."):"Couldn't get your location yet – make sure Location is on.")},
+  {enableHighAccuracy:false,timeout:20000,maximumAge:60000})};
+
+/* --- UK repeaters: nearby (RepeaterBook style) --- */
+var MODES={A:"FM",M:"DMR",D:"D-STAR",F:"Fusion",N:"NXDN",P:"P25","7":"M17",E:"TETRA",T:"ATV"};
+var RP=RPT.map(function(a){var o={};RPT_FIELDS.forEach(function(f,i){o[f]=a[i]});o.gw=(o.tx==o.rx);o.approx=(o.loc||"").length<=4;return o});
+var repView=store("repview")||"near",rnShown=60,rnFavs=loadJSON("rpt_fav",[]);
+var RB=loadJSON("rn_bands",null),RM=loadJSON("rn_modes",null);
+if(!RB){var ob=store("rn_band");RB=ob===null||ob===undefined?["2M"]:(ob?[ob]:[])}if(!RM){var om=store("rn_mode");RM=om?[om]:[]}
+function rnChips(){var bl=function(b){return b.replace("CM","cm").replace(/^(\d+)M$/,"$1m")};
+ $("rnBandC").innerHTML='<button data-b=""'+(RB.length?'':' class="on"')+'>All</button>'+RN_BANDS.map(function(b){return'<button data-b="'+b+'"'+(RB.indexOf(b)>=0?' class="on"':'')+'>'+bl(b)+'</button>'}).join("");
+ $("rnModeC").innerHTML='<button data-m=""'+(RM.length?'':' class="on"')+'>All</button>'+Object.keys(MODES).map(function(k){return'<button data-m="'+k+'"'+(RM.indexOf(k)>=0?' class="on"':'')+'>'+MODES[k]+'</button>'}).join("")}
+var RN_BANDS=[];
+(function(){var seen={};RP.forEach(function(r){seen[r.band]=1});
+ ["10M","6M","4M","2M","70CM","23CM","13CM","9CM","3CM"].forEach(function(b){if(seen[b])RN_BANDS.push(b)});
+ RB=RB.filter(function(b){return RN_BANDS.indexOf(b)>=0});RM=RM.filter(function(m){return MODES[m]});rnChips();
+ $("rnBandC").onclick=function(e){var b=e.target.dataset.b;if(b===undefined)return;if(!b)RB=[];else{var i=RB.indexOf(b);if(i>=0)RB.splice(i,1);else RB.push(b)}rnChips();rnRender()};
+ $("rnModeC").onclick=function(e){var m=e.target.dataset.m;if(m===undefined)return;if(!m)RM=[];else{var i=RM.indexOf(m);if(i>=0)RM.splice(i,1);else RM.push(m)}rnChips();rnRender()};
+ $("rnGw").checked=store("rn_gw")=="1";
+ $("rnSrc").textContent="Data: ukrepeater.net (RSGB ETCC) – offline snapshot "+RPT_SNAPSHOT+" ("+RP.length+" entries). Updated with each app version.";})();
+function rnRender(keep){if(!keep)rnShown=60;var h=homePos(),q=$("rnSearch").value.trim().toUpperCase(),gw=$("rnGw").checked,fav=$("rnFav").checked;
+ store("rn_bands",JSON.stringify(RB));store("rn_modes",JSON.stringify(RM));store("rn_gw",gw?"1":"0");
+ var L=RP.filter(function(r){return(!RB.length||RB.indexOf(r.band)>=0)&&(!RM.length||RM.some(function(m){return r.modes.indexOf(m)>=0}))&&(gw||!r.gw)&&(!fav||rnFavs.indexOf(r.id)>=0)&&(!q||r.call.indexOf(q)>=0||r.town.toUpperCase().indexOf(q)>=0)});
+ L.forEach(function(r){r.d=miles(h.lat,h.lon,r.lat,r.lon);r.b=bearing(h.lat,h.lon,r.lat,r.lon)});L.sort(function(x,y){return x.d-y.d});
+ $("rnFrom").innerHTML=L.length+" found · distances from "+(h.fallback?'<b>Redditch centre</b> (your location is off)':'<b>your location</b>')+'. "~" = approximate location (keeper privacy).';
+ $("rnList").innerHTML=L.slice(0,rnShown).map(function(r){var sh=r.gw?"simplex":((r.rx>r.tx?"+":"−")+Math.abs(r.rx-r.tx).toFixed(3));
+  var st=/not/i.test(r.status)?'<span class="chip bad">Not operational</span>':/reduced/i.test(r.status)?'<span class="chip warn">Reduced</span>':'';
+  var md=r.modes.split("").map(function(c){return MODES[c]?'<span class="chip">'+MODES[c]+'</span>':''}).join("");
+  var tone=(r.ctcss?'<span class="chip">CTCSS '+esc(r.ctcss)+'</span>':'')+(r.cc?'<span class="chip">CC '+esc(r.cc)+'</span>':'');
+  return'<div class="rp" data-id="'+r.id+'"><div class="top"><button class="star'+(rnFavs.indexOf(r.id)>=0?' on':'')+'" data-fav="'+r.id+'">★</button><span class="cs">'+esc(r.call)+'</span> <span class="mut small">'+esc(r.town)+'</span>'+
+   '<span class="dist">'+arrow(r.b)+(r.approx?'~':'')+(r.d<10?r.d.toFixed(1):Math.round(r.d))+' mi '+compass(r.b)+'</span></div>'+
+   '<div class="fq">TX <b>'+r.tx.toFixed(4)+'</b> · RX '+r.rx.toFixed(4)+' · '+sh+' · '+esc(r.chan||r.band)+'</div><div>'+md+tone+st+'</div><div class="rdet" hidden></div></div>'}).join("")||'<div class="mut" style="padding:10px">No repeaters match.</div>';
+ $("rnMore").hidden=L.length<=rnShown}
+$("rnList").onclick=function(e){var f=e.target.dataset.fav;if(f){f=+f;var i=rnFavs.indexOf(f);if(i>=0)rnFavs.splice(i,1);else rnFavs.push(f);store("rpt_fav",JSON.stringify(rnFavs));e.target.classList.toggle("on");return}
+ var row=e.target.closest(".rp");if(!row||e.target.tagName=="A")return;var d=row.querySelector(".rdet");if(!d.hidden){d.hidden=true;return}
+ var r=RP.filter(function(x){return x.id==row.dataset.id})[0];
+ d.innerHTML='<div class="kv"><b>Repeater TX (listen)</b><span>'+r.tx.toFixed(5)+' MHz</span><b>Repeater RX (transmit)</b><span>'+r.rx.toFixed(5)+' MHz</span><b>Channel</b><span>'+esc(r.chan||"–")+' ('+esc(r.band)+')</span><b>Modes</b><span>'+r.modes.split("").map(function(c){return MODES[c]||c}).join(", ")+'</span>'+
+  (r.ctcss?'<b>CTCSS</b><span>'+esc(r.ctcss)+' Hz</span>':'')+(r.cc?'<b>DMR colour code</b><span>'+esc(r.cc)+'</span>':'')+'<b>Locator</b><span>'+esc(r.loc)+(r.approx?' (approximate)':'')+'</span><b>Keeper</b><span>'+esc(r.keeper)+'</span><b>Status</b><span>'+esc(r.status)+'</span>'+
+  (r.echolink?'<b>EchoLink</b><span>'+esc(r.echolink)+'</span>':'')+(r.allstar?'<b>AllStar</b><span>'+esc(r.allstar)+'</span>':'')+'</div>'+
+  '<div class="btns"><a class="btn sm" href="https://ukrepeater.net/my_repeater.php?id='+r.id+'">ukrepeater.net page</a><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(r.call)+'">QRZ</a></div>';d.hidden=false};
+["rnGw","rnFav"].forEach(function(id){$(id).onchange=function(){rnRender()}});$("rnSearch").oninput=function(){rnRender()};
+$("rnMore").onclick=function(){rnShown+=60;rnRender(true)};
+function setRepView(v){repView=v;store("repview",v);$("repNear").hidden=v!="near";$("repPlan").hidden=v!="plan";
+ var b=document.querySelectorAll("#repSeg button");for(var i=0;i<b.length;i++)b[i].className=b[i].dataset.v==v?"on":"";if(v=="near")rnRender()}
+$("repSeg").onclick=function(e){if(e.target.dataset.v)setRepView(e.target.dataset.v)};
+
+/* --- open bands (PSK Reporter + wspr.live) --- */
+var OBB=[["160",1.8,2.0],["80",3.5,4.0],["60",5.25,5.45],["40",7.0,7.3],["30",10.1,10.15],["20",14.0,14.35],["17",18.068,18.168],["15",21.0,21.45],["12",24.89,24.99],["10",28.0,29.7],["6",50,54],["4",70,71]];
+var OBC={"160":"#a78bfa","80":"#60a5fa","60":"#22d3ee","40":"#4ade80","30":"#a3e635","20":"#facc15","17":"#fb923c","15":"#f87171","12":"#f472b6","10":"#e879f9","6":"#ffffff","4":"#cbd5e1"};
+var WSB={1:"160",3:"80",5:"60",7:"40",10:"30",14:"20",18:"17",21:"15",24:"12",28:"10",50:"6",70:"4"};
+var OB=loadJSON("ob_cache",null),obBand=store("ob_band")||"all",obBusy=false;
+function obBandOf(hz){var m=hz/1e6;for(var i=0;i<OBB.length;i++)if(m>=OBB[i][1]&&m<=OBB[i][2])return OBB[i][0];return null}
+function region(lat,lon){if(lat<-60)return"Antarctica";if(lon<-25)return lat>=13?"North America":"South America";
+ if(lon<60&&lat>=35)return"Europe";if(lon<=60&&lat<35)return(lon>=34&&lat>=12)?"Middle East":"Africa";if(lon>=110&&lat<-10||lon>=150)return"Oceania";return"Asia"}
+function obChips(){$("obChips").innerHTML=[["all","All"]].concat(OBB.map(function(b){return[b[0],b[0]+"m"]})).map(function(c){return'<button data-b="'+c[0]+'" class="'+(obBand==c[0]?'on':'')+'"'+(c[0]!="all"?' style="border-left:4px solid '+OBC[c[0]]+'"':'')+'>'+c[1]+'</button>'}).join("")}
+$("obChips").onclick=function(e){if(e.target.dataset.b){obBand=e.target.dataset.b;store("ob_band",obBand);obChips();drawMap()}};
+function obGrid(){var h=homePos();return toGrid(h.lat,h.lon)}
+function obLoad(force){var g=obGrid();
+ if(obBusy)return;if(OB&&OB.grid==g&&Date.now()-OB.t<5*60000){if(force)$("obStatus").textContent="Spots are less than 5 minutes old – next refresh allowed at "+new Date(OB.t+5*60000).toTimeString().slice(0,5)+".";return}
+ obBusy=true;$("obStatus").textContent="Loading spots for "+g+"…";var spots=[],done=0,errs=0;
+ function fin(){if(++done<2)return;obBusy=false;
+  if(errs==2&&!spots.length){$("obStatus").textContent=OB?"Offline – showing spots from "+new Date(OB.t).toUTCString().slice(17,22)+" UTC.":"Couldn't load spots – check your internet connection.";obSummary();drawMap();return}
+  OB={t:Date.now(),grid:g,spots:spots};try{store("ob_cache",JSON.stringify(OB))}catch(e){}
+  $("obStatus").textContent=spots.length+" spots for "+g+" · updated "+new Date(OB.t).toUTCString().slice(17,22)+" UTC";obSummary();drawMap()}
+ function add(nearLoc,farLoc,band,mode,snr,call,heard){if(!band)return;var f=loc2ll(farLoc),n=loc2ll(nearLoc);if(!f||!n)return;spots.push([band,mode,snr,+n.lat.toFixed(2),+n.lon.toFixed(2),+f.lat.toFixed(2),+f.lon.toFixed(2),call,heard?1:0])}
+ var x=new XMLHttpRequest();x.open("GET","https://retrieve.pskreporter.info/query?callsign="+g+"&modify=grid&flowStartSeconds=-900&rronly=1&noactive=1&rptlimit=1500&appcontact="+encodeURIComponent("github.com/"+REPO));x.timeout=25000;
+ x.onload=function(){try{var d=new DOMParser().parseFromString(x.responseText,"text/xml"),R=d.getElementsByTagName("receptionReport");
+   for(var i=0;i<R.length;i++){var a=function(k){return R[i].getAttribute(k)||""},rl=a("receiverLocator"),sl=a("senderLocator"),b=obBandOf(+a("frequency")),sn=a("sNR")===""?null:+a("sNR");
+    if(rl.toUpperCase().indexOf(g)==0)add(rl,sl,b,a("mode"),sn,a("senderCallsign"),true);else add(sl,rl,b,a("mode"),sn,a("receiverCallsign"),false)}}catch(e){errs++}fin()};
+ x.onerror=x.ontimeout=function(){errs++;fin()};x.send();
+ var q="SELECT band,rx_sign,rx_loc,tx_sign,tx_loc,snr FROM wspr.rx WHERE time > now() - INTERVAL 30 MINUTE AND (rx_loc LIKE '"+g+"%' OR tx_loc LIKE '"+g+"%') LIMIT 1500 FORMAT JSONCompact";
+ var w=new XMLHttpRequest();w.open("GET","https://db1.wspr.live/?query="+encodeURIComponent(q));w.timeout=25000;
+ w.onload=function(){try{JSON.parse(w.responseText).data.forEach(function(r){var b=WSB[r[0]];if(String(r[2]).toUpperCase().indexOf(g)==0)add(r[2],r[4],b,"WSPR",r[5],r[3],true);else add(r[4],r[2],b,"WSPR",r[5],r[1],false)})}catch(e){errs++}fin()};
+ w.onerror=w.ontimeout=function(){errs++;fin()};w.send();}
+$("obRefresh").onclick=function(){obLoad(true)};
+function obSummary(){if(!OB){$("obSum").innerHTML="";return}var by={};OB.spots.forEach(function(s){var b=by[s[0]]=by[s[0]]||{n:0,best:-99,reg:{},modes:{}};b.n++;if(s[2]!=null&&s[2]>b.best)b.best=s[2];var rg=region(s[5],s[6]);b.reg[rg]=(b.reg[rg]||0)+1;b.modes[s[1]]=1});
+ var h='<table><tr><th>Band</th><th>Spots</th><th>Open to</th><th>Best SNR</th></tr>';
+ OBB.forEach(function(bb){var b=by[bb[0]];if(!b){h+='<tr><td><i class="dot" style="background:'+OBC[bb[0]]+'"></i>'+bb[0]+'m</td><td>0</td><td class="mut">No spots (may be closed or quiet)</td><td></td></tr>';return}
+  var regs=Object.keys(b.reg).sort(function(x,y){return b.reg[y]-b.reg[x]}).slice(0,3).join(", ");var g=b.best>10?'<span class="Good">SSB</span>':b.best>-1?'<span class="Fair">CW</span>':'<span class="Poor">Digital only</span>';
+  h+='<tr><td><i class="dot" style="background:'+OBC[bb[0]]+'"></i>'+bb[0]+'m</td><td>'+b.n+'</td><td>'+esc(regs)+'<div class="mut small">'+esc(Object.keys(b.modes).join(", "))+'</div></td><td>'+(b.best>-99?b.best+' dB<br>':'')+g+'</td></tr>'});
+ $("obSum").innerHTML=h+'</table>'}
+function obDraw(ctx,W,H){if(!OB)return;ctx.lineWidth=1.2;OB.spots.forEach(function(s){if(obBand!="all"&&s[0]!=obBand)return;
+ var x1=(s[4]+180)/360*W,y1=(90-s[3])/180*H,lon2=s[6];if(lon2-s[4]>180)lon2-=360;if(s[4]-lon2>180)lon2+=360;var x2=(lon2+180)/360*W,y2=(90-s[5])/180*H;
+ ctx.strokeStyle=OBC[s[0]]+"aa";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.fillStyle=OBC[s[0]];ctx.beginPath();ctx.arc(x2,y2,2.2,0,7);ctx.fill()})}
+var _drawMap=drawMap;drawMap=function(){_drawMap();var c=$("map");obDraw(c.getContext("2d"),c.width,c.height);
+ var h=homePos(),ctx=c.getContext("2d"),rx=(REDDITCH.lon+180)/360*c.width,ry=(90-REDDITCH.lat)/180*c.height;ctx.fillStyle="#ef4444";ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.beginPath();ctx.arc(rx,ry,5,0,7);ctx.fill();ctx.stroke()};
+var _showTab=showTab;showTab=function(t){_showTab(t);if(t=="rep"&&repView=="near")rnRender(true)};
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+var _condShow=condShow;condShow=function(){obChips();_condShow();obSummary();obLoad(false)};
+setInterval(function(){if(curTab=="cond")obLoad(false)},5*60000+5000);
+
+/* --- update check (GitHub Releases) --- */
+function vnum(s){return String(s).replace(/^[^0-9]*/,"").split(".").map(function(x){return parseInt(x,10)||0})}
+function newer(a,b){a=vnum(a);b=vnum(b);for(var i=0;i<Math.max(a.length,b.length);i++){var x=a[i]||0,y=b[i]||0;if(x!=y)return x>y}return false}
+var UPD=loadJSON("upd_info",null);
+function updShow(manual){var u=UPD;if(!u||!newer(u.tag,APP_VERSION)){$("updBanner").hidden=true;if(manual)$("updMsg").textContent="You're up to date (v"+APP_VERSION+").";return}
+ if(manual)$("updMsg").textContent="Version "+u.tag.replace(/^v/,"")+" is available – see the green banner at the top.";
+ if(!manual&&store("upd_later")==u.tag)return;
+ $("updTitle").textContent="Version "+u.tag.replace(/^v/i,"")+" is available (you have "+APP_VERSION+")";$("updBody").textContent=u.body||"";$("updGo").href=WEB?"javascript:location.reload()":(u.apk||u.page);if(WEB)$("updGo").textContent="Reload to update";$("updBanner").hidden=false}
+function updCheck(manual){if(!manual&&Date.now()-(+store("upd_t")||0)<6*3600000){updShow(false);return}
+ if(manual)$("updMsg").textContent="Checking…";var x=new XMLHttpRequest();x.open("GET","https://api.github.com/repos/"+REPO+"/releases/latest");x.timeout=15000;
+ x.onload=function(){try{var d=JSON.parse(x.responseText);if(!d.tag_name)throw 1;var apk=(d.assets||[]).filter(function(a){return/\.apk$/i.test(a.name)})[0];
+   UPD={tag:d.tag_name,body:d.body||"",page:d.html_url,apk:apk?apk.browser_download_url:null};store("upd_info",JSON.stringify(UPD));store("upd_t",String(Date.now()));updShow(manual)}catch(e){if(manual)$("updMsg").textContent="Couldn't check for updates right now."}};
+ x.onerror=x.ontimeout=function(){if(manual)$("updMsg").textContent="Couldn't check – no internet connection?";else updShow(false)};x.send()}
+$("updNotes").onclick=function(){$("updBody").hidden=!$("updBody").hidden};
+$("updLater").onclick=function(){if(UPD)store("upd_later",UPD.tag);$("updBanner").hidden=true};
+$("updCheckBtn").onclick=function(){store("upd_later","");updCheck(true)};
+setInterval(function(){updCheck(false)},30*60000);
+
+/* --- feature suggestions --- */
+$("sugBtn").onclick=function(){$("verBtn").onclick();setTimeout(function(){$("sugCard").scrollIntoView()},50)};
+$("sgSend").onclick=function(){var t=$("sgTitle").value.trim(),b=$("sgBody").value.trim(),out=$("verOut");if(!t){$("sgTitle").focus();return}
+ var c=($("sgCall").value.trim()||QZ.call||"").toUpperCase().slice(0,12),txt=(t+(b?"\n\n"+b:"")).slice(0,2000);if(txt.length<3){$("sgTitle").focus();return}
+ out.textContent="Sending…";FB.add("suggestions",{text:txt,call:c,name:(store("my_name")||"").slice(0,60),ver:(APP_VERSION+(WEB?" web":"")).slice(0,10)},function(ok,err){
+  out.textContent=ok?"✓ Thanks – your suggestion has been sent.":"Couldn't send ("+err+") – check your internet connection and try again.";
+  if(ok){$("sgTitle").value=$("sgBody").value=""}})};
+
+/* --- QRZ: lookup + logbook --- */
+var QZ=loadJSON("qrz_cfg",{}),QLOG=loadJSON("qrz_log",[]),qzKey=null;
+function qzSegSet(v){["look","log","set"].forEach(function(k){$({look:"qzLook",log:"qzLog",set:"qzSet"}[k]).hidden=k!=v});var b=document.querySelectorAll("#qzSeg button");for(var i=0;i<b.length;i++)b[i].className=b[i].dataset.v==v?"on":""}
+$("qzSeg").onclick=function(e){if(e.target.dataset.v)qzSegSet(e.target.dataset.v)};
+$("stCall").value=QZ.call||"";$("stUser").value=QZ.user||"";$("stPass").value=QZ.pass||"";$("stKey").value=QZ.key||"";
+$("stSave").onclick=function(){QZ={call:$("stCall").value.trim().toUpperCase(),user:$("stUser").value.trim(),pass:$("stPass").value,key:$("stKey").value.trim()};store("qrz_cfg",JSON.stringify(QZ));qzKey=null;$("stMsg").textContent="Saved on this phone."};
+$("stWipe").onclick=function(){QZ={call:QZ.call||""};store("qrz_cfg",JSON.stringify(QZ));qzKey=null;$("stUser").value=$("stPass").value=$("stKey").value="";$("stMsg").textContent="QRZ login and API key removed from this phone (your callsign is kept)."};
+function post(url,data,cb){var x=new XMLHttpRequest();x.open("POST",url);x.setRequestHeader("Content-Type","application/x-www-form-urlencoded");x.timeout=20000;
+ x.onload=function(){cb(x.status==200?x.responseText:null,x.status)};x.onerror=x.ontimeout=function(){cb(null,0)};
+ x.send(Object.keys(data).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(data[k])}).join("&"))}
+function xget(xml,tag){var e=xml.getElementsByTagName(tag)[0];return e?e.textContent:""}
+function qzLogin(cb){if(qzKey)return cb(qzKey);if(!QZ.user||!QZ.pass)return cb(null,"Add your QRZ username and password in Settings for full lookups.");
+ post("https://xmldata.qrz.com/xml/current/",{username:QZ.user,password:QZ.pass,agent:"RadioChatUnlimited-"+APP_VERSION},function(t){if(!t)return cb(null,"Couldn't reach QRZ – check your internet connection.");
+  var x=new DOMParser().parseFromString(t,"text/xml"),k=xget(x,"Key"),er=xget(x,"Error");qzKey=k||null;cb(qzKey,er||(!k?"QRZ login failed.":""),xget(x,"SubExp"))})}
+$("stTest").onclick=function(){$("stMsg").textContent="Testing…";qzKey=null;var m=[];
+ qzLogin(function(k,er,sub){m.push(k?"Lookup login OK ("+(sub||"")+")":"Lookup: "+(er||"not set up"));
+  if(!QZ.key){m.push("Logbook: no API key set");$("stMsg").textContent=m.join(" · ");return}
+  post("https://logbook.qrz.com/api",{KEY:QZ.key,ACTION:"STATUS"},function(t){var r=qp(t||"");m.push(r.RESULT=="OK"?"Logbook OK ("+(r.CALLSIGN||"")+", "+(r.COUNT||"?")+" QSOs)":"Logbook: "+(r.REASON||"couldn't connect"));$("stMsg").textContent=m.join(" · ")})})};
+function qp(t){var o={};String(t).split("&").forEach(function(p){var i=p.indexOf("=");if(i>0)o[p.slice(0,i).toUpperCase()]=decodeURIComponent(p.slice(i+1).replace(/\+/g," "))});return o}
+function qlRender(c,x,msg){var f=function(t){return xget(x,t)},h="";
+ if(x&&f("call")){var name=(f("fname")+" "+f("name")).trim(),where=[f("addr2"),f("state"),f("country")].filter(Boolean).join(", "),gr=f("grid"),img=f("image");
+  var p=loc2ll(gr),dist="";if(p){var o=homePos(),d=miles(o.lat,o.lon,p.lat,p.lon),b=bearing(o.lat,o.lon,p.lat,p.lon);dist=Math.round(d).toLocaleString()+" mi "+compass(b)+" ("+Math.round(b)+"°)"}
+  h+=(img?'<img src="'+esc(img)+'" style="max-width:100%;border-radius:8px;margin-top:8px">':'')+'<h2 style="margin-top:8px">'+esc(f("call"))+'</h2><div class="kv">'+(name?'<b>Name</b><span>'+esc(name)+'</span>':'')+(where?'<b>Location</b><span>'+esc(where)+'</span>':'')+(gr?'<b>Locator</b><span>'+esc(gr)+'</span>':'')+(dist?'<b>Distance</b><span>'+dist+'</span>':'')+(f("class")?'<b>Licence</b><span>'+esc(f("class"))+'</span>':'')+(f("qslmgr")?'<b>QSL</b><span>'+esc(f("qslmgr"))+'</span>':'')+'</div>'}
+ if(msg)h+='<div class="info">'+esc(msg)+'</div>';
+ h+='<div class="btns"><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(c)+'">Open '+esc(c)+' on QRZ.com</a><button class="btn sm" id="qlLog">Log QSO with '+esc(c)+'</button></div>';
+ $("qlOut").innerHTML=h;$("qlLog").onclick=function(){qzSegSet("log");$("lgCall").value=c;if(x){$("lgName").value=(xget(x,"fname")||"").split(" ")[0];$("lgGrid").value=xget(x,"grid")}lgNow()}}
+$("qlGo").onclick=function(){var c=$("qlCall").value.trim().toUpperCase().replace(/[^A-Z0-9\/]/g,"");if(!c)return;$("qlOut").innerHTML='<div class="mut" style="margin-top:8px">Looking up…</div>';
+ qzLogin(function(k,er){if(!k)return qlRender(c,null,er);
+  post("https://xmldata.qrz.com/xml/current/",{s:k,callsign:c},function(t){if(!t)return qlRender(c,null,"Couldn't reach QRZ.");var x=new DOMParser().parseFromString(t,"text/xml"),e=xget(x,"Error");
+   if(!xget(x,"Key"))qzKey=null;qlRender(c,xget(x,"call")?x:null,e||xget(x,"Message"))})})};
+$("qlCall").onkeydown=function(e){if(e.key=="Enter")$("qlGo").onclick()};
+var LBANDS=[["160m",1.8,2],["80m",3.5,4],["60m",5.06,5.45],["40m",7,7.3],["30m",10.1,10.15],["20m",14,14.35],["17m",18.068,18.168],["15m",21,21.45],["12m",24.89,24.99],["10m",28,29.7],["6m",50,54],["4m",70,71],["2m",144,148],["70cm",420,450],["23cm",1240,1300]];
+var LMODES=[["SSB","SSB",""],["USB","SSB","USB"],["LSB","SSB","LSB"],["FM","FM",""],["AM","AM",""],["CW","CW",""],["FT8","FT8",""],["FT4","MFSK","FT4"],["DMR","DIGITALVOICE","DMR"],["D-STAR","DIGITALVOICE","DSTAR"],["Fusion (C4FM)","DIGITALVOICE","C4FM"],["RTTY","RTTY",""],["PSK31","PSK","PSK31"]];
+$("lgBand").innerHTML='<option value="">Band</option>'+LBANDS.map(function(b){return'<option>'+b[0]+'</option>'}).join("");
+$("lgMode").innerHTML=LMODES.map(function(m,i){return'<option value="'+i+'">'+m[0]+'</option>'}).join("");$("lgMode").value=store("lg_mode")||"3";
+$("lgFreq").oninput=function(){var v=parseFloat(this.value);LBANDS.forEach(function(b){if(v>=b[1]&&v<=b[2])$("lgBand").value=b[0]})};
+function p2(n){return(n<10?"0":"")+n}
+function lgNow(){var d=new Date();$("lgDate").value=d.getUTCFullYear()+"-"+p2(d.getUTCMonth()+1)+"-"+p2(d.getUTCDate());$("lgTime").value=p2(d.getUTCHours())+":"+p2(d.getUTCMinutes())}
+$("lgNow").onclick=lgNow;lgNow();
+function adif(q){var f=function(k,v){v=String(v==null?"":v);return v?"<"+k+":"+v.length+">"+v:""};var m=LMODES[q.mode];
+ return f("call",q.call)+f("qso_date",q.date.replace(/-/g,""))+f("time_on",q.time.replace(":",""))+f("band",q.band)+(q.freq?f("freq",q.freq):"")+f("mode",m[1])+(m[2]?f("submode",m[2]):"")+f("rst_sent",q.rs)+f("rst_rcvd",q.rr)+f("name",q.name)+f("gridsquare",q.grid)+f("comment",q.cmt)+f("station_callsign",q.me)+f("my_gridsquare",q.mygrid)+"<eor>"}
+function lgSend(q,cb){post("https://logbook.qrz.com/api",{KEY:QZ.key,ACTION:"INSERT",ADIF:adif(q)},function(t){var r=qp(t||"");
+ if(r.RESULT=="OK"||r.RESULT=="REPLACE"){q.st="sent";q.logid=r.LOGID}else if(!t){q.st="pending"}else{q.st="failed";q.err=r.REASON||"rejected"}cb(q)})}
+function lgSave(){store("qrz_log",JSON.stringify(QLOG.slice(0,300)))}
+function lgRender(){$("lgList").innerHTML=QLOG.slice(0,50).map(function(q,i){var st=q.st=="sent"?'<span class="chip">Sent to QRZ</span>':q.st=="pending"?'<span class="chip warn">Waiting – no signal</span>':'<span class="chip bad">Failed: '+esc(q.err||"")+'</span>';
+ return'<div class="rp"><div class="top"><span class="cs">'+esc(q.call)+'</span> <span class="mut small">'+esc(q.date)+' '+esc(q.time)+'Z</span><span class="dist small">'+esc(q.band)+' '+esc(LMODES[q.mode][0])+'</span></div><div>'+st+(q.st!="sent"?' <button class="x" data-del="'+i+'">✕</button>':'')+'</div></div>'}).join("")||'<div class="mut">No QSOs logged yet.</div>'}
+$("lgList").onclick=function(e){var i=e.target.dataset.del;if(i!==undefined&&confirm("Delete this unsent QSO?")){QLOG.splice(+i,1);lgSave();lgRender()}};
+$("lgSave").onclick=function(){var q={call:$("lgCall").value.trim().toUpperCase(),freq:$("lgFreq").value.trim(),band:$("lgBand").value,mode:+$("lgMode").value,rs:$("lgRstS").value.trim(),rr:$("lgRstR").value.trim(),
+  date:$("lgDate").value.trim(),time:$("lgTime").value.trim(),name:$("lgName").value.trim(),grid:$("lgGrid").value.trim().toUpperCase(),cmt:$("lgCmt").value.trim(),me:QZ.call||"",mygrid:(store("lg_mygrid")!="0"&&lastPos)?maiden(lastPos.lat,lastPos.lon,6):""};
+ store("lg_mode",String(q.mode));
+ if(!/^[A-Z0-9\/]{3,}$/.test(q.call))return $("lgMsg").textContent="Enter their callsign.";
+ if(!q.band)return $("lgMsg").textContent="Choose the band (or enter the frequency).";
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(q.date)||!/^\d{2}:\d{2}$/.test(q.time))return $("lgMsg").textContent="Date must be YYYY-MM-DD and time HH:MM (UTC).";
+ if(!QZ.key){qzSegSet("set");return $("stMsg").textContent="Add your QRZ Logbook API key first."}
+ $("lgMsg").textContent="Sending to QRZ…";QLOG.unshift(q);lgSave();lgRender();
+ lgSend(q,function(r){lgSave();lgRender();$("lgMsg").textContent=r.st=="sent"?"Logged to QRZ ✔ ("+r.call+")":r.st=="pending"?"No connection – saved on the phone and will send when you're back online.":"QRZ rejected it: "+(r.err||"");
+  if(r.st=="sent"){["lgCall","lgName","lgGrid","lgCmt"].forEach(function(id){$(id).value=""});lgNow()}})};
+function lgRetry(){var p=QLOG.filter(function(q){return q.st=="pending"});if(!p.length||!QZ.key)return;var n=0;p.forEach(function(q){lgSend(q,function(){lgSave();lgRender();if(++n==p.length)$("lgMsg").textContent="Pending QSOs processed."})})}
+$("lgRetry").onclick=lgRetry;$("lgClear").onclick=function(){QLOG=QLOG.filter(function(q){return q.st!="sent"});lgSave();lgRender()};
+window.addEventListener("online",lgRetry);setInterval(lgRetry,10*60000);lgRender();
+
+
+/* --- voice: listen for callsigns & reports, heard map --- */
+var PH={alpha:"A",alfa:"A",bravo:"B",charlie:"C",charly:"C",delta:"D",echo:"E",foxtrot:"F",fox:"F",golf:"G",hotel:"H",india:"I",juliet:"J",juliett:"J",kilo:"K",lima:"L",mike:"M",november:"N",oscar:"O",papa:"P",quebec:"Q",romeo:"R",sierra:"S",tango:"T",uniform:"U",victor:"V",whiskey:"W",whisky:"W",xray:"X",yankee:"Y",zulu:"Z",
+ zero:"0",one:"1",two:"2",three:"3",tree:"3",four:"4",fower:"4",five:"5",fife:"5",six:"6",seven:"7",eight:"8",nine:"9",niner:"9"};
+var CSRE=/[A-Z]{1,2}[0-9][A-Z]{1,4}|[0-9][A-Z][0-9][A-Z]{1,4}|[A-Z][0-9][A-Z]?[0-9][A-Z]{1,4}/g;
+function speechParse(text){var calls=[],rst=null;
+ String(text).split("|").forEach(function(alt){var w=alt.toLowerCase().replace(/x-ray/g,"xray").replace(/[^a-z0-9\/ ]/g," ").split(/\s+/).filter(Boolean),runs=[],cur="";
+  for(var i=0;i<w.length;i++){var t=w[i],c=null;
+   if(PH[t])c=PH[t];else if(/^[a-z]$/.test(t))c=t.toUpperCase();else if(/^[a-z0-9]+$/.test(t)&&/[0-9]/.test(t)&&/[a-z]/.test(t))c=t.toUpperCase();else if(/^[0-9]+$/.test(t))c=t;
+   else if((t=="stroke"||t=="slash"||t=="portable"||t=="mobile")&&cur){c=t=="portable"?"/P":t=="mobile"?"/M":"/";}
+   if(c!=null)cur+=c;else{if(cur)runs.push(cur);cur=""}}
+  if(cur)runs.push(cur);
+  runs.forEach(function(r){r=r.replace(/\/+/g,"/");var m=r.replace(/\/(?![PM])/g,"").match(CSRE);if(m)m.forEach(function(x){var mob=(r.indexOf(x+"/M")>=0?"/M":r.indexOf(x+"/P")>=0?"/P":"");if(calls.indexOf(x+mob)<0)calls.push(x+mob)})});
+  if(!rst){var dg=w.map(function(t){return PH[t]&&/[0-9]/.test(PH[t])?PH[t]:t}).join(" ");
+   var m=dg.match(/\b([1-5])\s+(?:and\s+|by\s+|x\s+)?([1-9])\b/)||dg.match(/\b([1-5])([1-9])\b/);if(m)rst=m[1]+m[2]}});
+ return{calls:calls,rst:rst}}
+var HEARD=loadJSON("heard",[]);
+function hdSave(){store("heard",JSON.stringify(HEARD.slice(0,200)))}
+function hdAdd(call,rst){var t=new Date(),e={call:call,rst:rst||"",t:t.toISOString().slice(0,16).replace("T"," "),grid:"",name:""};HEARD.unshift(e);hdSave();hdRender();
+ qzLogin(function(k){if(!k)return;post("https://xmldata.qrz.com/xml/current/",{s:k,callsign:call},function(tx){if(!tx)return;var x=new DOMParser().parseFromString(tx,"text/xml");e.grid=xget(x,"grid");e.name=(xget(x,"fname")||"").split(" ")[0];hdSave();hdRender()})})}
+window.onSpeech=function(txt){txt=decodeURIComponent(txt||"");var o=$("lsOut");if(!txt){o.innerHTML='<div class="mut" style="margin-top:8px">Nothing heard – try again.</div>';return}
+ var p=speechParse(txt),h='<div class="res" style="margin-top:8px"><div class="mut small">Heard: "'+esc(txt.split("|")[0])+'"</div>';
+ if(!p.calls.length)h+='<div style="margin-top:6px">No callsign recognised. Try again, or type it below.</div>';
+ else h+='<div style="margin-top:6px">Callsign'+(p.calls.length>1?'s':'')+': '+p.calls.map(function(c,i){return'<button class="btn sm'+(i?' alt':'')+'" data-cs="'+esc(c)+'">'+esc(c)+'</button>'}).join(" ")+'</div>';
+ if(p.rst)h+='<div style="margin-top:6px">Signal report: <b>'+p.rst+'</b></div>';
+ o.innerHTML=h+'</div>';
+ if(p.calls.length){var c=p.calls[0].replace(/\/[PM]$/,"");$("qlCall").value=c;$("qlGo").onclick();hdAdd(p.calls[0],p.rst);if(p.rst)$("lgRstR").value=p.rst}};
+$("lsOut").onclick=function(e){var c=e.target.dataset.cs;if(c){$("qlCall").value=c.replace(/\/[PM]$/,"");$("qlGo").onclick();if(HEARD[0])HEARD[0].call=c;hdSave();hdRender()}};
+$("lsBtn").onclick=function(){var r=null;try{r=prompt("rcu:listen")}catch(e){}
+ if(r=="ok"){$("lsOut").innerHTML='<div class="mut" style="margin-top:8px">Listening…</div>';return}
+ $("lsOut").innerHTML='<div class="info">'+(r=="nohandler"?(WEB?"This browser has no speech recognition – use Microsoft Edge or Google Chrome.":"This phone has no voice recognition app – install or enable Google voice typing / the Google app."):"Voice listening only works in the installed app.")+'</div>'};
+function hdRender(){$("hdList").innerHTML=HEARD.slice(0,30).map(function(e,i){var p=loc2ll(e.grid),d="";if(p){var o=homePos();d=Math.round(miles(o.lat,o.lon,p.lat,p.lon))+" mi "+compass(bearing(o.lat,o.lon,p.lat,p.lon))}
+ return'<div class="rp"><div class="top"><span class="cs">'+esc(e.call)+'</span> <span class="mut small">'+esc(e.name)+' '+esc(e.t)+'Z</span><span class="dist small">'+(e.rst?'RST '+esc(e.rst)+' · ':'')+d+'</span></div><div class="btns" style="margin-top:4px"><button class="btn sm alt" data-hl="'+i+'">Look up</button><button class="btn sm alt" data-hq="'+i+'">Log QSO</button><button class="x" data-hx="'+i+'">✕</button></div></div>'}).join("")||'<div class="mut">Nothing heard yet – tap Listen.</div>';hdDraw()}
+$("hdList").onclick=function(e){var d=e.target.dataset,i;if(d.hx!==undefined){HEARD.splice(+d.hx,1);hdSave();hdRender()}
+ else if(d.hl!==undefined){$("qlCall").value=HEARD[+d.hl].call.replace(/\/[PM]$/,"");$("qlGo").onclick();window.scrollTo(0,0)}
+ else if(d.hq!==undefined){i=+d.hq;qzSegSet("log");$("lgCall").value=HEARD[i].call;$("lgRstR").value=HEARD[i].rst||"59";$("lgName").value=HEARD[i].name||"";$("lgGrid").value=HEARD[i].grid||"";lgNow()}};
+$("hdClear").onclick=function(){if(confirm("Clear the heard list?")){HEARD=[];hdSave();hdRender()}};
+function hdDraw(){var c=$("hdMap"),W=c.width,H=c.height,x=c.getContext("2d"),o=homePos(),pts=[{lat:o.lat,lon:o.lon,me:1}];
+ HEARD.forEach(function(e){var p=loc2ll(e.grid);if(p)pts.push({lat:p.lat,lon:p.lon,call:e.call})});
+ var la0=Math.min.apply(0,pts.map(function(p){return p.lat})),la1=Math.max.apply(0,pts.map(function(p){return p.lat})),lo0=Math.min.apply(0,pts.map(function(p){return p.lon})),lo1=Math.max.apply(0,pts.map(function(p){return p.lon}));
+ var cl=(la0+la1)/2,k=Math.cos(cl*Math.PI/180),span=Math.max((la1-la0)*1.4,(lo1-lo0)*k*1.4*H/W,8),cx=(lo0+lo1)/2,cy=cl;
+ var sy=H/span,sx=sy*k;function P(lat,lon){return[W/2+(lon-cx)*sx,H/2-(lat-cy)*sy]}
+ x.fillStyle="#0a2742";x.fillRect(0,0,W,H);x.fillStyle="#2f6b3a";x.strokeStyle="#5fa46a";x.lineWidth=1;
+ WORLD.forEach(function(poly){x.beginPath();poly.forEach(function(pt,i){var q=P(pt[1],pt[0]);if(i)x.lineTo(q[0],q[1]);else x.moveTo(q[0],q[1])});x.closePath();x.fill();x.stroke()});
+ x.font="bold 18px system-ui";pts.forEach(function(p){var q=P(p.lat,p.lon);if(!p.me){x.strokeStyle="rgba(245,165,36,.6)";x.beginPath();var m=P(o.lat,o.lon);x.moveTo(m[0],m[1]);x.lineTo(q[0],q[1]);x.stroke()}
+  x.fillStyle=p.me?"#ef4444":"#f5a524";x.beginPath();x.arc(q[0],q[1],p.me?7:6,0,7);x.fill();if(p.call){x.fillStyle="#fff";x.fillText(p.call,q[0]+9,q[1]-6)}})}
+hdRender();
+
+
+/* --- v1.3: my callsign --- */
+function myCall(){return String(QZ.call||"").toUpperCase()}
+function baseCall(c){return String(c||"").toUpperCase().replace(/\/[A-Z0-9]+$/,"").replace(/^[A-Z0-9]+\//,"")}
+function isMe(c){var m=myCall();return!!m&&baseCall(c)==baseCall(m)}
+function meShow(){var m=myCall();$("meBtn").hidden=!m;$("meCall").textContent=m}
+function setMyCall(c){c=String(c||"").trim().toUpperCase();QZ.call=c;store("qrz_cfg",JSON.stringify(QZ));$("stCall").value=c;meShow();hdRender()}
+function askCall(force){$("cmCall").value=myCall();$("cmMsg").textContent="";$("callModal").hidden=false;if(force!==undefined)setTimeout(function(){$("cmCall").focus()},100)}
+var cmPending=null;
+$("cmSave").onclick=function(){var c=$("cmCall").value.trim().toUpperCase();if(!/^[A-Z0-9]{1,3}[0-9][A-Z]{1,4}(\/[A-Z0-9]+)?$/.test(c)){$("cmMsg").textContent="That doesn't look like a callsign – e.g. M0PTN, 2E0ABC, M7VPE.";return}
+ if(store("consent")!="1"){cmPending=c;$("cmConsent").hidden=false;return}
+ setMyCall(c);$("callModal").hidden=true;if(window.FB)FB.hello(true)};
+$("cmSkip").onclick=function(){$("callModal").hidden=true;$("cmConsent").hidden=true};
+$("cmAccept").onclick=function(){store("consent","1");$("cmConsent").hidden=true;if(cmPending){setMyCall(cmPending);cmPending=null}$("callModal").hidden=true;if(window.FB)FB.hello(true)};
+$("cmDecline").onclick=function(){$("cmConsent").hidden=true;$("cmMsg").textContent="Callsign not saved – you need to accept to use a callsign in the app.";
+ if(cmPending===null&&myCall()&&store("consent")!="1")setMyCall("");cmPending=null};
+$("cmCall").onkeydown=function(e){if(e.key=="Enter")$("cmSave").onclick()};
+$("meBtn").onclick=function(){askCall(true)};
+var _stSave=$("stSave").onclick;$("stSave").onclick=function(){_stSave();meShow();hdRender();if(!myCall())askCall(true);
+ else if(store("consent")!="1"){askCall(true);cmPending=null;$("cmConsent").hidden=false}else if(window.FB)FB.hello(true)};
+/* ignore my own callsign when listening */
+var _speechParse=speechParse;speechParse=function(t){var p=_speechParse(t);p.me=p.calls.filter(isMe).length>0;p.calls=p.calls.filter(function(c){return!isMe(c)});return p};
+var _onSpeech=window.onSpeech;window.onSpeech=function(txt){_onSpeech(txt);var p=speechParse(decodeURIComponent(txt||""));
+ if(p.me)$("lsOut").insertAdjacentHTML("beforeend",'<div class="mut small" style="margin-top:6px">Your own callsign ('+esc(myCall())+') was heard and ignored.</div>')};
+/* label me on the heard map */
+var _hdDraw=hdDraw;hdDraw=function(){_hdDraw();var m=myCall();if(!m)return;var c=$("hdMap"),x=c.getContext("2d");
+ /* recompute my position on the same projection */
+ var W=c.width,H=c.height,o=homePos(),pts=[{lat:o.lat,lon:o.lon}];HEARD.forEach(function(e){var p=loc2ll(e.grid);if(p)pts.push(p)});
+ var la0=Math.min.apply(0,pts.map(function(p){return p.lat})),la1=Math.max.apply(0,pts.map(function(p){return p.lat})),lo0=Math.min.apply(0,pts.map(function(p){return p.lon})),lo1=Math.max.apply(0,pts.map(function(p){return p.lon}));
+ var cl=(la0+la1)/2,k=Math.cos(cl*Math.PI/180),span=Math.max((la1-la0)*1.4,(lo1-lo0)*k*1.4*H/W,8),sy=H/span,sx=sy*k,X=W/2+(o.lon-(lo0+lo1)/2)*sx,Y=H/2-(o.lat-cl)*sy;
+ x.font="bold 18px system-ui";x.fillStyle="#fca5a5";x.fillText(m+" (you)",X+10,Y+20)};
+HEARD=HEARD.filter(function(e){return!isMe(e.call)});
+
+
+/* --- v1.5: continuous listening --- */
+var LISTEN=false,lsSeen={};
+function lsSet(on){LISTEN=on;$("lsBtn").classList.toggle("on",on)}
+function lsMsg(t){$("lsOut").innerHTML=t?'<div class="mut small" style="margin-top:6px">'+esc(t)+'</div>':''}
+function rcuStartCmd(){return store("ls_boost")=="1"?"rcu:startb":"rcu:start"}
+function lsStart(){var r=null;try{r=prompt(rcuStartCmd())}catch(e){}
+ if(r=="ok"){lsSet(true);lsMsg("");return}
+ lsSet(false);lsMsg(r=="perm"?(WEB?"Allow the microphone for this site, then tap Listen again.":"Allow the microphone for this app, then tap Listen again."):r=="nohandler"?(WEB?"This browser has no speech recognition – use Microsoft Edge or Google Chrome.":"This phone has no speech recognition service – enable Google voice typing / the Google app."):"Listening only works in the installed app.")}
+function lsStop(){if(!LISTEN)return;lsSet(false);try{prompt("rcu:stop")}catch(e){}}
+window.onListenStopped=function(){lsSet(false)};
+var QNAMES=loadJSON("qrz_names",{}),lsHint=false;
+function mappable(t){return!!PH[t]||/^[a-z]$/.test(t)||/^[0-9]+$/.test(t)||(/^[a-z0-9]+$/.test(t)&&/[0-9]/.test(t)&&/[a-z]/.test(t))||t=="stroke"||t=="slash"||t=="portable"||t=="mobile"}
+function trimTail(alt){var w=alt.toLowerCase().replace(/x-ray/g,"xray").replace(/[^a-z0-9\/ ]/g," ").split(/\s+/).filter(Boolean);while(w.length&&mappable(w[w.length-1]))w.pop();return w.join(" ")}
+function lsTime(){var t=new Date();return(t.getHours()<10?"0":"")+t.getHours()+":"+(t.getMinutes()<10?"0":"")+t.getMinutes()}
+function lsRow(c){return document.querySelector('#lsCalls .lc[data-k="'+baseCall(c)+'"]')}
+function lsName(c){var k=baseCall(c);if(QNAMES[k]!==undefined){lsSetName(k,QNAMES[k]);return}
+ if(!QZ.user||!QZ.pass){if(!lsHint){lsHint=true;lsMsg("Add your QRZ login in QRZ › Settings to show names.")}return}
+ qzLogin(function(key){if(!key)return;post("https://xmldata.qrz.com/xml/current/",{s:key,callsign:k},function(tx){if(!tx)return;var x=new DOMParser().parseFromString(tx,"text/xml");if(!xget(x,"Key"))qzKey=null;
+  var nm=((xget(x,"fname")||"").split(" ")[0]||"");nm=nm?nm.charAt(0)+nm.slice(1).toLowerCase():"";QNAMES[k]=nm;try{store("qrz_names",JSON.stringify(QNAMES))}catch(e){}lsSetName(k,nm);
+  var g=xget(x,"grid");HEARD.forEach(function(e){if(baseCall(e.call)==k){if(g)e.grid=g;if(nm)e.name=nm}});hdSave();hdRender()})})}
+function lsSetName(k,nm){var r=document.querySelectorAll('#lsCalls .lc[data-k="'+k+'"] .nm');for(var i=0;i<r.length;i++)r[i].textContent=nm||""}
+var LSWIN=15000,lsN=0;
+function lsAdd(c,rst){var k=baseCall(c),now=Date.now();
+ /* a longer callsign that extends a very recent shorter one replaces it (e.g. M0PT -> M0PTN) */
+ Object.keys(lsSeen).forEach(function(o){if(o!=k&&k.indexOf(o)==0&&now-lsSeen[o].t<LSWIN){var or=document.getElementById(lsSeen[o].id);if(or)or.remove();delete lsSeen[o]}});
+ var s=lsSeen[k];
+ if(s&&now-s.t<LSWIN){/* same transmission (partial results repeat) - just add the report if new */
+  var r=document.getElementById(s.id);if(r&&rst&&!r.querySelector(".rs").textContent)r.querySelector(".rs").textContent=rst;
+  if(rst)hdUpsert(c,rst);s.t=now;return}
+ var id="lc"+(++lsN);lsSeen[k]={t:now,id:id};
+ $("lsCalls").insertAdjacentHTML("afterbegin",'<div class="lc" id="'+id+'" data-k="'+esc(k)+'"><b>'+esc(c)+'</b><span class="nm">'+esc(QNAMES[k]||"")+'</span><span class="rs">'+(rst?esc(rst):'')+'</span><span class="mut" style="margin-left:auto">'+lsTime()+'</span></div>');
+ $("lsCalls").scrollTop=0;hdUpsert(c,rst);lsName(c)}
+/* heard map/list keeps one entry per station, moved to the top with the latest time */
+function hdUpsert(c,rst){var k=baseCall(c),e=HEARD.filter(function(x){return baseCall(x.call)==k})[0],t=new Date().toISOString().slice(0,16).replace("T"," ");
+ if(e){HEARD.splice(HEARD.indexOf(e),1);e.t=t;if(rst)e.rst=rst}else e={call:c,rst:rst||"",t:t,grid:"",name:QNAMES[k]||""};
+ HEARD.unshift(e);hdSave();hdRender()}
+function lsHandle(txt,partial){if(!LISTEN)return;txt=decodeURIComponent(txt||"");if(!txt)return;
+ var src=partial?txt.split("|").map(trimTail).join("|"):txt;var p=speechParse(src);
+ var rst=partial?null:p.rst;
+ p.calls.forEach(function(c){lsAdd(c,rst)})}
+window.onSpeechP=function(t){lsHandle(t,true)};
+window.onSpeechC=function(t){lsHandle(t,false)};
+$("lsBtn").onclick=function(){if(LISTEN)lsStop();else lsStart()};
+var _showTab15=showTab;showTab=function(t){if(t!="qrz")lsStop();_showTab15(t)};
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+var _qzSegSet=qzSegSet;qzSegSet=function(v){if(v!="look")lsStop();_qzSegSet(v)};
+$("verBtn").addEventListener("click",lsStop);$("sugBtn").addEventListener("click",lsStop);
+document.addEventListener("visibilitychange",function(){if(document.hidden)lsStop()});
+
+
+/* --- v1.8: listening robustness + diagnostics --- */
+var lsLastEv=0,lsStable=null,lsDiagOn=store("ls_diag")=="1";
+$("stDiag").checked=lsDiagOn;$("lsDiag").hidden=!lsDiagOn;
+$("stDiag").onchange=function(){lsDiagOn=this.checked;store("ls_diag",lsDiagOn?"1":"0");$("lsDiag").hidden=!lsDiagOn};
+function lsLog(t){if(!lsDiagOn)return;var d=new Date(),ts=d.toTimeString().slice(0,8),el=$("lsDiag");el.textContent=(ts+" "+t+"\n"+el.textContent).slice(0,6000)}
+var ERRN={1:"network timeout",2:"network",3:"audio",4:"server",5:"client",6:"no speech (timeout)",7:"no match",8:"busy",9:"no permission",10:"too many requests",11:"server disconnected",12:"language not supported",13:"language unavailable"};
+window.onEarEv=function(e){lsLastEv=Date.now();var m=/^error (\d+)/.exec(e);lsLog(m?"error "+m[1]+" ("+(ERRN[m[1]]||"?")+")":e)};
+/* partials: log a trailing callsign once the speech pauses (no new partial for 1.2 s) */
+var _lsHandle=lsHandle;lsHandle=function(txt,partial){lsLastEv=Date.now();
+ if(lsDiagOn)lsLog((partial?"partial: ":"final: ")+decodeURIComponent(txt||"").split("|")[0].slice(0,80));
+ _lsHandle(txt,partial);clearTimeout(lsStable);
+ if(partial)lsStable=setTimeout(function(){_lsHandle(txt,false)},1200)};
+window.onSpeechP=function(t){lsHandle(t,true)};window.onSpeechC=function(t){lsHandle(t,false)};
+/* watchdog: if the recogniser goes quiet for 15 s while listening, re-arm it */
+setInterval(function(){if(!LISTEN)return;if(Date.now()-lsLastEv>15000){lsLog("watchdog: no activity for 15 s – restarting");lsLastEv=Date.now();var r=null;try{r=prompt(rcuStartCmd())}catch(e){}if(r!="ok"){lsLog("restart failed: "+r);lsSet(false)}}},5000);
+var _lsStart=lsStart;lsStart=function(){lsLastEv=Date.now();lsLog("start");_lsStart()};
+var _lsStop=lsStop;lsStop=function(){if(LISTEN)lsLog("stop");_lsStop()};
+$("lsBtn").onclick=function(){if(LISTEN)lsStop();else lsStart()};
+
+
+/* --- v1.9: input level meter + boost (auto-gain) --- */
+var lsClipPrev=-1,lsClipT=0,lsShown=0,lsLvlPrev="",lsTalkT=0,lsLoudN=0,lsQuietN=0,lsBoostWarned=false,lsSdk=0,lsBoostSaid=null;
+$("stBoost").checked=store("ls_boost")=="1";if(WEB)$("stBoostRow").hidden=true;
+function boostNote(){var t="";if(lsSdk&&lsSdk<33)t="This phone is on an older Android (API "+lsSdk+") – boost isn't available, normal listening is used.";$("stBoostNote").textContent=t}
+$("stBoost").onchange=function(){store("ls_boost",this.checked?"1":"0");lsBoostWarned=false;if(LISTEN){lsStop();lsStart()}};
+var _lsHandle19=lsHandle;lsHandle=function(t,p){lsTalkT=Date.now();_lsHandle19(t,p)};
+function lsLevel(){if(!LISTEN){$("lsMeter").hidden=true;return}
+ var r=null;try{r=prompt("rcu:lvl")}catch(e){}if(!r||r.indexOf("|")<0){$("lsMeter").hidden=true;return}
+ if(r!=lsLvlPrev){lsLastEv=Date.now();lsLvlPrev=r}   /* level changing = recogniser/pump alive (keeps the watchdog happy) */
+ var a=r.split("|"),rms=parseFloat(a[0])||0,pk=+a[1]||0,gn=(+a[2]||256)/256,bst=a[4]=="true";lsSdk=+a[3]||0;boostNote();
+ if(lsBoostSaid!==bst){lsBoostSaid=bst;if(store("ls_boost")=="1")lsLog(bst?"boost active (Android API "+lsSdk+")":"boost not active – using normal listening")}
+ var pct,lbl,col,clip=+a[5]||0,clipNow=false;
+ if(lsClipPrev>=0&&clip>lsClipPrev){clipNow=true;lsClipT=Date.now();lsLog("clipping: "+(clip-lsClipPrev)+" samples at full scale")}lsClipPrev=clip;
+ if(bst){var out=Math.min(32767,pk*gn);pct=out<1?0:Math.max(0,Math.min(100,(20*Math.log(out/32767)/Math.LN10+60)/60*100))}
+ else pct=Math.max(0,Math.min(100,(rms+2)/14*100));   /* recogniser's level is only approximate */
+ lsShown=Math.max(pct,lsShown*0.8);pct=lsShown;
+ if(Date.now()-lsClipT<2500){lbl="CLIPPING – turn the radio down or move the phone further away";col="#ef4444"}
+ else if(pct<20){lbl="quiet";col="#64748b"}
+ else if(bst&&pct>92){lbl="strong";col="#eab308"}
+ else{lbl="good";col="#22c55e"}
+ $("lsMeter").hidden=false;$("lsLvl").style.width=pct.toFixed(0)+"%";$("lsLvl").style.background=col;
+ var tx=(bst?"Input level: ":"Input level (approx.): ")+lbl;if(bst)tx+=" · boost ×"+gn.toFixed(1);
+ if(pct>=40)lsLoudN++;if(pct<20)lsQuietN++;
+ if(lsQuietN>150&&lsLoudN<10&&!bst)tx+=" – try turning the radio up, moving the phone closer, or Boost in QRZ › Settings";
+ $("lsLvlTx").textContent=tx;
+ /* boost sanity: lots of sound but nothing recognised for 45 s */
+ if(bst&&!lsBoostWarned&&lsLoudN>120&&Date.now()-lsTalkT>45000){lsBoostWarned=true;lsLog("boost: sound but no words for 45 s – recogniser may not support boost");
+  lsMsg("Hearing sound but no words – Boost may not work with this phone's speech service. Try turning it off in QRZ › Settings.")}}
+setInterval(lsLevel,250);
+var _lsStart19=lsStart;lsStart=function(){lsTalkT=Date.now();lsLoudN=0;lsQuietN=0;lsBoostSaid=null;lsClipPrev=-1;lsClipT=0;lsShown=0;_lsStart19()};
+var _lsStop19=lsStop;lsStop=function(){_lsStop19();$("lsMeter").hidden=true};
+$("lsBtn").onclick=function(){if(LISTEN)lsStop();else lsStart()};
+
+
+/* --- v2.1: GB3XO live status from the AllStar stats API (max 1 request/min for the node; API allows 30/min) --- */
+var XO_NODE="63824",XO_ECHO="328875",xoTimer=null,xoNames=loadJSON("xo_names",{});
+function xoAgo(s){s=Math.max(0,Math.round(s));if(s<60)return s+" s";if(s<3600)return Math.round(s/60)+" min";if(s<86400)return Math.floor(s/3600)+" h "+Math.round(s%3600/60)+" min";return Math.floor(s/86400)+" d "+Math.floor(s%86400/3600)+" h"}
+function xoLinkLabel(n){
+ if(/^3\d{6}$/.test(n)){var e=n.slice(1).replace(/^0+/,"");return e==XO_ECHO?"EchoLink "+e+" (GB3XO-R – this repeater on EchoLink)":"EchoLink node "+e}
+ if(+n<2000)return"Private node "+n;
+ var c=xoNames[n];return"AllStar "+n+(c&&c.n?" – "+c.n:"")}
+function xoLookup(list){var now=Date.now(),todo=list.filter(function(n){return!/^3\d{6}$/.test(n)&&+n>=2000&&(!xoNames[n]||now-xoNames[n].t>864e5)}).slice(0,5);
+ todo.forEach(function(n){fetch("https://stats.allstarlink.org/api/stats/"+n).then(function(r){return r.json()}).then(function(j){var nd=j.node||j.user_node||{},sv=nd.server||{};
+  xoNames[n]={t:Date.now(),n:[nd.callsign,sv.Location].filter(Boolean).join(", ")};store("xo_names",JSON.stringify(xoNames));if(xoLast)xoRender(xoLast,xoLastT,false)}).catch(function(){})})}
+var xoLast=loadJSON("xo_last",null),xoLastT=+store("xo_last_t")||0;
+function xoRender(j,fetchedAt,cached){var d=(j&&j.stats&&j.stats.data)||null;
+ if(!d){$("xoSt").textContent="No status available";$("xoDot").style.background="#64748b";return}
+ var now=Date.now()/1000,rep=+d.time||0,age=rep?now-rep:1e9,keyed=d.keyed===true||d.keyed==="1"||d.keyed===1,on=age<900;
+ var dot,st;
+ if(!on){dot="#64748b";st="Node not reporting"+(rep?" (last report "+xoAgo(age)+" ago)":"")}
+ else if(keyed){dot="#ef4444";st="ON AIR – someone is transmitting"}
+ else{dot="#22c55e";st="Online – idle"}
+ $("xoDot").style.background=dot;$("xoDot").style.boxShadow=keyed&&on?"0 0 10px 3px rgba(239,68,68,.7)":"none";$("xoSt").textContent=st;
+ var kt=+d.keytime||0,up=+d.apprptuptime||0,rows=[];
+ if(kt&&up&&kt<up)rows.push(["Last keyed",xoAgo(kt+(on?age:0))+" ago"]);
+ if(up)rows.push(["Node up",xoAgo(up)]);
+ if(d.totalkeyups)rows.push(["Key-ups",d.totalkeyups+(d.totaltxtime?" · "+xoAgo(+d.totaltxtime)+" on air":"")]);
+ $("xoInfo").innerHTML=rows.map(function(r){return"<b>"+r[0]+"</b><span>"+esc(r[1])+"</span>"}).join("");
+ var modes={},nl=[];String(d.nodes||"").split(",").forEach(function(x){var m=/^([A-Z]?)(\d+)$/.exec(x.trim());if(m){modes[m[2]]=m[1];nl.push(m[2])}});
+ if(!nl.length&&Array.isArray(d.links))nl=d.links.map(String);
+ var MD={T:"",R:" · listen only",C:" · connecting",L:"",M:" · listen only"};
+ $("xoLinks").innerHTML=nl.length?'<div class="mut small">Linked to '+nl.length+' node'+(nl.length>1?"s":"")+':</div>'+nl.map(function(n){return'<div style="padding:3px 0;border-bottom:1px solid var(--line)">'+esc(xoLinkLabel(n))+'<span class="mut small">'+esc(MD[modes[n]]||"")+'</span></div>'}).join(""):'<div class="mut small">Not linked to any other nodes</div>';
+ if(nl.length)xoLookup(nl);
+ $("xoUpd").innerHTML=(cached?"No connection – showing data from "+xoAgo(Date.now()/1000-fetchedAt/1000)+" ago · ":"Updated "+new Date(fetchedAt).toTimeString().slice(0,5)+" · refreshes every minute · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+XO_NODE+'" target="_blank">stats.allstarlink.org</a>'}
+function xoFetch(){fetch("https://stats.allstarlink.org/api/stats/"+XO_NODE,{cache:"no-store"}).then(function(r){if(!r.ok)throw r.status;return r.json()}).then(function(j){
+  xoLast=j;xoLastT=Date.now();try{store("xo_last",JSON.stringify(j));store("xo_last_t",String(xoLastT))}catch(e){}xoRender(j,xoLastT,false)})
+ .catch(function(){if(xoLast)xoRender(xoLast,xoLastT,true);else{$("xoSt").textContent="Can't reach AllStar stats – check your connection";$("xoDot").style.background="#64748b"}})}
+function xoStart(){xoStop();if(xoLast)xoRender(xoLast,xoLastT,true);xoFetch();xoTimer=setInterval(function(){if(!document.hidden)xoFetch()},60000)}
+function xoStop(){if(xoTimer){clearInterval(xoTimer);xoTimer=null}}
+var _showTab21=showTab;showTab=function(t){_showTab21(t);if(t=="gb3xo")xoStart();else xoStop()};
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&curTab=="gb3xo")xoFetch()});
+
+
+/* --- v2.2: GB3XO Listen (hidden official Hoseline page on TG 23589, native side) --- */
+var IS_APP=/RadioChatUnlimited\//.test(navigator.userAgent),XOL=false;
+function xoLSet(on){XOL=on;var b=$("xoListen");b.className="btn"+(on?" on":"");b.textContent=on?"🔊 Listening – tap to stop":"🔊 Listen";
+ $("xoListenTx").hidden=!on;if(WEB)$("xoListenTx").innerHTML='Keeps playing while this page is open (minimised is fine) – tap again to stop. Not hearing anything? <a href="https://hose.brandmeister.network/?subscribe=23589">Open the player in a new tab</a>.';else $("xoListenTx").textContent="Keeps playing in the background – stop it here or from the notification."}
+$("xoListen").onclick=function(){
+ 
+ var r=null;try{r=prompt(XOL?"rcu:xoff":"rcu:xon")}catch(e){}
+ if(XOL){xoLSet(false);return}
+ if(r=="ok")xoLSet(true);else{$("xoListenTx").hidden=false;$("xoListenTx").textContent="Couldn't start listening"+(r?" ("+r+")":"")+" – try again."}};
+window.onHoseOff=function(){xoLSet(false)};
+function xoLSync(){if(!IS_APP)return;var r=null;try{r=prompt("rcu:xstate")}catch(e){}xoLSet(r=="on")}
+xoLSync();
+/* --- v2.2: QTH locator (Maidenhead) – suggested by Paul M7VPE --- */
+function maiden(lat,lon,n){n=n||8;var lo=lon+180,la=lat+90;lo=Math.min(Math.max(lo,0),359.999999);la=Math.min(Math.max(la,0),179.999999);
+ var s=String.fromCharCode(65+Math.floor(lo/20))+String.fromCharCode(65+Math.floor(la/10))+Math.floor(lo%20/2)+Math.floor(la%10);
+ var a=lo%2*12,b=la%1*24;s+=String.fromCharCode(97+Math.floor(a))+String.fromCharCode(97+Math.floor(b));
+ s+=Math.floor(a%1*10)+""+Math.floor(b%1*10);return s.slice(0,n)}
+function mhBox(loc){/* bounds of a 4- or 6-char locator */var lo=(loc.charCodeAt(0)-65)*20-180+(+loc[2])*2,la=(loc.charCodeAt(1)-65)*10-90+(+loc[3]),w=2,hh=1;
+ if(loc.length>=6){lo+=(loc.toLowerCase().charCodeAt(4)-97)*(2/24);la+=(loc.toLowerCase().charCodeAt(5)-97)*(1/24);w=2/24;hh=1/24}
+ return{w:lo,s:la,e:lo+w,n:la+hh}}
+function dms(v,p,q){var a=Math.abs(v),d=Math.floor(a),m=Math.floor((a-d)*60),s=Math.round(((a-d)*60-m)*60);if(s==60){s=0;m++}if(m==60){m=0;d++}return d+"° "+m+"′ "+s+"″ "+(v>=0?p:q)}
+var locZoom=7,locLastKey="";
+function locUpd(){var P=lastPos;
+ if(!P){$("locHdr").hidden=true;$("lgMyGridTx").textContent="needs location";if(curTab=="qth"){$("locBig").textContent="…";$("locSub").textContent="Finding your location… (location must be on)"}return}
+ var L=maiden(P.lat,P.lon,8);$("locHdr").hidden=false;$("locHdr").textContent=L.slice(0,6);$("lgMyGridTx").textContent=L.slice(0,6);
+ if(curTab!="qth")return;
+ $("locBig").textContent=L;$("locSub").textContent="Square "+L.slice(0,4)+" · sub-square "+L.slice(0,6)+(P.acc?" · accurate to about "+(P.acc<1000?Math.round(P.acc)+" m":(P.acc/1000).toFixed(1)+" km"):"");
+ $("locKv").innerHTML=[["Latitude",dms(P.lat,"N","S")+"  ("+P.lat.toFixed(5)+")"],["Longitude",dms(P.lon,"E","W")+"  ("+P.lon.toFixed(5)+")"]].map(function(r){return"<b>"+r[0]+"</b><span>"+esc(r[1])+"</span>"}).join("");
+ /* 3x3 grid of 4-char squares */
+ var c=mhBox(L.slice(0,4)),cx=(c.w+c.e)/2,cy=(c.s+c.n)/2,html='<div class="lgrid">';
+ [1,0,-1].forEach(function(dy){[-1,0,1].forEach(function(dx){var lo=cx+dx*2,la=cy+dy;lo=((lo+180)%360+360)%360-180;
+  var me=!dx&&!dy,t=(la>-90&&la<90)?maiden(la,lo,4):"";
+  html+='<div class="'+(me?"me":"")+'">'+t+(me?'<span class="ldot" style="left:'+((P.lon-c.w)/2*100).toFixed(1)+'%;top:'+((c.n-P.lat)*100).toFixed(1)+'%"></span>':"")+'</div>'})});
+ $("locGrid").innerHTML=html+'</div>';
+ var key=L.slice(0,6)+"|"+locZoom+"|"+P.lat.toFixed(4)+P.lon.toFixed(4);if(key!=locLastKey){locLastKey=key;locMap()}}
+function mPx(lat,lon,z){var n=256*Math.pow(2,z),r=lat*Math.PI/180;return{x:(lon+180)/360*n,y:(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n}}
+function locMap(){var P=lastPos,el=$("locMap");if(!P)return;var W=el.offsetWidth||340,H=300,z=locZoom;
+ var L=maiden(P.lat,P.lon,6),b=mhBox(z>=10?L:L.slice(0,4)),ctr=mPx((b.s+b.n)/2,(b.w+b.e)/2,z),x0=ctr.x-W/2,y0=ctr.y-H/2,N=Math.pow(2,z),h="";
+ for(var tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(var ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){if(ty<0||ty>=N)continue;
+  h+='<img alt="" src="https://tile.openstreetmap.org/'+z+'/'+((tx%N+N)%N)+'/'+ty+'.png" style="left:'+Math.round(tx*256-x0)+'px;top:'+Math.round(ty*256-y0)+'px">'}
+ var a=mPx(b.n,b.w,z),c=mPx(b.s,b.e,z),d=mPx(P.lat,P.lon,z);
+ h+='<div class="box" style="left:'+(a.x-x0)+'px;top:'+(a.y-y0)+'px;width:'+(c.x-a.x)+'px;height:'+(c.y-a.y)+'px"></div>';
+ h+='<div class="lab" style="left:'+(a.x-x0+4)+'px;top:'+(a.y-y0+4)+'px">'+(z>=10?L:L.slice(0,4))+'</div>';
+ h+='<span class="ldot" style="left:'+(d.x-x0)+'px;top:'+(d.y-y0)+'px"></span>';
+ h+='<div class="attr">© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>';el.innerHTML=h}
+function locZ(z){locZoom=z;$("locZ1").className="btn sm"+(z==7?"":" alt");$("locZ2").className="btn sm"+(z==12?"":" alt");locLastKey="";locUpd()}
+$("locZ1").onclick=function(){locZ(7)};$("locZ2").onclick=function(){locZ(12)};
+$("locRef").onclick=function(){$("locMsg").textContent="Updating location…";locate();setTimeout(function(){$("locMsg").textContent=""},4000)};
+function locText(){var P=lastPos;return P?"My locator: "+maiden(P.lat,P.lon,6)+" ("+P.lat.toFixed(4)+", "+P.lon.toFixed(4)+")":""}
+$("locCopy").onclick=function(){var t=lastPos?maiden(lastPos.lat,lastPos.lon,6):"";if(!t)return;
+ var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();
+ if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t).then(function(){},function(){});$("locMsg").textContent="Copied "+t};
+$("locShare").onclick=function(){var t=locText();if(!t)return;
+ if(IS_APP){try{prompt("rcu:xshare:"+t)}catch(e){}}else if(navigator.share)navigator.share({text:t}).catch(function(){});else $("locMsg").textContent=t};
+$("locHdr").onclick=function(e){e.stopPropagation();showTab("qth")};
+$("lgMyGrid").checked=store("lg_mygrid")!="0";$("lgMyGrid").onchange=function(){store("lg_mygrid",this.checked?"1":"0")};
+var _setDist22=setDist;setDist=function(){_setDist22.apply(this,arguments);locUpd()};
+var _showTab22=showTab;showTab=function(t){_showTab22(t);if(t=="qth"){locLastKey="";locUpd();if(!lastPos)locate()}if(t=="gb3xo")xoLSync()};
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+
+
+/* --- v2.3: swipe left/right to change tab; keep the current tab visible in the tab bar --- */
+function tabOrder(){return Array.prototype.filter.call(document.querySelectorAll("#tabs button"),function(b){return!b.hidden}).map(function(b){return b.dataset.t})}
+var _showTab23=showTab;showTab=function(t){_showTab23(t);var b=document.querySelector('#tabs button[data-t="'+t+'"]');
+ if(b&&b.scrollIntoView)try{b.scrollIntoView({inline:"center",block:"nearest"})}catch(e){}};
+$("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
+function swNoSwipe(el){for(;el&&el!==document.body;el=el.parentElement){
+  if(/^(INPUT|TEXTAREA|SELECT|CANVAS)$/.test(el.tagName))return true;
+  if(el.id=="tabs"||el.id=="locMap"||el.id=="callModal")return true;
+  var cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowX)&&el.scrollWidth>el.clientWidth+2)return true}
+ return false}
+var swS=null;
+document.addEventListener("touchstart",function(e){if(e.touches.length!=1){swS=null;return}var t=e.touches[0];
+ swS=swNoSwipe(e.target)?null:{x:t.clientX,y:t.clientY,t:Date.now()}},{passive:true});
+document.addEventListener("touchmove",function(e){if(swS&&e.touches.length!=1)swS=null},{passive:true});
+document.addEventListener("touchend",function(e){if(!swS)return;var t=e.changedTouches[0],dx=t.clientX-swS.x,dy=t.clientY-swS.y,dt=Date.now()-swS.t;swS=null;
+ if(dt>800||Math.abs(dx)<70||Math.abs(dx)<2*Math.abs(dy))return;
+ if(!$("ver").hidden)return;var m=$("callModal");if(m&&!m.hidden)return;
+ var o=tabOrder(),i=o.indexOf(curTab),j=i+(dx<0?1:-1);if(i<0||j<0||j>=o.length)return;showTab(o[j])},{passive:true});
+
+
+/* --- v2.4: Firebase (Firestore REST) - announcements, for sale, suggestions; invisible per-phone ID --- */
+var FB={key:"AIzaSyA6ClIo52wbC2afxEAJRerCdZLaHhOXdoc",proj:"radio-chat-unlimited-m0xoo",admin:false,
+ auth:loadJSON("fb_auth",null),busy:null};
+FB.base="https://firestore.googleapis.com/v1/projects/"+FB.proj+"/databases/(default)/documents";
+FB.json=function(url,opt,cb){fetch(url,opt).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}cb(r.ok,j,r.status)})}).catch(function(){cb(false,null,0)})};
+FB.token=function(cb){var a=FB.auth;
+ if(a&&a.idToken&&a.exp>Date.now()+60000)return cb(a.idToken);
+ if(FB.busy){FB.busy.push(cb);return}FB.busy=[cb];
+ var done=function(tok){var q=FB.busy;FB.busy=null;q.forEach(function(f){f(tok)})};
+ var save=function(uid,id,rf,exp){FB.auth={uid:uid,idToken:id,refresh:rf,exp:Date.now()+(+exp||3600)*1000};store("fb_auth",JSON.stringify(FB.auth));
+  if(IS_APP){try{prompt("rcu:xpref:uid="+uid)}catch(e){}}done(id)};
+ if(a&&a.refresh){FB.json("https://securetoken.googleapis.com/v1/token?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refresh)},function(ok,j){
+  if(ok&&j&&j.id_token)save(j.user_id,j.id_token,j.refresh_token,j.expires_in);else{FB.auth=null;store("fb_auth","");FB.busy=null;FB.token(function(t){done(t)})}});return}
+ FB.json("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json"},body:'{"returnSecureToken":true}'},function(ok,j){
+  if(ok&&j&&j.idToken)save(j.localId,j.idToken,j.refreshToken,j.expiresIn);else done(null)})};
+FB.enc=function(o){var f={};Object.keys(o).forEach(function(k){f[k]={stringValue:String(o[k])}});return f};
+FB.dec=function(d){var o={id:d.name.split("/").pop()},f=d.fields||{};Object.keys(f).forEach(function(k){var v=f[k];o[k]=v.stringValue!==undefined?v.stringValue:(v.timestampValue||"")});return o};
+FB.rid=function(){var c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<20;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s};
+FB.add=function(coll,data,cb){FB.token(function(tok){if(!tok)return cb(false,"no connection");data.uid=FB.auth.uid;
+ var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/"+coll+"/"+FB.rid(),fields:FB.enc(data)},currentDocument:{exists:false},
+  updateTransforms:[{fieldPath:"created",setToServerValue:"REQUEST_TIME"}]}]};
+ FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify(body)},function(ok,j,st){cb(ok,ok?"":(st==403?"not allowed – check the details":"error "+st))})})};
+FB.list=function(coll,fields,cb){var q="?orderBy=created%20desc&pageSize=60&key="+FB.key+(fields?fields.map(function(f){return"&mask.fieldPaths="+f}).join(""):"");
+ FB.json(FB.base+"/"+coll+q,{cache:"no-store"},function(ok,j){cb(ok,ok?((j&&j.documents)||[]).map(FB.dec):null)})};
+FB.get=function(coll,id,cb){FB.json(FB.base+"/"+coll+"/"+id+"?key="+FB.key,{},function(ok,j){cb(ok&&j?FB.dec(j):null)})};
+FB.del=function(coll,id,cb){FB.token(function(tok){if(!tok)return cb(false);FB.json(FB.base+"/"+coll+"/"+id+"?key="+FB.key,{method:"DELETE",headers:{Authorization:"Bearer "+tok}},function(ok){cb(ok)})})};
+/* record which callsign is on this phone (lets Pete find admin phone IDs) + find out if this phone is an admin */
+FB.lastHello=0;
+FB.hello=function(force){if(!force&&Date.now()-FB.lastHello<300000)return;FB.lastHello=Date.now();FB.token(function(tok){if(!tok)return;
+ if(store("consent")=="1"&&QZ.call){var tr=[{fieldPath:"seen",setToServerValue:"REQUEST_TIME"}],first=store("fb_first")!="1";if(first)tr.push({fieldPath:"first",setToServerValue:"REQUEST_TIME"});
+  var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/devices/"+FB.auth.uid,fields:FB.enc({call:(QZ.call||"").slice(0,12),name:(store("my_name")||"").slice(0,60),ver:(APP_VERSION+(WEB?" web":"")).slice(0,10)})},
+   updateMask:{fieldPaths:["call","name","ver"]},updateTransforms:tr}]};
+  FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify(body)},function(ok){if(ok&&first)store("fb_first","1")})}
+ FB.json(FB.base+"/devices?pageSize=1&key="+FB.key,{headers:{Authorization:"Bearer "+tok}},function(ok){FB.admin=!!ok;var ab=document.querySelector('#tabs button[data-t="adm"]');if(ab)ab.hidden=!FB.admin;if(!FB.admin&&curTab=="adm")showTab("gb3xo");if(!$("ver").hidden&&window.sgAdmShow)sgAdmShow();if(curTab=="ann")anRender();if(curTab=="sale")fsRender()})})};
+function fbWhen(ts){if(!ts)return"";var d=new Date(ts);return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+" "+d.toTimeString().slice(0,5)}
+function fbMine(p){return(FB.auth&&p.uid==FB.auth.uid)||FB.admin}
+/* poster identity: callsign from the app; name from QRZ (if a QRZ login is set) or typed once */
+function myName(cb){var n=store("my_name");if(n)return cb(n);if(!QZ.call||!QZ.user||!QZ.pass)return cb("");
+ qzLogin(function(key){if(!key)return cb("");post("https://xmldata.qrz.com/xml/current/",{s:key,callsign:baseCall(QZ.call)},function(tx){var nm="";
+  if(tx){var x=new DOMParser().parseFromString(tx,"text/xml");nm=((xget(x,"fname")||"")+" "+(xget(x,"name")||"")).trim().toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase()})}
+  if(nm)store("my_name",nm);cb(nm)})})}
+function postForm(pref){var ok=!!QZ.call;$(pref+"Who").innerHTML=ok?"Posting as <b>"+esc(QZ.call)+"</b>"+(QZ.user?" (name from QRZ)":"")+".":'<span style="color:#ef4444">Set your callsign first (tap "You" at the top, or QRZ › Settings).</span>';
+ myName(function(n){if(!$(pref+"Name").value)$(pref+"Name").value=n||""});return ok}
+function seenMark(coll,list,k){if(!list.length)return;var top=list[0].created;store("seen_"+k,top);if(IS_APP){try{prompt("rcu:xpref:"+k+"="+top)}catch(e){}}tabDots()}
+function tabDots(){[["ann","a"],["sale","f"]].forEach(function(p){var b=document.querySelector('#tabs button[data-t="'+p[0]+'"]');if(!b)return;var dot=b.querySelector(".dot"),n=(LATEST[p[1]]||"")>(store("seen_"+p[1])||"");
+ if(n&&!dot)b.insertAdjacentHTML("beforeend",'<span class="dot"></span>');if(!n&&dot)dot.remove()})}
+var LATEST={};
+function latestCheck(){[["announcements","a"],["forsale","f"]].forEach(function(p){FB.list(p[0],["created"],function(ok,l){if(ok&&l.length){LATEST[p[1]]=l[0].created;tabDots()}})})}
+function askNotif(){if(IS_APP&&!store("notif_asked")){store("notif_asked","1");try{prompt("rcu:xnotif")}catch(e){}}}
+/* ---- Announcements ---- */
+var AN=[];
+function anLoad(){$("anSrc").textContent="Loading…";FB.list("announcements",null,function(ok,l){if(!ok){$("anSrc").textContent="Can't load announcements – no internet?";if(!AN.length)anRender();return}
+ AN=l;anRender();$("anSrc").textContent="Anyone using the app can post. Updated "+new Date().toTimeString().slice(0,5);seenMark("announcements",AN,"a")})}
+function anRender(){$("anList").innerHTML=AN.map(function(p){var mp=p.where?'<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.where)+'">📍 '+esc(p.where)+'</a>':"";
+  return'<div class="post">'+(fbMine(p)?'<button class="del" data-del="'+p.id+'">Delete</button>':'')+'<h3>'+esc(p.title)+'</h3>'+
+   (p.when?'<div>🗓 '+esc(p.when)+'</div>':'')+(mp?'<div>'+mp+'</div>':'')+(p.body?'<div style="margin-top:6px;white-space:pre-wrap">'+esc(p.body)+'</div>':'')+
+   '<div class="by">Posted by <b>'+esc(p.call)+'</b>'+(p.name?' – '+esc(p.name):'')+' · '+fbWhen(p.created)+'</div></div>'}).join("")||'<div class="card mut">No announcements yet.</div>'}
+$("anList").onclick=function(e){var id=e.target.dataset.del;if(!id)return;if(!confirmDel(e.target))return;
+ FB.del("announcements",id,function(ok){if(ok){AN=AN.filter(function(p){return p.id!=id});anRender()}else e.target.textContent="Couldn't delete"})};
+function confirmDel(b){if(b.dataset.sure)return true;b.dataset.sure="1";b.textContent="Tap again to delete";setTimeout(function(){if(b.isConnected){delete b.dataset.sure;b.textContent="Delete"}},4000);return false}
+$("anNew").onclick=function(){$("anForm").hidden=!$("anForm").hidden;if(!$("anForm").hidden){postForm("an");$("anTitle").focus()}};
+$("anCancel").onclick=function(){$("anForm").hidden=true};
+$("anPost").onclick=function(){if(!postForm("an"))return;var t=$("anTitle").value.trim();if(!t){$("anTitle").focus();return}
+ var nm=$("anName").value.trim();if(nm)store("my_name",nm);$("anMsg").textContent="Posting…";
+ FB.add("announcements",{title:t.slice(0,100),body:$("anBody").value.trim().slice(0,2000),when:$("anWhen").value.trim().slice(0,100),where:$("anWhere").value.trim().slice(0,120),call:QZ.call.slice(0,12),name:nm.slice(0,60)},function(ok,err){
+  $("anMsg").textContent=ok?"✓ Posted – everyone will see it.":"Couldn't post ("+err+").";if(ok){["anTitle","anBody","anWhen","anWhere"].forEach(function(i){$(i).value=""});$("anForm").hidden=true;anLoad()}})};
+/* ---- For Sale ---- */
+var FS=[],fsPhoto=null,fsThumb=null;
+function shrink(file,max,q,limit,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
+  var go=function(m,qq){var s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);
+   c.getContext("2d").drawImage(im,0,0,c.width,c.height);var d=c.toDataURL("image/jpeg",qq);if(d.length>limit&&m>160)return go(Math.round(m*0.8),Math.max(0.4,qq-0.1));return d};cb(go(max,q))};
+  im.onerror=function(){cb(null)};im.src=r.result};r.onerror=function(){cb(null)};r.readAsDataURL(file)}
+$("fsPhoto").onchange=function(){var f=this.files&&this.files[0];if(!f)return;$("fsMsg").textContent="Preparing photo…";
+ shrink(f,1024,0.72,440000,function(big){if(!big){$("fsMsg").textContent="Couldn't read that photo.";return}fsPhoto=big;$("fsPrev").src=big;$("fsPrev").style.display="block";
+  shrink(f,240,0.62,58000,function(t){fsThumb=t;$("fsMsg").textContent="Photo ready ("+Math.round(big.length*0.75/1024)+" KB)."})})};
+function fsLoad(){FB.list("forsale",["title","price","thumb","call","name","uid","created"],function(ok,l){if(!ok){if(!FS.length)$("fsList").innerHTML='<div class="card mut">Can\'t load listings – no internet?</div>';return}
+ FS=l;fsRender();seenMark("forsale",FS,"f")})}
+function fsRender(){$("fsList").innerHTML=FS.map(function(p){return'<div class="post" data-id="'+p.id+'">'+(fbMine(p)?'<button class="del" data-del="'+p.id+'">Delete</button>':'')+
+  '<div class="fs"><img alt="" src="'+(p.thumb||"")+'"><div><h3>'+esc(p.title)+'</h3><div class="pr">'+esc(p.price)+'</div>'+
+  '<div class="by">'+esc(p.call)+(p.name?' – '+esc(p.name):'')+' · '+fbWhen(p.created)+'</div></div></div><div class="fsd" hidden></div></div>'}).join("")||'<div class="card mut">Nothing for sale yet.</div>'}
+$("fsList").onclick=function(e){var id=e.target.dataset.del;
+ if(id){if(!confirmDel(e.target))return;FB.del("forsale",id,function(ok){if(ok){FS=FS.filter(function(p){return p.id!=id});fsRender()}else e.target.textContent="Couldn't delete"});return}
+ var row=e.target.closest(".post");if(!row||e.target.tagName=="A")return;var d=row.querySelector(".fsd");if(!d.hidden){d.hidden=true;return}
+ d.hidden=false;d.innerHTML='<div class="mut small" style="margin-top:8px">Loading…</div>';
+ FB.get("forsale",row.dataset.id,function(p){if(!p){d.innerHTML='<div class="mut small">Couldn\'t load – no internet?</div>';return}
+  d.innerHTML=(p.photo?'<img alt="" src="'+p.photo+'" style="width:100%;border-radius:10px;margin-top:8px">':'')+'<div style="margin-top:8px;white-space:pre-wrap">'+esc(p.desc||"(no description)")+'</div>'+
+   '<div class="btns"><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(p.call))+'">'+esc(p.call)+' on QRZ</a></div>'})};
+$("fsNew").onclick=function(){$("fsForm").hidden=!$("fsForm").hidden;if(!$("fsForm").hidden){postForm("fs");$("fsTitle").focus()}};
+$("fsCancel").onclick=function(){$("fsForm").hidden=true};
+$("fsPost").onclick=function(){if(!postForm("fs"))return;var t=$("fsTitle").value.trim(),pr=$("fsPrice").value.trim();if(!t){$("fsTitle").focus();return}if(!pr){$("fsPrice").focus();return}
+ if(/^\d+(\.\d\d)?$/.test(pr))pr="£"+pr;var nm=$("fsName").value.trim();if(nm)store("my_name",nm);$("fsMsg").textContent="Listing…";
+ FB.add("forsale",{title:t.slice(0,100),desc:$("fsDesc").value.trim().slice(0,2000),price:pr.slice(0,30),thumb:fsThumb||"",photo:fsPhoto||"",call:QZ.call.slice(0,12),name:nm.slice(0,60)},function(ok,err){
+  $("fsMsg").textContent=ok?"✓ Listed – everyone will see it.":"Couldn't list ("+err+").";
+  if(ok){["fsTitle","fsDesc","fsPrice"].forEach(function(i){$(i).value=""});fsPhoto=fsThumb=null;$("fsPrev").style.display="none";$("fsForm").hidden=true;fsLoad()}})};
+var _showTab24=showTab;showTab=function(t){_showTab24(t);if(t=="ann"){anLoad();askNotif()}if(t=="sale"){fsLoad();askNotif()}};
+$("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
+FB.hello(true);latestCheck();
+if(myCall()&&store("consent")!="1")setTimeout(function(){askCall(true);cmPending=null;$("cmConsent").hidden=false},600);
+if(IS_APP){try{prompt("rcu:xsched")}catch(e){}}
+document.addEventListener("visibilitychange",function(){if(!document.hidden){latestCheck();FB.hello();if(curTab=="ann")anLoad();if(curTab=="sale")fsLoad()}});
+
+
+/* --- v2.5: Admin tab (admins only) - app users from Firebase "devices" --- */
+var AD=[];
+function adAgo(ts){if(!ts)return"–";var s=(Date.now()-new Date(ts))/1000;if(s<90)return"just now";if(s<3600)return Math.round(s/60)+" min ago";if(s<86400)return Math.round(s/3600)+" h ago";return Math.round(s/86400)+" days ago"}
+function adLoad(){$("adCount").textContent="Loading…";FB.token(function(tok){if(!tok){$("adCount").textContent="No connection.";return}
+ FB.json(FB.base+"/devices?orderBy=seen%20desc&pageSize=300&key="+FB.key,{headers:{Authorization:"Bearer "+tok},cache:"no-store"},function(ok,j){
+  if(!ok){$("adCount").textContent="Couldn't load users (admin phones only).";return}AD=((j&&j.documents)||[]).map(FB.dec);adRender()})})}
+function adRender(){var q=$("adSearch").value.trim().toUpperCase(),L=AD.filter(function(u){return!q||(u.call||"").toUpperCase().indexOf(q)>=0||(u.name||"").toUpperCase().indexOf(q)>=0});
+ var day=AD.filter(function(u){return u.seen&&Date.now()-new Date(u.seen)<864e5}).length;
+ $("adCount").innerHTML="<b>"+AD.length+"</b> users · <b>"+day+"</b> opened the app in the last 24 hours";
+ $("adList").innerHTML=L.map(function(u){return'<div class="rp"><div class="top"><span class="cs">'+(u.call?esc(u.call):'<span class="mut">(no callsign)</span>')+'</span> <span class="mut small">'+esc(u.name||"")+'</span>'+
+  '<span class="dist">'+adAgo(u.seen)+'</span></div><div class="mut small">Last opened '+fbWhen(u.seen)+(u.ver?' · v'+esc(u.ver):' · v2.4 or older')+(u.first?' · first seen '+fbWhen(u.first):'')+'</div></div>'}).join("")||'<div class="mut" style="padding:10px">No users found.</div>'}
+$("adSearch").oninput=adRender;$("adRef").onclick=adLoad;
+var _showTab25=showTab;showTab=function(t){if(t=="adm"&&!FB.admin)t="gb3xo";_showTab25(t);if(t=="adm")adLoad()};
+$("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
+
+
+/* --- v2.6: admin review of suggestions (accept / reject, never delete) --- */
+var SG=[],sgFilter="";
+function sgAdmShow(){$("sgAdm").hidden=!FB.admin;if(FB.admin)sgLoad()}
+function sgLoad(){$("sgCount").textContent="Loading…";FB.list("suggestions",null,function(ok,l){if(!ok){$("sgCount").textContent="Can't load – no internet?";return}SG=l;sgRender()})}
+function sgRender(){var st=function(s){return s.status||"new"},n={new:0,accepted:0,rejected:0};SG.forEach(function(s){n[st(s)]++});
+ $("sgCount").innerHTML="<b>"+SG.length+"</b> suggestions · "+n.new+" new · "+n.accepted+" accepted · "+n.rejected+" rejected";
+ var col={new:"#94a3b8",accepted:"#22c55e",rejected:"#ef4444"},lab={new:"New",accepted:"Accepted",rejected:"Rejected"};
+ $("sgList").innerHTML=SG.filter(function(s){return!sgFilter||st(s)==sgFilter}).map(function(s){var S=st(s);
+  return'<div class="post" style="border-left:4px solid '+col[S]+'"><div style="white-space:pre-wrap">'+esc(s.text)+'</div>'+
+   '<div class="by">'+(s.call?'<b>'+esc(s.call)+'</b>':'(no callsign)')+(s.name?' – '+esc(s.name):'')+' · '+fbWhen(s.created)+(s.ver?' · app v'+esc(s.ver):'')+'</div>'+
+   '<div class="small" style="margin-top:4px;color:'+col[S]+'"><b>'+lab[S]+'</b>'+(s.by?' by '+esc(s.by)+' · '+fbWhen(s.at):'')+'</div>'+
+   '<div class="btns" style="margin-top:6px">'+(S!="accepted"?'<button class="btn sm" data-sg="accepted" data-id="'+s.id+'">✓ Accept</button>':'')+
+   (S!="rejected"?'<button class="btn sm alt" data-sg="rejected" data-id="'+s.id+'">✕ Reject</button>':'')+'</div></div>'}).join("")||'<div class="mut">None.</div>'}
+$("sgF").onclick=function(e){var f=e.target.dataset.f;if(f===undefined)return;sgFilter=f;Array.prototype.forEach.call(this.children,function(b){b.className=b.dataset.f==f?"on":""});sgRender()};
+$("sgList").onclick=function(e){var s=e.target.dataset.sg,id=e.target.dataset.id;if(!s||!id)return;e.target.textContent="Saving…";
+ FB.token(function(tok){if(!tok){e.target.textContent="No connection";return}
+  var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/suggestions/"+id,fields:FB.enc({status:s,by:(QZ.call||"").slice(0,12)})},
+   updateMask:{fieldPaths:["status","by"]},currentDocument:{exists:true},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}]};
+  FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify(body)},function(ok){
+   if(ok)sgLoad();else e.target.textContent="Not allowed"})})};
+$("verBtn").addEventListener("click",function(){setTimeout(sgAdmShow,60)});$("sugBtn").addEventListener("click",function(){setTimeout(sgAdmShow,60)});
+var _sgSend=$("sgSend").onclick;$("sgSend").onclick=function(){_sgSend();if(FB.admin)setTimeout(sgLoad,2500)};
+
+/* ---------- start ---------- */
+sel.value=store("band")||"20m";if(!sel.value)sel.value="20m";renderBand(sel.value);
+$("repSel").value=store("repband")||"70cm";if(!$("repSel").value)$("repSel").value="70cm";renderRep($("repSel").value);
+var _old=store("my_call");if(_old&&!QZ.call){QZ.call=_old.toUpperCase();store("qrz_cfg",JSON.stringify(QZ))}try{localStorage.removeItem("my_call");localStorage.removeItem("call_asked")}catch(e){}
+$("stCall").value=QZ.call||"";meShow();hdRender();if(!myCall())askCall(true);
+emRender();scFill();setRepView(repView);obChips();updCheck(false);lgRetry();locate();
+var t0=store("tab");if(t0=="cb")t0="scan";showTab(t0&&$(t0)?t0:"gb3xo");
+</script>
+</body></html>

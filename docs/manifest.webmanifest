@@ -1,0 +1,14 @@
+{
+  "name": "Radio Chat Unlimited M0XOO",
+  "short_name": "Radio Chat",
+  "description": "Amateur radio companion for the GB3XO / Redditch area – by M0PTN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0f1a30",
+  "icons": [
+    {"src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}
