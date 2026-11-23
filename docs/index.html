@@ -85,9 +85,9 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 #meBtn{display:block;margin-top:3px;background:#0b1424;border:1px solid var(--line);color:var(--tx);border-radius:14px;padding:2px 9px;font-size:12px;font-weight:700}
 #meBtn b{color:var(--acc)}
 #meBtn[hidden]{display:none}
-#callModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+#admModal,#callModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
 #callModal .card{width:100%;max-width:420px}
-#callModal[hidden]{display:none}
+#admModal[hidden],#callModal[hidden]{display:none}
 #lsBtn{transition:background .2s,box-shadow .2s;background:#24314a;color:var(--tx)}
 #xoListen.on,#lsBtn.on{background:#22c55e;color:#06210f;box-shadow:0 0 18px 4px rgba(34,197,94,.65)}
 #lsCalls .lc{display:flex;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -131,6 +131,13 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <nav id="tabs">
 <button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="adm" hidden>Admin</button>
 </nav>
+<div id="admModal" hidden><div class="card">
+ <h2>Admin sign in</h2>
+ <div class="mut small">Your callsign is on the app's admin list. Enter the admin password to delete any post, review suggestions and see the Admin tab on this device. Not an admin? Just tap Skip.</div>
+ <input id="admPw" type="password" placeholder="Admin password" autocomplete="off" style="margin-top:10px;font-size:18px">
+ <div id="admMsg" class="small" style="margin-top:6px"></div>
+ <div class="btns"><button class="btn" id="admGo">Sign in</button><button class="btn alt" id="admSkip">Skip</button></div>
+</div></div>
 <div id="callModal" hidden><div class="card">
  <h2>Welcome! What's your callsign?</h2>
  <div class="mut small">It's shown at the top of the app, used for your QRZ logging, and ignored when the app listens for callsigns (that's you!). It's the same callsign as in QRZ › Settings.</div>
@@ -397,6 +404,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
    <div class="mut small">Stored only on this phone and sent only to qrz.com. Not encrypted on the phone – if you share the phone, don't save your password.</div>
    <h3>My station</h3>
    <input id="stCall" placeholder="My callsign (used across the app)" autocapitalize="characters" style="text-transform:uppercase">
+   <div id="admRow" hidden class="small" style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="admState" class="mut"></span><button class="btn sm alt" id="admBtn">Admin sign in</button></div>
    <h3>Callsign lookups</h3>
    <input id="stUser" placeholder="QRZ username (your callsign)" autocapitalize="characters">
    <input id="stPass" type="password" placeholder="QRZ password" style="margin-top:8px">
@@ -1327,5 +1335,31 @@ var _old=store("my_call");if(_old&&!QZ.call){QZ.call=_old.toUpperCase();store("q
 $("stCall").value=QZ.call||"";meShow();hdRender();if(!myCall())askCall(true);
 emRender();scFill();setRepView(repView);obChips();updCheck(false);lgRetry();locate();
 var t0=store("tab");if(t0=="cb")t0="scan";showTab(t0&&$(t0)?t0:"gb3xo");
+
+/* --- v2.8: admin sign in - M0PTN / M7VPE + admin password (the password is only kept in Firebase, checked by the rules) --- */
+/* the admin callsign list lives in Firebase: settings/admins, field "calls" (e.g. M0PTN,M7VPE) - edit it in the console */
+var ADMIN_CALLS=loadJSON("adm_calls",["M0PTN","M7VPE"]);
+function admCallsLoad(){FB.get("settings","admins",function(d){if(!d||typeof d.calls!="string")return;
+ ADMIN_CALLS=d.calls.toUpperCase().split(",").map(function(c){return c.trim()}).filter(Boolean);store("adm_calls",JSON.stringify(ADMIN_CALLS));admUi()})}
+function admCallOk(){return ADMIN_CALLS.indexOf(baseCall(QZ.call))>=0}
+function admUi(){var on=admCallOk();$("admRow").style.display=on?"flex":"none";$("admRow").hidden=!on;if(!on)return;
+ $("admState").textContent=FB.admin?"✔ Signed in as admin on this device.":"Not signed in as admin.";$("admBtn").textContent=FB.admin?"Sign out of admin":"Admin sign in"}
+function admAsk(){if(!admCallOk()||FB.admin)return;$("admPw").value="";$("admMsg").textContent="";$("admMsg").style.color="";$("admModal").hidden=false;setTimeout(function(){$("admPw").focus()},100)}
+function admRecheck(){FB.hello(true);var n=0,t=setInterval(function(){admUi();if(++n>8)clearInterval(t)},700)}
+$("admGo").onclick=function(){var pw=$("admPw").value;if(!pw){$("admPw").focus();return}var m=$("admMsg");m.style.color="";m.textContent="Checking…";
+ FB.token(function(tok){if(!tok){m.textContent="Couldn't connect – check the internet connection.";return}
+  var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/adminClaims/"+FB.auth.uid,fields:FB.enc({call:baseCall(QZ.call),pw:pw})},
+   updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}]};
+  FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify(body)},function(ok,j,st){
+   if(ok){$("admPw").value="";m.style.color="#4ade80";m.textContent="Signed in as admin.";setTimeout(function(){$("admModal").hidden=true},900);admRecheck()}
+   else{m.style.color="#fca5a5";m.textContent=st==403?"Wrong password.":"Couldn't check right now – try again."}})})};
+$("admPw").onkeydown=function(e){if(e.key=="Enter")$("admGo").onclick()};
+$("admSkip").onclick=function(){$("admModal").hidden=true};
+$("admBtn").onclick=function(){if(!FB.admin){admAsk();return}
+ FB.del("adminClaims",FB.auth.uid,function(){admRecheck()})};
+var _cmSave28=$("cmSave").onclick;$("cmSave").onclick=function(){_cmSave28.apply(this,arguments);setTimeout(function(){if($("callModal").hidden){admUi();admAsk()}},2500)};
+var _cmAcc28=$("cmAccept").onclick;$("cmAccept").onclick=function(){_cmAcc28.apply(this,arguments);setTimeout(function(){admUi();admAsk()},2500)};
+$("stCall").addEventListener("change",function(){setTimeout(admUi,100)});
+setInterval(admUi,3000);setTimeout(admUi,1500);admCallsLoad();setInterval(admCallsLoad,30*60000);
 </script>
 </body></html>

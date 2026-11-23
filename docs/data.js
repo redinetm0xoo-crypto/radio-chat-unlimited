@@ -189,9 +189,12 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "2.7";
+var APP_VERSION = "2.8";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"2.8", date:"23 Nov 2026", items:[
+   "Admin sign in: when M0PTN or M7VPE is entered as the callsign the app asks for the admin password - works on any phone or PC (also under QRZ › Settings)",
+   "Admins can sign out of admin from QRZ › Settings"]},
  {v:"2.7", date:"23 Nov 2026", items:[
    "New: web version for Windows / Mac / iPhone – redinetm0xoo-crypto.github.io/radio-chat-unlimited – install it from Edge or Chrome (Install app icon in the address bar)",
    "Web version: same tabs and features; voice listening works in Edge and Chrome; GB3XO Listen plays while the page is open",
