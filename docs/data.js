@@ -180,6 +180,7 @@ var EMERG_DEFAULTS = [
   {label:"GB3XO repeater",   f:"433.0250",  mode:"FM",     notes:"Transmit 438.0250, CTCSS 77.0 Hz", prio:1},
   {label:"2m - Simplex",     f:"145.250",   mode:"FM",     notes:"67 Hz tone", prio:2},
   {label:"PMR - Ch 7",       f:"446.08125", mode:"FM",     notes:"Family use, for example", prio:3},
+  {label:"CB - Ch 7",        f:"27.66125",  mode:"FM",     notes:"UK 27/81 CB"},
   {label:"70cm - Simplex",   f:"433.400",   mode:"FM",     notes:""},
   {label:"2m DMR - Simplex", f:"145.275",   mode:"DMR",    notes:"CC1, TG9, TS1"},
   {label:"6m - Simplex",     f:"51.010",    mode:"FM",     notes:""},
@@ -190,9 +191,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.0";
+var APP_VERSION = "3.1";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.1", date:"23 Nov 2026", items:[
+   "Redditch Emergency: CB channel 7 added (27.66125 MHz FM, UK 27/81) - from a suggestion"]},
  {v:"3.0", date:"23 Nov 2026", items:[
    "Redditch Emergency priority list is now: 1st GB3XO repeater (listen 433.0250, transmit 438.0250, CTCSS 77.0 Hz), 2nd 2m Simplex 145.250, 3rd PMR channel 7",
    "PMR channel 7 note: family use, for example",
