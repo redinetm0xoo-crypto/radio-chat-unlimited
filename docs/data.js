@@ -177,10 +177,10 @@ var GB3XO = {
 };
 
 var EMERG_DEFAULTS = [
-  {label:"PMR - Ch 7",       f:"446.08125", mode:"FM",     notes:""},
+  {label:"2m - Simplex",     f:"145.250",   mode:"FM",     notes:"67 Hz tone", prio:1},
+  {label:"PMR - Ch 7",       f:"446.08125", mode:"FM",     notes:"",           prio:2},
   {label:"70cm - Simplex",   f:"433.400",   mode:"FM",     notes:""},
   {label:"2m DMR - Simplex", f:"145.275",   mode:"DMR",    notes:"CC1, TG9, TS1"},
-  {label:"2m - Simplex",     f:"145.250",   mode:"FM",     notes:"67 Hz tone"},
   {label:"6m - Simplex",     f:"51.010",    mode:"FM",     notes:""},
   {label:"10m - Simplex",    f:"28.330",    mode:"FM/USB", notes:""},
   {label:"20m - Simplex",    f:"14.130",    mode:"USB",    notes:""},
@@ -189,11 +189,14 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "2.8";
+var APP_VERSION = "2.9";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"2.9", date:"23 Nov 2026", items:[
+   "Redditch Emergency: priority frequencies to check first locally - 1st 2m Simplex 145.250 FM, 2nd PMR channel 7 - starred and boxed at the top",
+   "Admin tab: the current admins' callsigns are listed at the top"]},
  {v:"2.8", date:"23 Nov 2026", items:[
-   "Admin sign in: when M0PTN or M7VPE is entered as the callsign the app asks for the admin password - works on any phone or PC (also under QRZ › Settings)",
+   "Admin sign in: admins (callsigns on the admin list) are asked for the admin password when they enter their callsign - works on any phone or PC (also under QRZ › Settings)",
    "Admins can sign out of admin from QRZ › Settings"]},
  {v:"2.7", date:"23 Nov 2026", items:[
    "New: web version for Windows / Mac / iPhone – redinetm0xoo-crypto.github.io/radio-chat-unlimited – install it from Edge or Chrome (Install app icon in the address bar)",

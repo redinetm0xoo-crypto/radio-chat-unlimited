@@ -35,6 +35,7 @@ select,input{width:100%;background:#0b1424;color:var(--tx);border:1px solid var(
 .bar div{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.35)}
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
 table{width:100%;border-collapse:collapse;font-size:14px}
+.emt col{width:auto!important}@media(min-width:700px){.emt{table-layout:fixed}.emt col:nth-child(1){width:34%!important}.emt col:nth-child(2){width:17%!important}.emt col:nth-child(3){width:15%!important}.emt col:nth-child(4){width:28%!important}.emt col:nth-child(5){width:6%!important}}
 td,th{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase}
 .f{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -272,6 +273,8 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 
 <section id="adm" hidden>
  <div class="card">
+  <h2>Admins</h2>
+  <div id="adAdmins" style="font-weight:800;font-size:17px;color:#f5a524;margin-bottom:12px"></div>
   <h2>App users</h2>
   <div class="mut small">Everyone who has set a callsign and opened the app (only admin phones can see this).</div>
   <div class="row" style="margin-top:8px"><input id="adSearch" placeholder="Search callsign or name"><button class="btn sm" id="adRef" style="flex:none">Refresh</button></div>
@@ -283,7 +286,11 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <section id="emerg" hidden>
  <div class="card">
   <h2>Redditch Emergency Frequencies</h2>
-  <table><thead><tr><th>Name</th><th>MHz</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="emBody"></tbody></table>
+  <div id="emPrio" style="border:2px solid #f5a524;border-radius:12px;padding:8px 0;margin:8px 0 12px;background:#1c1405">
+   <div style="font-weight:800;color:#f5a524;padding:0 8px">★ Priority – check these first in Redditch</div>
+   <table class="emt"><colgroup><col style="width:34%"><col style="width:17%"><col style="width:15%"><col style="width:28%"><col style="width:6%"></colgroup><tbody id="emPrioBody"></tbody></table>
+  </div>
+  <table class="emt"><colgroup><col style="width:34%"><col style="width:17%"><col style="width:15%"><col style="width:28%"><col style="width:6%"></colgroup><thead><tr><th>Name</th><th>MHz</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="emBody"></tbody></table>
   <div class="info">PMR446 Channel 6 (446.06875 MHz) is used across the UK for nets – may be active.</div>
   <h3>Add frequency</h3>
   <div class="row"><input id="emL" placeholder="Name"><input id="emF" inputmode="decimal" placeholder="MHz"></div>
@@ -575,7 +582,7 @@ $("xoQrz").href=GB3XO.qrz;
 /* ---------- Redditch emergency ---------- */
 function emLoad(){
  var s=loadJSON("emerg2",null);if(s&&s.length!==undefined)return s;
- var list=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes}});
+ var list=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes,prio:x.prio}});
  var old=loadJSON("emerg",null); // carry over anything the user added in v1.0
  if(old&&old.length)old.forEach(function(r){if(EMERG_V10_DEFAULTS.indexOf(r.f+"|"+r.mode)<0)list.push({label:r.label||"",f:r.f,mode:r.mode,notes:""})});
  store("emerg2",JSON.stringify(list));return list}
@@ -583,9 +590,10 @@ var EM=emLoad();
 /* v2.4: built-in Redditch frequencies can't be deleted - put back any that were removed, keep the user's own after them */
 (function(){var key=function(r){return r.f+"|"+r.mode},dk=EMERG_DEFAULTS.map(key);
  var own=EM.filter(function(r){return dk.indexOf(key(r))<0}).map(function(r){r.own=1;return r});
- EM=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes}}).concat(own);store("emerg2",JSON.stringify(EM))})();
+ EM=EMERG_DEFAULTS.map(function(x){return{label:x.label,f:x.f,mode:x.mode,notes:x.notes,prio:x.prio}}).concat(own);store("emerg2",JSON.stringify(EM))})();
 function emSave(){store("emerg2",JSON.stringify(EM))}
-function emRender(){$("emBody").innerHTML=EM.map(function(r,i){return'<tr><td>'+esc(r.label)+'</td><td class="f">'+esc(r.f)+'</td><td>'+esc(r.mode)+'</td><td class="small">'+esc(r.notes)+'</td><td>'+(r.own?'<button class="x" data-i="'+i+'">✕</button>':'')+'</td></tr>'}).join("")}
+function emRow(r,i){return'<tr><td>'+(r.prio?'<b style="color:#f5a524">★ '+r.prio+'</b> ':'')+esc(r.label)+'</td><td class="f">'+esc(r.f)+'</td><td>'+esc(r.mode)+'</td><td class="small">'+esc(r.notes)+'</td><td>'+(r.own?'<button class="x" data-i="'+i+'">✕</button>':'')+'</td></tr>'}
+function emRender(){var P=[],R=[];EM.forEach(function(r,i){(r.prio?P:R).push(emRow(r,i))});$("emPrioBody").innerHTML=P.join("");$("emPrio").hidden=!P.length;$("emBody").innerHTML=R.join("")}
 $("emBody").onclick=function(e){var i=e.target.dataset.i;if(i!==undefined&&EM[+i]&&EM[+i].own){EM.splice(+i,1);emSave();emRender()}};
 $("emAdd").onclick=function(){var v=parseFloat($("emF").value.replace(",","."));if(!(v>0)){$("emMsg").textContent="Enter a frequency in MHz.";return}
  EM.push({label:$("emL").value||"",f:String(v),mode:$("emM").value,notes:$("emN").value||"",own:1});emSave();emRender();$("emF").value=$("emL").value=$("emN").value="";$("emMsg").textContent="Added."};
@@ -1343,7 +1351,7 @@ var ADMIN_CALLS=loadJSON("adm_calls",["M0PTN","M7VPE"]);
 function admCallsLoad(){FB.get("settings","admins",function(d){if(!d||typeof d.calls!="string")return;
  ADMIN_CALLS=d.calls.toUpperCase().split(",").map(function(c){return c.trim()}).filter(Boolean);store("adm_calls",JSON.stringify(ADMIN_CALLS));admUi()})}
 function admCallOk(){return ADMIN_CALLS.indexOf(baseCall(QZ.call))>=0}
-function admUi(){var on=admCallOk();$("admRow").style.display=on?"flex":"none";$("admRow").hidden=!on;if(!on)return;
+function admUi(){if($("adAdmins"))$("adAdmins").textContent=ADMIN_CALLS.join(", ");var on=admCallOk();$("admRow").style.display=on?"flex":"none";$("admRow").hidden=!on;if(!on)return;
  $("admState").textContent=FB.admin?"✔ Signed in as admin on this device.":"Not signed in as admin.";$("admBtn").textContent=FB.admin?"Sign out of admin":"Admin sign in"}
 function admAsk(){if(!admCallOk()||FB.admin)return;$("admPw").value="";$("admMsg").textContent="";$("admMsg").style.color="";$("admModal").hidden=false;setTimeout(function(){$("admPw").focus()},100)}
 function admRecheck(){FB.hello(true);var n=0,t=setInterval(function(){admUi();if(++n>8)clearInterval(t)},700)}
