@@ -541,7 +541,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
  <h2 style="margin:12px 4px 6px">App users on APRS</h2>
  <div id="apMapBox" style="position:relative;height:60vh;min-height:320px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#dde;margin-bottom:12px;touch-action:none"></div>
- <div class="mut small" style="margin:-6px 4px 12px">You (red dot) and app users found on APRS (orange). Drag to move, + / − to zoom, tap a callsign to see it on aprs.fi. Positions from <a href="https://aprs.fi/" target="_blank">aprs.fi</a>.</div>
+ <div class="mut small" style="margin:-6px 4px 12px">You (red dot) and app users found on APRS (orange). Updates every minute while this tab is open. Drag to move, + / − to zoom, tap a callsign to see it on aprs.fi. Positions from <a href="https://aprs.fi/" target="_blank">aprs.fi</a>.</div>
  <div class="card">
   <h2>aprs.fi API key</h2>
   <div class="mut small">The app has a built-in aprs.fi key (with aprs.fi's OK) to look up app users' APRS positions – callsign and -1 … -9 – for the Activity tab. Positions are shared with everyone and refreshed at most every 5 minutes. You only need your own key if the built-in one stops working (aprs.fi › My account › API key).</div>
@@ -600,7 +600,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 var WEB=!/RadioChatUnlimited\//.test(navigator.userAgent),RELAY="https://script.google.com/macros/s/AKfycbzIX4uGGMnfXtpO0d1urHHx84aHLsHf4ru-Pqm50xtnlxX_awxO_ogGO4DfPa9UF32UFQ/exec";
 if(WEB){
  /* sites that block requests from web pages go through the M0PTN relay (Google Apps Script) */
- (function(){var RX=/^https:\/\/(logbook\.qrz\.com\/api$|www\.hamqsl\.com\/solarxml\.php|retrieve\.pskreporter\.info\/query\?)/,o=XMLHttpRequest.prototype.open;
+ (function(){var RX=/^https:\/\/(logbook\.qrz\.com\/api$|www\.hamqsl\.com\/solarxml\.php|retrieve\.pskreporter\.info\/query\?|api\.aprs\.fi\/api\/get\?)/,o=XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open=function(m,u){if(RX.test(String(u)))arguments[1]=RELAY+"?u="+encodeURIComponent(u);return o.apply(this,arguments)}})();
  /* browser versions of the app's native commands */
  (function(){var np=window.prompt.bind(window),SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,want=false,hose=null;
@@ -1954,7 +1954,7 @@ $("apNow").onclick=function(){AP.lastRun=0;apRefresh(true)};
 function apMyPos(){if(lastPos)return{lat:lastPos.lat,lon:lastPos.lon,src:"you"};var me=QZ.call&&AP.pos[baseCall(QZ.call)];if(me)return{lat:me.lat,lon:me.lng,src:"your APRS ("+me.n+")"};return null}
 function apZoom(lat,w){var z=Math.log(156543.03*Math.cos(lat*Math.PI/180)*w/40234)/Math.LN2;return Math.max(3,Math.min(18,Math.round(z)))}
 function apAprsUrl(){var P=apMyPos()||homePos();return"https://aprs.fi/?lat="+(+P.lat).toFixed(4)+"&lng="+(+(P.lon!=null?P.lon:P.lng)).toFixed(4)+"&z="+apZoom(P.lat,Math.min(window.innerWidth||400,1000))+"&timerange=3600"}
-function apUsersUrl(){var L=Object.keys(AP.pos).filter(function(k){return AP.users[k]}).map(function(k){return AP.pos[k].n}).slice(0,20);return L.length?"https://aprs.fi/?call="+encodeURIComponent(L.join(","))+"&others=1&timerange=3600":apAprsUrl()}
+function apUsersUrl(){var L=Object.keys(AP.pos).filter(function(k){return apIsUser(k)}).map(function(k){return AP.pos[k].n}).slice(0,20);return L.length?"https://aprs.fi/?call="+encodeURIComponent(L.join(","))+"&others=1&timerange=3600":apAprsUrl()}
 function apCallUrl(n){return"https://aprs.fi/?call="+encodeURIComponent(n)+"&others=1&timerange=3600"}
 /* in-app map (OpenStreetMap tiles, like the Locator tab): me + app users found on APRS */
 var APM={c:null,z:null};
@@ -1964,11 +1964,11 @@ function apMap(){var box=$("apMapBox"),W=box.offsetWidth||380,H=box.offsetHeight
  for(var tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(var ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){if(ty<0||ty>=N)continue;
   h+='<img alt="" src="https://tile.openstreetmap.org/'+z+'/'+((tx%N+N)%N)+'/'+ty+'.png" style="left:'+Math.round(tx*256-x0)+'px;top:'+Math.round(ty*256-y0)+'px">'}
  var me=apMyPos(),n=0,myB=QZ.call?baseCall(QZ.call):"";
- Object.keys(AP.pos).forEach(function(c){if(!AP.users[c]||c==myB)return;var p=AP.pos[c],q=mPx(p.lat,p.lng,z),x=q.x-x0,y=q.y-y0;if(x<-60||y<-20||x>W+60||y>H+30)return;n++;
-  h+='<a class="apm" href="'+esc(apCallUrl(p.n))+'" target="_blank" style="left:'+Math.round(x)+'px;top:'+Math.round(y)+'px" title="'+esc(p.n+" · "+apAge(Date.now()/1000-p.t))+'">'+esc(p.n)+'</a>'});
+ Object.keys(AP.pos).forEach(function(c){if(!apIsUser(c)||c==myB)return;var p=AP.pos[c],q=mPx(p.lat,p.lng,z),x=q.x-x0,y=q.y-y0;if(x<-60||y<-20||x>W+60||y>H+30)return;n++;
+  h+='<a class="apm" href="'+esc(apCallUrl(p.n))+'" target="_blank" style="left:'+Math.round(x)+'px;top:'+Math.round(y)+'px" title="'+esc(p.n+" · "+apAge(Date.now()/1000-p.t))+'">'+esc(p.n)+' <span style="font-weight:600;opacity:.75">'+apAge(Date.now()/1000-p.t).replace(" ago","")+'</span></a>'});
  if(me){var d=mPx(me.lat,me.lon,z);h+='<span class="ldot" style="left:'+Math.round(d.x-x0)+'px;top:'+Math.round(d.y-y0)+'px"></span>'}
  h+='<div class="apz"><button data-apz="1">+</button><button data-apz="-1">−</button></div><div class="attr">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</div>';box.innerHTML=h;
- var tot=Object.keys(AP.pos).filter(function(c){return AP.users[c]&&c!=myB}).length;
+ var tot=Object.keys(AP.pos).filter(function(c){return apIsUser(c)&&c!=myB}).length;
  $("apWho").textContent=(me?"":"Location is off – centred on Redditch. ")+tot+" other app user"+(tot==1?"":"s")+" found on APRS"+(tot?" ("+n+" in this view).":".")}
 $("apMapBox").addEventListener("click",function(e){var z=e.target.dataset&&e.target.dataset.apz;if(!z)return;APM.z=Math.max(3,Math.min(18,APM.z+(+z)));apMap()});
 (function(){var box=$("apMapBox"),st=null;box.addEventListener("pointerdown",function(e){if(e.target.closest(".apz,.apm,.attr"))return;st={x:e.clientX,y:e.clientY,c:APM.c};box.setPointerCapture(e.pointerId)});
@@ -1980,14 +1980,25 @@ function apShowCall(name){window.open(apCallUrl(name),"_blank")}
 /* app users: users/{CALL} written by each app once a day */
 function apRegister(){var c=QZ.call&&baseCall(QZ.call);if(!c||!/^[A-Z0-9]{3,12}$/.test(c))return;var k="ap_reg_"+c,t=+store(k)||0;if(Date.now()-t<864e5)return;
  FB.token(function(tok){if(!tok)return;fbCommit([{update:{name:fbDoc("users/"+c),fields:FB.enc({call:c,name:(store("my_name")||"").slice(0,60)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){if(ok)store(k,String(Date.now()))})})}
-function apLoadFb(cb){var n=2;function done(){if(--n==0)cb&&cb()}
+/* known app users = anyone who opened v3.8+ (users) + admins + everyone seen in the activity log, suggestions, posts and nets */
+AP.known={};AP.knownAt=0;
+function apAddKnown(c,name){c=baseCall(c);if(!/^([A-Z]{1,2}|\d[A-Z])\d{1,2}[A-Z]{1,4}$/.test(c))return;if(!AP.known[c])AP.known[c]={call:c,name:""};if(name&&!AP.known[c].name)AP.known[c].name=String(name).slice(0,60)}
+function apLoadKnown(cb){if(Date.now()-AP.knownAt<10*60e3)return cb&&cb();var L=["settings/admins","activitylog?orderBy=at%20desc&pageSize=300","suggestions?pageSize=300","announcements?pageSize=100","forsale?pageSize=100","nets?pageSize=20","operators?pageSize=300"],n=L.length;
+ L.forEach(function(q){FB.json(FB.base+"/"+q+(q.indexOf("?")<0?"?":"&")+"key="+FB.key,{cache:"no-store"},function(ok,j){if(ok&&j){var D=j.documents?j.documents.map(FB.dec):(j.fields?[FB.dec(j)]:[]);
+   D.forEach(function(d){if(d.calls)String(d.calls).split(",").forEach(function(c){apAddKnown(c.trim())});if(d.call&&q.indexOf("operators")!=0)apAddKnown(d.call,d.name);if(d.by&&q.indexOf("nets")==0)apAddKnown(d.by);
+    if(d.rows){try{JSON.parse(d.rows).forEach(function(r){apAddKnown(r.call||r.c,r.name||r.n)})}catch(e){}}})}
+  if(--n==0){AP.knownAt=Date.now();cb&&cb()}})})}
+function apIsUser(c){return!!(AP.users[c]||AP.known[c])}
+function apUserName(c){return(AP.users[c]&&AP.users[c].name)||(AP.known[c]&&AP.known[c].name)||""}
+function apLoadFb(cb){var n=3;function done(){if(--n==0)cb&&cb()}
+ apLoadKnown(done);
  FB.json(FB.base+"/users?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.users={};((j&&j.documents)||[]).map(FB.dec).forEach(function(u){if(u.call)AP.users[u.call]=u})}done()});
  FB.json(FB.base+"/aprs?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.pos={};AP.posAt={};((j&&j.documents)||[]).map(FB.dec).forEach(function(d){AP.posAt[d.call]=d.at;try{var p=d.pos?JSON.parse(d.pos):null;if(p&&p.lat!=null)AP.pos[d.call]=p}catch(e){}})}done()})}
 /* look up every app user (and anyone showing on air) on aprs.fi: CALL, CALL-1 ... CALL-9, newest position wins; 2 callsigns per request (20 names) */
-function apRefresh(force){var key=apKey();apLoadFb(function(){acRender();
- if(!key||AP.busy)return;if(!force&&Date.now()-AP.lastRun<5*60e3)return;
- var calls={};Object.keys(AP.users).forEach(function(c){calls[c]=1});(AC.list||[]).forEach(function(d){var b=baseCall(d.call);if(/^[A-Z0-9]{3,12}$/.test(b))calls[b]=1});if(QZ.call)calls[baseCall(QZ.call)]=1;
- var L=Object.keys(calls).filter(function(c){return force||!AP.posAt||!AP.posAt[c]||Date.now()-new Date(AP.posAt[c])>5*60e3});if(!L.length)return;
+function apRefresh(force){var key=apKey(),maxAge=curTab=="aprs"?60e3:5*60e3;apLoadFb(function(){acRender();
+ if(!key||AP.busy)return;if(!force&&Date.now()-AP.lastRun<(curTab=="aprs"?50e3:5*60e3))return;
+ var calls={};Object.keys(AP.users).concat(Object.keys(AP.known)).forEach(function(c){calls[c]=1});(AC.list||[]).forEach(function(d){var b=baseCall(d.call);if(/^[A-Z0-9]{3,12}$/.test(b))calls[b]=1});if(QZ.call)calls[baseCall(QZ.call)]=1;
+ var L=Object.keys(calls).filter(function(c){return force||!AP.posAt||!AP.posAt[c]||Date.now()-new Date(AP.posAt[c])>maxAge});if(!L.length)return;
  AP.busy=true;AP.lastRun=Date.now();store("ap_last",String(AP.lastRun));$("apMsg").textContent="Looking up "+L.length+" callsign"+(L.length>1?"s":"")+" on aprs.fi…";
  var batches=[];for(var i=0;i<L.length;i+=2)batches.push(L.slice(i,i+2));var found=0,fail=0,bi=0;
  (function next(){if(bi>=batches.length){AP.busy=false;$("apMsg").textContent=fail?"aprs.fi lookup failed ("+fail+" of "+batches.length+") – check the key or try later.":"✓ Checked "+L.length+" callsign"+(L.length>1?"s":"")+" (each with -1 … -9): "+found+" on APRS.";apLoadFb(function(){acRender()});return}
@@ -2012,13 +2023,14 @@ var _acRender38=acRender;acRender=function(){_acRender38();hdFreqs();if(curTab==
  Array.prototype.forEach.call(document.querySelectorAll("#acNow .post"),function(el){var b=el.querySelector("b");if(!b||el.querySelector("[data-apcall]"))return;var h=apProxHtml(b.textContent);if(h)el.querySelector(".by").insertAdjacentHTML("beforebegin",h)});
  /* app users on APRS within 25 miles who are NOT already showing on air */
  var me=apMyPos(),onAir={},myB=QZ.call?baseCall(QZ.call):"";(AC.list||[]).forEach(function(d){onAir[baseCall(d.call)]=1});
- var near=Object.keys(AP.pos).filter(function(c){return c!=myB&&!onAir[c]&&AP.users[c]}).map(function(c){var r=apProx(c);r.c=c;return r}).filter(function(r){return r.mi!=null&&r.mi<=AP.near&&r.age<86400}).sort(function(a,b){return a.mi-b.mi});
- $("apNear").innerHTML=(near.length?'<h2 style="margin:12px 4px 6px">Nearby on APRS <span class="mut small">(app users within '+AP.near+' miles)</span></h2>'+near.map(function(r){var u=AP.users[r.c]||{};
+ var near=Object.keys(AP.pos).filter(function(c){return c!=myB&&!onAir[c]&&apIsUser(c)}).map(function(c){var r=apProx(c);r.c=c;return r}).filter(function(r){return r.mi!=null&&r.mi<=AP.near&&r.age<86400}).sort(function(a,b){return a.mi-b.mi});
+ $("apNear").innerHTML=(near.length?'<h2 style="margin:12px 4px 6px">Nearby on APRS <span class="mut small">(app users within '+AP.near+' miles)</span></h2>'+near.map(function(r){var u={name:apUserName(r.c)};
    return'<div class="post"><div class="fq" style="font-size:20px">'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' <span style="font-size:15px">miles '+r.dir+'</span></div><div><b>'+esc(r.c)+'</b>'+(u.name?' – '+esc(u.name):'')+' <span class="mut small">· APRS '+esc(r.p.n)+'</span></div>'+(r.p.c?'<div class="small mut">'+esc(r.p.c)+'</div>':'')+'<div class="by">'+apAge(r.age)+'</div>'+
    '<div class="btns" style="margin-top:6px"><a class="btn sm alt" href="'+esc(apCallUrl(r.p.n))+'" target="_blank" data-apcall="'+esc(r.p.n)+'">📍 Show on aprs.fi ↗</a><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(r.c)+'">'+esc(r.c)+' on QRZ</a></div></div>'}).join(""):"")+
   (me?"":'<div class="mut small" style="text-align:center;margin:6px 0">Turn location on (top right) to see how far away people are.</div>')};
 var _acLoad38=acLoad;acLoad=function(){_acLoad38();if(curTab=="act")apRefresh(false)};
-var _showTab38=showTab;showTab=function(t){_showTab38(t);if(t=="aprs"){setTimeout(apMap,30);apRefresh(false)}if(t=="act")apRefresh(false)};
+var _showTab38=showTab;showTab=function(t){_showTab38(t);if(t=="aprs"){setTimeout(apMap,30);apRefresh(false)}
+ clearInterval(AP.live);if(t=="aprs")AP.live=setInterval(function(){if(!document.hidden&&curTab=="aprs")apRefresh(false)},60e3);if(t=="act")apRefresh(false)};
 setTimeout(apRegister,4000);var _setMyCall38=setMyCall;setMyCall=function(c){_setMyCall38(c);setTimeout(apRegister,500)};
 if(curTab=="act")setTimeout(function(){apRefresh(false)},3000);
 </script>
