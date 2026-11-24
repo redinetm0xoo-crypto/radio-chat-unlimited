@@ -35,6 +35,8 @@ select,input{width:100%;background:#0b1424;color:var(--tx);border:1px solid var(
 .bar div{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.35)}
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
 table{width:100%;border-collapse:collapse;font-size:14px}
+.ntr{display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:var(--card,#111c33);touch-action:pan-y}.ntr.cur{background:rgba(34,197,94,.15);border-left:4px solid #22c55e}.ntr.out{background:rgba(239,68,68,.12)}.ntr.out .nc{color:#ef4444}.ntr.drag{opacity:.85;box-shadow:0 6px 18px rgba(0,0,0,.5);position:relative;z-index:5}
+.nth{cursor:grab;font-size:20px;padding:4px 6px;touch-action:none;user-select:none;color:#94a3b8}.ntb{flex:1;min-width:0}.nc{font-weight:800;font-size:17px}.ntr .x2{background:none;border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:4px 8px;font-size:12px}
 .f.acme{outline:2px solid #22c55e;outline-offset:2px;border-radius:4px;background:rgba(34,197,94,.12)}.acdot{color:#22c55e;font-size:12px;margin-left:4px;cursor:pointer}
 #acBar{position:fixed;left:8px;right:8px;bottom:10px;z-index:60;background:#0f1a30;border:2px solid #22c55e;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;box-shadow:0 6px 24px rgba(0,0,0,.5)}#acBar[hidden]{display:none}#acBarTx{flex:1 1 200px;font-weight:700}
 .acc{border-left:4px solid #22c55e}.acc .fq{font-size:22px;font-weight:800;color:#22c55e}
@@ -134,7 +136,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -174,6 +176,24 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <div id="acNow"></div>
  <div class="mut small" id="acSrc" style="text-align:center;margin:6px 0 10px"></div>
  <div class="card"><h2>Activity log</h2><div id="acLog"></div></div>
+</section>
+
+<section id="net" hidden>
+ <div class="chips" id="ntSel"></div>
+ <div class="card">
+  <div class="row"><label class="small mut" style="flex:1">Frequency (MHz)<input id="ntFreq" inputmode="decimal" maxlength="12" placeholder="e.g. 145.250"></label>
+  <label class="small mut" style="flex:1">Started<input id="ntStart" maxlength="20" placeholder="e.g. 20:00"></label></div>
+  <div class="btns"><button class="btn sm alt" id="ntNow">Started now</button><button class="btn sm alt" id="ntSaveHd">Save frequency / time</button></div>
+  <div class="row" style="margin-top:10px"><input id="ntCall" maxlength="12" placeholder="Callsign" autocapitalize="characters" style="text-transform:uppercase;font-size:18px;flex:2"><button class="btn" id="ntAdd">＋ Add</button></div>
+  <div id="ntMsg" class="small" style="margin-top:6px"></div>
+ </div>
+ <div class="card" style="padding:6px 0">
+  <div id="ntTurn" style="padding:4px 12px 8px"></div>
+  <div id="ntRows"></div>
+  <div class="btns" style="padding:0 12px"><button class="btn" id="ntNext">▶ Next station</button><button class="btn sm alt" id="ntEmpty">Empty the list</button></div>
+  <div class="mut small" style="padding:6px 12px">Go down the list, then back to the top. Drag ☰ to change the order. <b>Out</b> moves someone to the bottom in red (drag them back up, or tap Back). ✕ removes them. Names and locations come from QRZ – or tap ✎ to add them; they're remembered for next time. Everyone using the app sees the same list.</div>
+ </div>
+ <div class="mut small" id="ntSrc" style="text-align:center;margin:6px 0"></div>
 </section>
 
 <section id="band">
@@ -1680,5 +1700,78 @@ $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t
 setInterval(function(){if(!document.hidden&&(curTab=="act"||AC.list.length))acLoad()},30000);
 document.addEventListener("visibilitychange",function(){if(!document.hidden)acLoad()});
 acLoad();
+
+/* ===================== v3.4: Net Order ===================== */
+var NT_COUNT=3,NT={sel:store("net_sel")||"net1",docs:{},busy:false,edit:null,drag:null};
+function ntRaw(id,cb){FB.json(FB.base+"/nets/"+id+"?key="+FB.key,{cache:"no-store"},function(ok,j,st){
+ if(!ok&&st!=404)return cb(false);var o={id:id,freq:"",started:"",rows:[],cur:"",by:"",at:"",ut:null};
+ if(ok&&j&&j.fields){var f=FB.dec(j);o.freq=f.freq||"";o.started=f.started||"";o.cur=f.cur||"";o.by=f.by||"";o.at=f.at||"";try{o.rows=JSON.parse(f.rows||"[]")}catch(e){o.rows=[]}o.ut=j.updateTime}cb(true,o)})}
+function ntAll(cb){FB.json(FB.base+"/nets?pageSize=50&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)((j&&j.documents)||[]).forEach(function(d){var f=FB.dec(d),r=[];try{r=JSON.parse(f.rows||"[]")}catch(e){}
+  NT.docs[f.id]={id:f.id,freq:f.freq||"",started:f.started||"",rows:r,cur:f.cur||"",by:f.by||"",at:f.at||"",ut:d.updateTime}});cb&&cb(ok)})}
+function ntMutate(fn,tries){tries=tries||0;if(!QZ.call){$("ntMsg").innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return}
+ var id=NT.sel;ntRaw(id,function(ok,o){if(!ok){$("ntMsg").textContent="No connection.";return}if(fn(o)===false)return;
+  var w={update:{name:fbDoc("nets/"+id),fields:FB.enc({freq:(o.freq||"").slice(0,12),started:(o.started||"").slice(0,20),rows:JSON.stringify(o.rows).slice(0,20000),cur:(o.cur||"").slice(0,12),by:QZ.call.slice(0,12)})},
+   updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}],currentDocument:o.ut?{updateTime:o.ut}:{exists:false}};
+  fbCommit([w],function(ok2,st){if(ok2){NT.docs[id]=o;ntRender();ntLoad();return}
+   if((st==400||st==409||st==412)&&tries<3)return ntMutate(fn,tries+1);$("ntMsg").textContent="Couldn't save ("+(st==403?"not allowed":"error "+st)+").";ntLoad()})})}
+function ntLoad(){if(NT.drag||NT.edit)return;ntRaw(NT.sel,function(ok,o){if(!ok){$("ntSrc").textContent="Can't load – no internet?";return}NT.docs[NT.sel]=o;ntRender();
+ $("ntSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+(o.by?" · last change by "+o.by+" "+fbWhen(o.at):"")+" · refreshes every 8 s"})}
+function ntSelRender(){var h="";for(var i=1;i<=NT_COUNT;i++){var id="net"+i,d=NT.docs[id],n=d?d.rows.filter(function(r){return!r.o}).length:0;
+ h+='<button data-n="'+id+'"'+(id==NT.sel?' class="on"':'')+'>Net '+i+(d&&d.freq?' · '+esc(d.freq):'')+(n?' ('+n+')':'')+'</button>'}$("ntSel").innerHTML=h}
+function ntRender(){ntSelRender();var o=NT.docs[NT.sel]||{rows:[],cur:"",freq:"",started:""};
+ if(document.activeElement!=$("ntFreq"))$("ntFreq").value=o.freq||"";if(document.activeElement!=$("ntStart"))$("ntStart").value=o.started||"";
+ var live=o.rows.filter(function(r){return!r.o}),cur=live.filter(function(r){return r.c==o.cur})[0];
+ $("ntTurn").innerHTML=live.length?(cur?'Over to: <b style="font-size:20px;color:#22c55e">'+esc(cur.c)+'</b>'+(cur.n?' – '+esc(cur.n):''):'<span class="mut">Tap ▶ Next station to start at the top.</span>'):'<span class="mut">No stations yet – add callsigns above.</span>';
+ $("ntRows").innerHTML=o.rows.map(function(r,i){var ed=NT.edit==r.c;return'<div class="ntr'+(r.o?' out':'')+(r.c==o.cur&&!r.o?' cur':'')+'" data-i="'+i+'"><span class="nth" data-h="'+i+'">☰</span>'+
+  '<div class="ntb"><span class="nc">'+(r.c==o.cur&&!r.o?'▶ ':'')+esc(r.c)+'</span> <span class="small">'+esc(r.n||"")+'</span>'+(r.l?'<div class="mut small">📍 '+esc(r.l)+'</div>':'')+
+  (ed?'<div class="row" style="margin-top:6px"><input id="ntEN" maxlength="60" placeholder="Name" value="'+esc(r.n||"")+'"><input id="ntEL" maxlength="60" placeholder="Location" value="'+esc(r.l||"")+'"></div><div class="btns"><button class="btn sm" data-es="'+i+'">Save</button><button class="btn sm alt" data-ec="1">Cancel</button></div>':'')+'</div>'+
+  (ed?'':'<button class="x2" data-ed="'+i+'">✎</button>'+(r.o?'<button class="x2" data-back="'+i+'">Back</button>':'<button class="x2" data-out="'+i+'">Out</button>')+'<button class="x2" data-rm="'+i+'" style="color:#ef4444">✕</button>')+'</div>'}).join("")}
+function ntFirstOut(rows){for(var i=0;i<rows.length;i++)if(rows[i].o)return i;return rows.length}
+function ntLookup(call,cb){var bc=baseCall(call);FB.get("operators",bc,function(d){if(d&&(d.name||d.loc))return cb(d.name||"",d.loc||"");
+ qzLogin(function(k){if(!k)return cb("","");post("https://xmldata.qrz.com/xml/current/",{s:k,callsign:bc},function(tx){if(!tx)return cb("","");var x=new DOMParser().parseFromString(tx,"text/xml");if(!xget(x,"call"))return cb("","");
+  var n=((xget(x,"fname")||"")+" "+(xget(x,"name")||"")).trim().toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase()}),l=[xget(x,"addr2"),xget(x,"state")].filter(Boolean).join(", ");cb(n,l)})})})}
+$("ntSel").onclick=function(e){var n=e.target.closest("button");if(!n||!n.dataset.n)return;NT.sel=n.dataset.n;store("net_sel",NT.sel);NT.edit=null;ntRender();ntLoad()};
+$("ntAdd").onclick=function(){var c=$("ntCall").value.trim().toUpperCase().replace(/\s+/g,"");if(!/^[A-Z0-9\/]{3,12}$/.test(c)){$("ntMsg").textContent="Enter a callsign.";$("ntCall").focus();return}
+ $("ntMsg").textContent="Looking up "+c+"…";ntLookup(c,function(n,l){ntMutate(function(o){if(o.rows.some(function(r){return r.c==c})){$("ntMsg").textContent=c+" is already in this net.";return false}
+  var r={c:c,n:n.slice(0,40),l:l.slice(0,50),o:0};o.rows.splice(ntFirstOut(o.rows),0,r)});$("ntMsg").textContent=n?"✓ Added "+c+" – "+n:"✓ Added "+c+" (not found on QRZ – tap ✎ to add a name)";$("ntCall").value=""})};
+$("ntCall").onkeydown=function(e){if(e.key=="Enter")$("ntAdd").onclick()};
+$("ntNow").onclick=function(){$("ntStart").value=new Date().toTimeString().slice(0,5);$("ntSaveHd").onclick()};
+$("ntSaveHd").onclick=function(){var f=$("ntFreq").value.trim(),t=$("ntStart").value.trim();ntMutate(function(o){o.freq=f;o.started=t});$("ntMsg").textContent="✓ Saved."};
+$("ntNext").onclick=function(){ntMutate(function(o){var live=o.rows.filter(function(r){return!r.o});if(!live.length)return false;var i=live.map(function(r){return r.c}).indexOf(o.cur);o.cur=live[(i+1)%live.length].c})};
+$("ntEmpty").onclick=function(){var b=this;if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Tap again to empty Net "+NT.sel.slice(3);setTimeout(function(){delete b.dataset.sure;b.textContent="Empty the list"},4000);return}
+ delete b.dataset.sure;b.textContent="Empty the list";ntMutate(function(o){o.rows=[];o.cur="";o.started=""})};
+$("ntRows").onclick=function(e){var t=e.target,d=t.dataset,i;
+ if(d.out!==undefined){i=+d.out;ntMutate(function(o){var r=o.rows[i];if(!r)return false;var live=o.rows.filter(function(x){return!x.o});
+  if(o.cur==r.c){var k=live.indexOf(r);o.cur=live.length>1?live[(k+1)%live.length].c:""}o.rows.splice(i,1);r.o=1;o.rows.push(r)});return}
+ if(d.back!==undefined){i=+d.back;ntMutate(function(o){var r=o.rows[i];if(!r)return false;o.rows.splice(i,1);r.o=0;o.rows.splice(ntFirstOut(o.rows),0,r)});return}
+ if(d.rm!==undefined){if(!t.dataset.sure){t.dataset.sure="1";t.textContent="Remove?";setTimeout(function(){if(t.isConnected){delete t.dataset.sure;t.textContent="✕"}},3500);return}
+  i=+d.rm;ntMutate(function(o){var r=o.rows[i];if(!r)return false;if(o.cur==r.c){var live=o.rows.filter(function(x){return!x.o}),k=live.indexOf(r);o.cur=live.length>1?live[(k+1)%live.length].c:""}o.rows.splice(i,1)});return}
+ if(d.ed!==undefined){NT.edit=(NT.docs[NT.sel].rows[+d.ed]||{}).c;ntRender();return}
+ if(d.ec){NT.edit=null;ntRender();return}
+ if(d.es!==undefined){i=+d.es;var n=$("ntEN").value.trim().slice(0,40),l=$("ntEL").value.trim().slice(0,50),c=NT.edit;NT.edit=null;
+  fbCommit([{update:{name:fbDoc("operators/"+baseCall(c)),fields:FB.enc({call:baseCall(c),name:n,loc:l,by:(QZ.call||"").slice(0,12)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){});
+  ntMutate(function(o){o.rows.forEach(function(r){if(r.c==c){r.n=n;r.l=l}})})}};
+/* drag to reorder (mouse + touch) */
+$("ntRows").addEventListener("pointerdown",function(e){var h=e.target.closest(".nth");if(!h)return;e.preventDefault();var row=h.closest(".ntr"),rows=[].slice.call($("ntRows").children);
+ NT.drag={row:row,from:+row.dataset.i,y0:e.clientY,mids:rows.map(function(r){var b=r.getBoundingClientRect();return b.top+b.height/2}),pid:e.pointerId};row.classList.add("drag");try{h.setPointerCapture(e.pointerId)}catch(x){}});
+$("ntRows").addEventListener("pointermove",function(e){if(!NT.drag)return;NT.drag.dy=e.clientY-NT.drag.y0;NT.drag.row.style.transform="translateY("+NT.drag.dy+"px)"});
+function ntDrop(){var g=NT.drag;if(!g)return;NT.drag=null;g.row.style.transform="";g.row.classList.remove("drag");var c=g.mids[g.from]+(g.dy||0),to=0;
+ g.mids.forEach(function(m,k){if(k!=g.from&&m<c)to++});if(to==g.from){ntRender();return}
+ ntMutate(function(o){var r=o.rows[g.from];if(!r)return false;o.rows.splice(g.from,1);o.rows.splice(to,0,r);
+  if(r.o&&o.rows.slice(to+1).some(function(x){return!x.o}))r.o=0;
+  o.rows=o.rows.filter(function(x){return!x.o}).concat(o.rows.filter(function(x){return x.o}))})}
+$("ntRows").addEventListener("pointerup",ntDrop);$("ntRows").addEventListener("pointercancel",ntDrop);
+/* Activity: "Show net" for stations in a net */
+function ntNetsOf(call){var b=baseCall(call),L=[];Object.keys(NT.docs).sort().forEach(function(id){var d=NT.docs[id];if(d.rows.some(function(r){return!r.o&&baseCall(r.c)==b}))L.push(id)});return L}
+var _acRender34=acRender;acRender=function(){_acRender34();
+ Array.prototype.forEach.call($("acNow").querySelectorAll(".post"),function(p,k){var me=FB.auth&&FB.auth.uid,O=AC.list.filter(function(d){return d.id!=me}),d=O[k];if(!d)return;
+  ntNetsOf(d.call).forEach(function(id){p.querySelector(".btns").insertAdjacentHTML("beforeend",'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>')})});
+ var mine=QZ.call?ntNetsOf(QZ.call):[];if(mine.length)$("acMeNow").insertAdjacentHTML("beforeend",' '+mine.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join(" "))};
+document.addEventListener("click",function(e){var id=e.target.dataset&&e.target.dataset.shownet;if(!id)return;NT.sel=id;store("net_sel",id);showTab("net")});
+var _acLoad34=acLoad;acLoad=function(){_acLoad34();ntAll(function(){if(curTab=="act")acRender()})};
+var _showTab34=showTab;showTab=function(t){_showTab34(t);if(t=="net"){ntAll(function(){ntSelRender()});ntLoad()}};
+$("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
+setInterval(function(){if(!document.hidden&&curTab=="net")ntLoad()},8000);
+ntAll(function(){if(curTab=="act")acRender()});
 </script>
 </body></html>

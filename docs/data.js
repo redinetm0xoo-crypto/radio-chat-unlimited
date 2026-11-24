@@ -199,9 +199,12 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.3";
+var APP_VERSION = "3.4";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.4", date:"24 Nov 2026", items:[
+   "New Net tab: shared net order for up to 3 nets at once – frequency and start time, add callsigns (names and locations from QRZ, or add your own – remembered for next time), drag to reorder, Out / Back / remove, empty the list, and Next station to go round the list",
+   "Activity tab: 'Show net' button for anyone who is in a net"]},
  {v:"3.3", date:"24 Nov 2026", items:[
    "New Activity tab (first tab, opens when you start the app): show everyone the frequency and mode you're on, see who else is on air, and a log of who was on what",
    "Tap any frequency in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO) to show you're on it – your frequency gets a green box, and a green dot shows where others are",
