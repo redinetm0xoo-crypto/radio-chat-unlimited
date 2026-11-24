@@ -123,6 +123,11 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 .fs{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.fs img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:#0b1424;flex:none}
 .fs .pr{color:#f5a524;font-weight:800;font-size:17px}
 #tabs button .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:5px;vertical-align:middle}
+.exq{font-size:16px;font-weight:700;margin:6px 0 10px;line-height:1.35}
+.exo{display:block;width:100%;text-align:left;background:#0b1424;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:11px 12px;margin:6px 0;font-size:15px}
+.exo.ok{border-color:#22c55e;background:rgba(34,197,94,.15)}.exo.no{border-color:#ef4444;background:rgba(239,68,68,.15)}
+#exTest:disabled{opacity:.4}
+.exbar{height:8px;background:#0b1424;border-radius:4px;overflow:hidden}.exbar i{display:block;height:100%;background:var(--acc)}
 </style></head>
 <body>
 <header>
@@ -136,7 +141,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -499,6 +504,23 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
 </section>
 
+<section id="exam" hidden>
+ <div class="card">
+  <h2>Exam practice</h2>
+  <div class="seg" id="exLv"><button data-l="F" class="on">Foundation</button><button data-l="I">Intermediate</button><button data-l="A">Full</button><button data-l="*">All</button></div>
+  <label class="small mut">Section<select id="exTp"></select></label>
+  <div class="btns" style="margin-top:10px"><button class="btn" id="exRand">🎲 Random question</button><button class="btn alt" id="exTest">📝 Practice test</button></div>
+  <div class="mut small" id="exInfo" style="margin-top:6px"></div>
+ </div>
+ <div class="card" id="exCard" hidden></div>
+ <div class="card">
+  <h2>Your scores</h2>
+  <div id="exStats"></div>
+  <div class="mut small" style="margin-top:8px">Questions are written for this app to match the UK Foundation, Intermediate and Full syllabus – they are not the RSGB's own exam questions. Official syllabus and specimen papers: <a href="https://rsgb.org/main/?p=20290" target="_blank">rsgb.org – Exam specifications</a>.</div>
+  <div class="btns"><button class="btn sm alt" id="exReset">Reset my scores</button></div>
+ </div>
+</section>
+
 <section id="set" hidden>
  <div class="card">
   <h2>Backup &amp; restore</h2>
@@ -581,6 +603,7 @@ if(WEB){
 <script src="repeaters.js"></script>
 <script src="repeaters_db.js"></script>
 <script src="world.js"></script>
+<script src="exam.js"></script>
 <script>
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -1837,5 +1860,56 @@ $("acFreq").addEventListener("input",function(){var v=acFreqOf(this.value);$("ac
 document.querySelector("main").addEventListener("click",function(){setTimeout(function(){if(!$("acBar").hidden&&acPend&&!/ · /.test($("acBarTx").textContent)){var n=acName(acPend.f);if(n)$("acBarTx").textContent="📻 "+acPend.f+" MHz "+acPend.m+" · "+n+" – show everyone you're on this?"}},0)},true);
 $("acGo").textContent="📡 Show I'm on this frequency";
 if(curTab=="act")acRender();
+</script>
+<script>
+/* --- v3.7: Exam practice (questions in exam.js) --- */
+var EX={lv:store("ex_lv")||"F",tp:store("ex_tp")||"",mode:null,cur:null,test:null,recent:[],stats:loadJSON("ex_stats",{})};
+function exPool(){return EXAM.filter(function(x){return(EX.lv=="*"||x.l==EX.lv)&&(!EX.tp||x.t==EX.tp)})}
+function exShuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function exSetup(){Array.prototype.forEach.call($("exLv").children,function(b){b.classList.toggle("on",b.dataset.l==EX.lv)});
+ var sel=$("exTp");sel.innerHTML='<option value="">All sections</option>'+Object.keys(EXAM_TOPICS).map(function(k){var n=EXAM.filter(function(x){return(EX.lv=="*"||x.l==EX.lv)&&x.t==k}).length;return n?'<option value="'+k+'">'+esc(EXAM_TOPICS[k].n)+' ('+n+')</option>':''}).join("");
+ if(EX.tp&&!sel.querySelector('option[value="'+EX.tp+'"]'))EX.tp="";sel.value=EX.tp;
+ var n=exPool().length,L=EXAM_LEVELS[EX.lv];
+ $("exInfo").textContent=n+" question"+(n==1?"":"s")+" in this choice."+(L?" Real "+L.n+" exam: "+L.q+" questions, pass mark "+L.pass+" ("+Math.round(L.pass/L.q*100)+"%).":"");
+ $("exTest").disabled=!L;$("exTest").title=L?"":"Pick a level for a practice test";exStatsRender()}
+$("exLv").onclick=function(e){var l=e.target.dataset.l;if(!l)return;EX.lv=l;store("ex_lv",l);exSetup()};
+$("exTp").onchange=function(){EX.tp=this.value;store("ex_tp",EX.tp);exSetup()};
+function exRecord(x,ok){var k=x.l+"."+x.t,s=EX.stats[k]||[0,0];s[1]++;if(ok)s[0]++;EX.stats[k]=s;store("ex_stats",JSON.stringify(EX.stats))}
+function exQHtml(x,head){var ord=exShuf([0,1,2,3]);x._ord=ord;
+ return'<div class="mut small">'+head+' · '+esc(EXAM_LEVELS[x.l].n)+' · '+esc(EXAM_TOPICS[x.t].n)+'</div><div class="exq">'+esc(x.q)+'</div>'+ord.map(function(i){return'<button class="exo" data-o="'+i+'">'+esc(x.o[i])+'</button>'}).join("")+'<div id="exFb"></div>'}
+function exRevise(x){var T=EXAM_TOPICS[x.t];return'<div class="small" style="margin-top:6px">📖 Revise: <b>'+esc(T.n)+'</b> in the '+esc(EXAM_LEVELS[x.l].n)+' syllabus'+(T.tab?' · <a href="#" data-extab="'+T.tab+'">open the '+esc(document.querySelector('#tabs button[data-t="'+T.tab+'"]').textContent)+' tab</a>':'')+'</div>'}
+function exRandom(){var P=exPool();if(!P.length)return;var C=P.filter(function(x){return EX.recent.indexOf(x)<0});if(!C.length){EX.recent=[];C=P}
+ var x=C[Math.floor(Math.random()*C.length)];EX.recent.push(x);if(EX.recent.length>Math.min(15,P.length-1))EX.recent.shift();
+ EX.mode="rand";EX.cur=x;$("exCard").hidden=false;$("exCard").innerHTML=exQHtml(x,"Random question");$("exCard").scrollIntoView({block:"nearest"})}
+function exStart(){var L=EXAM_LEVELS[EX.lv];if(!L)return;var P=exShuf(exPool()),n=Math.min(L.q,P.length);
+ EX.mode="test";EX.test={qs:P.slice(0,n),i:0,right:0,wrong:[],pass:Math.ceil(n*L.pass/L.q),full:n==L.q};exTestShow()}
+function exTestShow(){var T=EX.test,x=T.qs[T.i];EX.cur=x;$("exCard").hidden=false;
+ $("exCard").innerHTML='<div class="exbar"><i style="width:'+Math.round(T.i/T.qs.length*100)+'%"></i></div>'+exQHtml(x,"Question "+(T.i+1)+" of "+T.qs.length)+'<div class="btns"><button class="btn sm alt" id="exQuit">Stop test</button></div>';
+ $("exCard").scrollIntoView({block:"nearest"})}
+function exTestEnd(){var T=EX.test,n=T.qs.length,ok=T.right>=T.pass,by={};
+ T.qs.forEach(function(x){var b=by[x.t]||(by[x.t]=[0,0]);b[1]++});T.qs.forEach(function(x){if(T.wrong.indexOf(x)<0)by[x.t][0]++});
+ $("exCard").innerHTML='<h2>'+(ok?"✅ Pass":"❌ Not yet")+' – '+T.right+' / '+n+'</h2><div class="mut small">Pass mark '+T.pass+' / '+n+(T.full?"":" (scaled from the real exam's "+EXAM_LEVELS[EX.lv].pass+" / "+EXAM_LEVELS[EX.lv].q+" – this app has "+n+" "+EXAM_LEVELS[EX.lv].n+" questions so far)")+'</div>'+
+  '<table style="margin-top:8px">'+Object.keys(by).map(function(k){var b=by[k];return'<tr><td>'+esc(EXAM_TOPICS[k].n)+'</td><td style="text-align:right">'+b[0]+' / '+b[1]+'</td></tr>'}).join("")+'</table>'+
+  (T.wrong.length?'<h2 style="margin-top:10px">To revise</h2>'+T.wrong.map(function(x){return'<div style="padding:6px 0;border-bottom:1px solid var(--line)"><b>'+esc(x.q)+'</b><div class="small" style="color:#22c55e">✓ '+esc(x.o[x.a])+'</div><div class="small mut">'+esc(x.e)+'</div>'+exRevise(x)+'</div>'}).join(""):"")+
+  '<div class="btns"><button class="btn" id="exAgain">Another test</button></div>';EX.test=null}
+$("exCard").addEventListener("click",function(e){var t=e.target;
+ if(t.dataset.extab){e.preventDefault();showTab(t.dataset.extab);return}
+ if(t.id=="exQuit"){EX.test=null;$("exCard").hidden=true;return}
+ if(t.id=="exAgain"){exStart();return}
+ if(t.id=="exNext"){if(EX.mode=="rand")exRandom();else{EX.test.i++;if(EX.test.i<EX.test.qs.length)exTestShow();else exTestEnd()}return}
+ if(t.dataset.o==null||t.disabled)return;var x=EX.cur,pick=+t.dataset.o,ok=pick==x.a;
+ Array.prototype.forEach.call($("exCard").querySelectorAll(".exo"),function(b){b.disabled=true;if(+b.dataset.o==x.a)b.classList.add("ok");else if(b==t)b.classList.add("no")});
+ exRecord(x,ok);if(EX.mode=="test"){if(ok)EX.test.right++;else EX.test.wrong.push(x)}
+ var last=EX.mode=="test"&&EX.test.i==EX.test.qs.length-1;
+ $("exFb").innerHTML='<div style="margin-top:8px;font-weight:700;color:'+(ok?"#22c55e":"#ef4444")+'">'+(ok?"✓ Correct":"✗ Not quite – the answer is: "+esc(x.o[x.a]))+'</div><div class="small" style="margin-top:4px">'+esc(x.e)+'</div>'+(ok?"":exRevise(x))+
+  '<div class="btns"><button class="btn" id="exNext">'+(EX.mode=="rand"?"Next question →":last?"See my result":"Next →")+'</button></div>';exStatsRender()});
+$("exRand").onclick=exRandom;$("exTest").onclick=exStart;
+function exStatsRender(){var rows=[];["F","I","A"].forEach(function(l){Object.keys(EXAM_TOPICS).forEach(function(t){var s=EX.stats[l+"."+t];if(s&&s[1])rows.push([l,t,s[0],s[1]])})});
+ if(!rows.length){$("exStats").innerHTML='<div class="mut small">No answers yet – try a random question.</div>';return}
+ var tot=rows.reduce(function(a,r){return[a[0]+r[2],a[1]+r[3]]},[0,0]);
+ $("exStats").innerHTML='<div class="small">Overall '+tot[0]+' / '+tot[1]+' ('+Math.round(tot[0]/tot[1]*100)+'%)</div><table style="margin-top:6px">'+rows.sort(function(a,b){return a[2]/a[3]-b[2]/b[3]}).map(function(r){var p=Math.round(r[2]/r[3]*100);
+  return'<tr><td class="small">'+esc(EXAM_LEVELS[r[0]].n)+' – '+esc(EXAM_TOPICS[r[1]].n)+'</td><td class="small" style="text-align:right;white-space:nowrap;color:'+(p>=75?"#22c55e":p>=50?"#eab308":"#ef4444")+'">'+r[2]+' / '+r[3]+' ('+p+'%)</td></tr>'}).join("")+'</table><div class="mut small">Weakest first.</div>'}
+$("exReset").onclick=function(){if(this.dataset.c){EX.stats={};store("ex_stats","{}");delete this.dataset.c;this.textContent="Reset my scores";exStatsRender()}else{this.dataset.c=1;this.textContent="Tap again to reset"}};
+var _showTab37=showTab;showTab=function(t){_showTab37(t);if(t=="exam")exSetup()};
 </script>
 </body></html>

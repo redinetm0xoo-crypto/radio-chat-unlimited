@@ -199,9 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.6";
+var APP_VERSION = "3.7";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.7", date:"24 Nov 2026", items:[
+   "New Exam tab: Foundation, Intermediate and Full practice – a random question from all sections or one section, or a timed-style practice test with the real question count and pass mark",
+   "Exam: wrong answers show the right one, why, and which syllabus section to revise (with a link to the matching tab, e.g. Antenna or Band Plan); your scores are kept, weakest sections first",
+   "Android: home-screen widget showing GB3XO's status (idle / on air / not reporting, last keyed) – long-press your home screen, Widgets, Radio Chat Unlimited. Tap it to refresh, tap GB3XO to open the app"]},
  {v:"3.6", date:"24 Nov 2026", items:[
    "Tab order: Morse and Antenna moved up – the last tabs are now For Sale, Announcements, Settings, Admin"]},
  {v:"3.5", date:"24 Nov 2026", items:[
