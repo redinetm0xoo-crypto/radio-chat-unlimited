@@ -35,6 +35,8 @@ select,input{width:100%;background:#0b1424;color:var(--tx);border:1px solid var(
 .bar div{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.35)}
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
 table{width:100%;border-collapse:collapse;font-size:14px}
+.moref{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.moref div{background:#0b1424;border:1px solid var(--line);border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;cursor:pointer}.moref b{font-size:17px}.moref span{font:16px ui-monospace,Menlo,Consolas,monospace;color:#f5a524}
+.acks{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.acks .on{background:#16a34a;color:#fff;border-color:#16a34a}.post .edit{float:right;margin-right:6px;background:none;border:1px solid #60a5fa;color:#60a5fa;border-radius:8px;padding:3px 9px;font-size:12px}
 .emt col{width:auto!important}@media(min-width:700px){.emt{table-layout:fixed}.emt col:nth-child(1){width:34%!important}.emt col:nth-child(2){width:17%!important}.emt col:nth-child(3){width:15%!important}.emt col:nth-child(4){width:28%!important}.emt col:nth-child(5){width:6%!important}}
 td,th{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase}
@@ -120,7 +122,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <body>
 <header>
  <img src="icon.png" alt="">
- <div><h1>Radio Chat Unlimited</h1><small>M0XOO</small><button id="meBtn" hidden>You: <b id="meCall"></b></button></div>
+ <div><h1>Radio Chat Unlimited</h1><a href="https://www.qrz.com/db/M0XOO" style="text-decoration:none"><small>M0XOO</small></a><button id="meBtn" hidden>You: <b id="meCall"></b></button></div>
  <button id="distBtn" title="Distance from Redditch centre">
   <svg viewBox="0 0 24 24" fill="none" stroke="#f5a524" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#f5a524"/></svg>
   <span id="dist">…</span>
@@ -129,7 +131,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="adm" hidden>Admin</button>
+<button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="admModal" hidden><div class="card">
  <h2>Admin sign in</h2>
@@ -314,6 +316,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <textarea id="anBody" maxlength="2000" rows="4" class="ta" placeholder="Details (optional)"></textarea>
   <div class="row" style="margin-top:8px"><input id="anWhen" maxlength="100" placeholder="When, e.g. Sat 28 Nov, 7 pm"><input id="anWhere" maxlength="120" placeholder="Where / postcode"></div>
   <input id="anName" maxlength="60" placeholder="Your name" style="margin-top:8px">
+  <label class="chk" style="margin-top:8px"><input type="checkbox" id="anEv"> This is an event – people can say they'll attend</label>
   <div class="mut small" id="anWho" style="margin-top:6px"></div>
   <div class="btns"><button class="btn" id="anPost">Post</button><button class="btn alt" id="anCancel">Cancel</button></div>
   <div id="anMsg" class="small" style="margin-top:6px"></div>
@@ -428,6 +431,48 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
 </section>
 
+<section id="morse" hidden>
+ <button class="btn" id="moListen" style="width:100%;font-size:19px;padding:14px">🎧 Listen &amp; decode Morse</button>
+ <div class="mut small" id="moStat" style="margin:6px 0 8px;text-align:center">Hold your phone/PC microphone near the radio speaker. Works best with a clean tone (CW filter on).</div>
+ <div class="card">
+  <h2>Text</h2>
+  <textarea id="moText" rows="4" class="ta" placeholder="Decoded Morse appears here – or type your own text and tap → Morse"></textarea>
+  <div class="btns"><button class="btn sm" id="moTo">→ Morse</button><button class="btn sm" id="moPlay">▶ Play</button><button class="btn sm alt" id="moFrom">Morse → text</button><button class="btn sm alt" id="moClr">Clear</button></div>
+  <div id="moOut" style="font:20px/1.6 ui-monospace,Menlo,Consolas,monospace;word-break:break-word;margin-top:8px;color:#f5a524"></div>
+  <div class="row" style="margin-top:8px"><label class="small mut">Speed <input id="moWpm" type="number" min="5" max="40" value="18" style="width:70px"> WPM</label><label class="small mut">Tone <input id="moHz" type="number" min="300" max="1200" value="650" style="width:80px"> Hz</label></div>
+  <div class="mut small" style="margin-top:4px">Morse → text: type dots and dashes with a space between letters and / between words, e.g. <b>-- ----- -..- --- ---</b></div>
+ </div>
+ <div class="card">
+  <h2>Reference card</h2>
+  <div id="moRef" class="moref"></div>
+ </div>
+</section>
+
+<section id="ant" hidden>
+ <div class="card">
+  <h2>Antenna calculator</h2>
+  <div class="row"><label class="small mut" style="flex:1">Frequency (MHz)<input id="atF" type="number" step="0.001" value="145.500" inputmode="decimal"></label>
+  <label class="small mut" style="flex:1">Band<select id="atB"><option value="">–</option></select></label></div>
+  <div id="atOut" style="margin-top:10px"></div>
+  <div class="mut small" style="margin-top:8px">Starting lengths for bare copper wire / aluminium tube (velocity factor about 0.95). Cut a little long and trim for lowest SWR. Insulated wire is shorter still (about 2–3%).</div>
+ </div>
+</section>
+
+<section id="set" hidden>
+ <div class="card">
+  <h2>Backup &amp; restore</h2>
+  <div class="mut small">Saves everything this app keeps on this phone or PC – callsign, scanner lists, favourites, emergency list, logs, settings – so you can put it back later or on a new phone.</div>
+  <label class="chk" style="margin-top:8px"><input type="checkbox" id="bkQrz"> Include my QRZ login (the password will be readable in the backup)</label>
+  <div class="btns"><button class="btn" id="bkSave">💾 Make a backup</button><button class="btn alt" id="bkCopy">Copy backup text</button></div>
+  <div id="bkMsg" class="small" style="margin-top:6px"></div>
+  <h2 style="margin-top:14px">Restore</h2>
+  <label class="btn alt sm" style="display:inline-block">📂 Choose backup file<input type="file" id="bkFile" accept=".json,.txt,application/json,text/plain" hidden></label>
+  <textarea id="bkPaste" rows="3" class="ta" placeholder="…or paste the backup text here" style="margin-top:8px"></textarea>
+  <div class="btns"><button class="btn alt" id="bkRestore">Restore from pasted text</button></div>
+  <div id="bkRMsg" class="small" style="margin-top:6px"></div>
+ </div>
+</section>
+
 <section id="ver" hidden>
  <div class="card">
   <button class="btn sm alt" id="verBack">← Back</button>
@@ -443,13 +488,14 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <div class="btns"><button class="btn" id="sgSend">Send suggestion</button></div>
   <div class="mut small" style="margin-top:6px">Sent straight to the app's online database – no login needed. Suggestions are collected for the next version.</div>
   <div id="verOut"></div>
+  <div id="sgMine" style="margin-top:10px"></div>
  </div>
  <div class="card" id="sgAdm" hidden>
   <h2>All suggestions <span class="mut small">(admins only)</span></h2>
-  <div class="chips" id="sgF"><button data-f="" class="on">All</button><button data-f="new">New</button><button data-f="accepted">Accepted</button><button data-f="rejected">Rejected</button></div>
+  <div class="chips" id="sgF"><button data-f="" class="on">All</button><button data-f="new">New</button><button data-f="accepted">Accepted</button><button data-f="rejected">Rejected</button><button data-f="needswork">Needs more work</button><button data-f="implemented">Implemented</button></div>
   <div id="sgCount" class="small" style="margin-top:8px"></div>
   <div id="sgList" style="margin-top:6px"></div>
-  <div class="mut small" style="margin-top:6px">Suggestions are never deleted – accepted ones go into the next version.</div>
+  <div class="mut small" style="margin-top:6px">Suggestions are never deleted. Accepted ones go into the next version, then show as ✔ Implemented. "Needs more work" ones are left out until the sender edits and resubmits them.</div>
  </div>
 </section>
 
@@ -1260,7 +1306,7 @@ $("anNew").onclick=function(){$("anForm").hidden=!$("anForm").hidden;if(!$("anFo
 $("anCancel").onclick=function(){$("anForm").hidden=true};
 $("anPost").onclick=function(){if(!postForm("an"))return;var t=$("anTitle").value.trim();if(!t){$("anTitle").focus();return}
  var nm=$("anName").value.trim();if(nm)store("my_name",nm);$("anMsg").textContent="Posting…";
- FB.add("announcements",{title:t.slice(0,100),body:$("anBody").value.trim().slice(0,2000),when:$("anWhen").value.trim().slice(0,100),where:$("anWhere").value.trim().slice(0,120),call:QZ.call.slice(0,12),name:nm.slice(0,60)},function(ok,err){
+ FB.add("announcements",{title:t.slice(0,100),body:$("anBody").value.trim().slice(0,2000),when:$("anWhen").value.trim().slice(0,100),where:$("anWhere").value.trim().slice(0,120),call:QZ.call.slice(0,12),name:nm.slice(0,60),event:$("anEv").checked?"1":""},function(ok,err){
   $("anMsg").textContent=ok?"✓ Posted – everyone will see it.":"Couldn't post ("+err+").";if(ok){["anTitle","anBody","anWhen","anWhere"].forEach(function(i){$(i).value=""});$("anForm").hidden=true;anLoad()}})};
 /* ---- For Sale ---- */
 var FS=[],fsPhoto=null,fsThumb=null;
@@ -1370,5 +1416,189 @@ var _cmSave28=$("cmSave").onclick;$("cmSave").onclick=function(){_cmSave28.apply
 var _cmAcc28=$("cmAccept").onclick;$("cmAccept").onclick=function(){_cmAcc28.apply(this,arguments);setTimeout(function(){admUi();admAsk()},2500)};
 $("stCall").addEventListener("change",function(){setTimeout(admUi,100)});
 setInterval(admUi,3000);setTimeout(admUi,1500);admCallsLoad();setInterval(admCallsLoad,30*60000);
+
+/* ===================== v3.2 ===================== */
+function fbOwn(p){return!!(FB.auth&&p.uid==FB.auth.uid)}
+function fbCommit(writes,cb){FB.token(function(tok){if(!tok)return cb(false,0);
+ FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify({writes:writes})},function(ok,j,st){cb(ok,st)})})}
+function fbDoc(path){return"projects/"+FB.proj+"/databases/(default)/documents/"+path}
+
+/* ---- Announcements: read / attend + edit own ---- */
+var ACK={},anEditId=null;
+function ackLoad(){AN.forEach(function(p){FB.json(FB.base+"/announcements/"+p.id+"/acks?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){
+ if(!ok)return;ACK[p.id]=((j&&j.documents)||[]).map(FB.dec);anRender()})})}
+function anRender(){var me=FB.auth&&FB.auth.uid;$("anList").innerHTML=AN.map(function(p){var mp=p.where?'<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.where)+'">📍 '+esc(p.where)+'</a>':"";
+  var A=ACK[p.id]||[],mine=A.filter(function(a){return a.id==me})[0],att=A.filter(function(a){return a.attend=="yes"}),nm=function(a){return esc(a.call||"?")};
+  return'<div class="post">'+(fbMine(p)?'<button class="del" data-del="'+p.id+'">Delete</button>':'')+(fbOwn(p)?'<button class="edit" data-edit="'+p.id+'">Edit</button>':'')+
+   '<h3>'+esc(p.title)+(p.event=="1"?' <span class="small" style="color:#f5a524">· EVENT</span>':'')+'</h3>'+
+   (p.when?'<div>🗓 '+esc(p.when)+'</div>':'')+(mp?'<div>'+mp+'</div>':'')+(p.body?'<div style="margin-top:6px;white-space:pre-wrap">'+esc(p.body)+'</div>':'')+
+   '<div class="by">Posted by <b>'+esc(p.call)+'</b>'+(p.name?' – '+esc(p.name):'')+' · '+fbWhen(p.created)+(p.edited?' · edited '+fbWhen(p.edited):'')+'</div>'+
+   '<div class="acks"><button class="btn sm alt'+(mine?' on':'')+'" data-ack="'+p.id+'">'+(mine?'✓ Read':'Mark as read')+'</button>'+
+   (p.event=="1"?'<button class="btn sm alt'+(mine&&mine.attend=="yes"?' on':'')+'" data-att="'+p.id+'">'+(mine&&mine.attend=="yes"?'✓ Attending':'✋ I\'ll attend')+'</button>':'')+'</div>'+
+   (A.length?'<div class="mut small" style="margin-top:6px">Read by '+A.length+': '+A.map(nm).join(", ")+'</div>':'')+
+   (p.event=="1"&&att.length?'<div class="small" style="margin-top:2px;color:#22c55e">Attending ('+att.length+'): '+att.map(nm).join(", ")+'</div>':'')+'</div>'}).join("")||'<div class="card mut">No announcements yet.</div>'}
+function ackSet(id,attend,del){if(!QZ.call){$("anSrc").textContent="Set your callsign first (tap “You” at the top).";return}
+ var me=FB.auth&&FB.auth.uid;var go=function(){var path="announcements/"+id+"/acks/"+FB.auth.uid;
+  if(del){FB.del("announcements/"+id+"/acks",FB.auth.uid,function(ok){if(ok){ACK[id]=(ACK[id]||[]).filter(function(a){return a.id!=FB.auth.uid});anRender()}});return}
+  fbCommit([{update:{name:fbDoc(path),fields:FB.enc({call:QZ.call.slice(0,12),name:(store("my_name")||"").slice(0,60),attend:attend})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){
+   if(!ok){$("anSrc").textContent="Couldn't save – no internet?";return}var L=(ACK[id]||[]).filter(function(a){return a.id!=FB.auth.uid});
+   L.push({id:FB.auth.uid,call:QZ.call,attend:attend});ACK[id]=L;anRender()})};
+ if(me)go();else FB.token(function(t){if(t)go()})}
+$("anList").onclick=function(e){var t=e.target,me=FB.auth&&FB.auth.uid,id;
+ if((id=t.dataset.del)){if(!confirmDel(t))return;FB.del("announcements",id,function(ok){if(ok){AN=AN.filter(function(p){return p.id!=id});anRender()}else t.textContent="Couldn't delete"});return}
+ if((id=t.dataset.edit)){var p=AN.filter(function(x){return x.id==id})[0];if(!p)return;anEditId=id;$("anForm").hidden=false;postForm("an");
+  $("anTitle").value=p.title||"";$("anBody").value=p.body||"";$("anWhen").value=p.when||"";$("anWhere").value=p.where||"";$("anName").value=p.name||"";$("anEv").checked=p.event=="1";
+  $("anForm").querySelector("h2").textContent="Edit announcement";$("anPost").textContent="Save changes";$("anForm").scrollIntoView({behavior:"smooth"});return}
+ var mine=function(i){return(ACK[i]||[]).filter(function(a){return a.id==me})[0]};
+ if((id=t.dataset.ack)){var m=mine(id);if(m)ackSet(id,"",true);else ackSet(id,"");return}
+ if((id=t.dataset.att)){var m2=mine(id);ackSet(id,m2&&m2.attend=="yes"?"":"yes")}};
+function anFormReset(){anEditId=null;$("anForm").querySelector("h2").textContent="New announcement";$("anPost").textContent="Post";$("anEv").checked=false}
+var _anPost32=$("anPost").onclick;
+$("anPost").onclick=function(){if(!anEditId)return _anPost32();var t=$("anTitle").value.trim();if(!t){$("anTitle").focus();return}
+ var nm=$("anName").value.trim();$("anMsg").textContent="Saving…";var id=anEditId;
+ fbCommit([{update:{name:fbDoc("announcements/"+id),fields:FB.enc({title:t.slice(0,100),body:$("anBody").value.trim().slice(0,2000),when:$("anWhen").value.trim().slice(0,100),where:$("anWhere").value.trim().slice(0,120),name:nm.slice(0,60),event:$("anEv").checked?"1":""})},
+  updateMask:{fieldPaths:["title","body","when","where","name","event"]},currentDocument:{exists:true},updateTransforms:[{fieldPath:"edited",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  $("anMsg").textContent=ok?"✓ Saved.":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";
+  if(ok){["anTitle","anBody","anWhen","anWhere"].forEach(function(i){$(i).value=""});$("anForm").hidden=true;anFormReset();anLoad()}})};
+var _anCancel32=$("anCancel").onclick;$("anCancel").onclick=function(){_anCancel32();anFormReset()};
+var _anNew32=$("anNew").onclick;$("anNew").onclick=function(){anFormReset();_anNew32()};
+var _anLoad32=anLoad;anLoad=function(){_anLoad32();setTimeout(function(){if(AN.length)ackLoad()},1500)};
+
+/* ---- For Sale: edit own listing ---- */
+var fsEditId=null,fsNewPhoto=false;
+function fsRender(){$("fsList").innerHTML=FS.map(function(p){return'<div class="post" data-id="'+p.id+'">'+(fbMine(p)?'<button class="del" data-del="'+p.id+'">Delete</button>':'')+(fbOwn(p)?'<button class="edit" data-edit="'+p.id+'">Edit</button>':'')+
+  '<div class="fs"><img alt="" src="'+(p.thumb||"")+'"><div><h3>'+esc(p.title)+'</h3><div class="pr">'+esc(p.price)+'</div>'+
+  '<div class="by">'+esc(p.call)+(p.name?' – '+esc(p.name):'')+' · '+fbWhen(p.created)+'</div></div></div><div class="fsd" hidden></div></div>'}).join("")||'<div class="card mut">Nothing for sale yet.</div>'}
+var _fsList32=$("fsList").onclick;
+$("fsList").onclick=function(e){var id=e.target.dataset.edit;if(!id)return _fsList32.call(this,e);$("fsMsg").textContent="Loading…";
+ FB.get("forsale",id,function(p){if(!p){$("fsMsg").textContent="Couldn't load – no internet?";return}fsEditId=id;fsNewPhoto=false;$("fsForm").hidden=false;postForm("fs");
+  $("fsTitle").value=p.title||"";$("fsDesc").value=p.desc||"";$("fsPrice").value=p.price||"";$("fsName").value=p.name||"";fsPhoto=p.photo||null;fsThumb=p.thumb||null;
+  if(p.photo){$("fsPrev").src=p.photo;$("fsPrev").style.display="block"}$("fsMsg").textContent="Editing – choose a new photo to replace it.";
+  $("fsForm").querySelector("h2").textContent="Edit listing";$("fsPost").textContent="Save changes";$("fsForm").scrollIntoView({behavior:"smooth"})})};
+$("fsPhoto").addEventListener("change",function(){fsNewPhoto=true});
+function fsFormReset(){fsEditId=null;fsNewPhoto=false;$("fsForm").querySelector("h2").textContent="New listing";$("fsPost").textContent="List it"}
+var _fsPost32=$("fsPost").onclick;
+$("fsPost").onclick=function(){if(!fsEditId)return _fsPost32();var t=$("fsTitle").value.trim(),pr=$("fsPrice").value.trim();if(!t){$("fsTitle").focus();return}if(!pr){$("fsPrice").focus();return}
+ if(/^\d+(\.\d\d)?$/.test(pr))pr="£"+pr;var f={title:t.slice(0,100),desc:$("fsDesc").value.trim().slice(0,2000),price:pr.slice(0,30),name:$("fsName").value.trim().slice(0,60)},m=["title","desc","price","name"];
+ if(fsNewPhoto){f.photo=fsPhoto||"";f.thumb=fsThumb||"";m.push("photo","thumb")}$("fsMsg").textContent="Saving…";
+ fbCommit([{update:{name:fbDoc("forsale/"+fsEditId),fields:FB.enc(f)},updateMask:{fieldPaths:m},currentDocument:{exists:true},updateTransforms:[{fieldPath:"edited",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  $("fsMsg").textContent=ok?"✓ Saved.":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";
+  if(ok){["fsTitle","fsDesc","fsPrice"].forEach(function(i){$(i).value=""});fsPhoto=fsThumb=null;$("fsPrev").style.display="none";$("fsForm").hidden=true;fsFormReset();fsLoad()}})};
+var _fsCancel32=$("fsCancel").onclick;$("fsCancel").onclick=function(){_fsCancel32();fsFormReset()};
+var _fsNew32=$("fsNew").onclick;$("fsNew").onclick=function(){if(fsEditId){fsFormReset();fsPhoto=fsThumb=null;$("fsPrev").style.display="none";["fsTitle","fsDesc","fsPrice"].forEach(function(i){$(i).value=""})}_fsNew32()};
+
+/* ---- Suggestions: implemented / needs more work / admin edit / resubmit ---- */
+var SG_COL={new:"#94a3b8",accepted:"#22c55e",rejected:"#ef4444",implemented:"#3b82f6",needswork:"#f59e0b"},
+ SG_LAB={new:"New",accepted:"Accepted",rejected:"Rejected",implemented:"✔ Implemented",needswork:"Needs more work"};
+function sgAll(cb){FB.json(FB.base+"/suggestions?orderBy=created%20desc&pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){cb(ok,ok?((j&&j.documents)||[]).map(FB.dec):null)})}
+function sgLoad(){$("sgCount").textContent="Loading…";sgAll(function(ok,l){if(!ok){$("sgCount").textContent="Can't load – no internet?";return}SG=l;sgRender();sgMine()})}
+function sgRender(){var st=function(s){return s.status||"new"},n={new:0,accepted:0,rejected:0,implemented:0,needswork:0};SG.forEach(function(s){n[st(s)]=(n[st(s)]||0)+1});
+ $("sgCount").innerHTML="<b>"+SG.length+"</b> suggestions · "+n.new+" new · "+n.accepted+" accepted · "+n.implemented+" implemented · "+n.needswork+" need more work · "+n.rejected+" rejected";
+ $("sgList").innerHTML=SG.filter(function(s){return!sgFilter||st(s)==sgFilter}).map(function(s){var S=st(s),b=function(v,l,alt){return'<button class="btn sm'+(alt?' alt':'')+'" data-sg="'+v+'" data-id="'+s.id+'">'+l+'</button>'};
+  return'<div class="post" style="border-left:4px solid '+SG_COL[S]+'"><div style="white-space:pre-wrap" class="sgt">'+esc(s.text)+'</div>'+
+   '<div class="by">'+(s.call?'<b>'+esc(s.call)+'</b>':'(no callsign)')+(s.name?' – '+esc(s.name):'')+' · '+fbWhen(s.created)+(s.ver?' · app v'+esc(s.ver):'')+'</div>'+
+   '<div class="small" style="margin-top:4px;color:'+SG_COL[S]+'"><b>'+SG_LAB[S]+'</b>'+(s.by?' by '+esc(s.by)+' · '+fbWhen(s.at):'')+'</div>'+
+   (S=="implemented"?'':'<div class="btns" style="margin-top:6px">'+(S!="accepted"?b("accepted","✓ Accept"):b("implemented","✔ Mark implemented"))+
+    (S!="rejected"?b("rejected","✕ Reject",1):'')+(S!="needswork"?b("needswork","Needs more work",1):'')+b("edit","✎ Edit",1)+'</div>')+'</div>'}).join("")||'<div class="mut">None.</div>'}
+function sgSave(id,f,mask,btn){btn.textContent="Saving…";f.by=(QZ.call||"").slice(0,12);mask.push("by");
+ fbCommit([{update:{name:fbDoc("suggestions/"+id),fields:FB.enc(f)},updateMask:{fieldPaths:mask},currentDocument:{exists:true},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){if(ok)sgLoad();else btn.textContent="Not allowed"})}
+$("sgList").onclick=function(e){var t=e.target,v=t.dataset.sg,id=t.dataset.id;if(!v||!id)return;var s=SG.filter(function(x){return x.id==id})[0];if(!s)return;
+ if(v=="edit"){var box=t.closest(".post").querySelector(".sgt");if(box.querySelector("textarea"))return;box.innerHTML='<textarea class="ta" rows="5">'+esc(s.text)+'</textarea><div class="btns"><button class="btn sm" data-sg="save" data-id="'+id+'">Save text</button><button class="btn sm" data-sg="saveacc" data-id="'+id+'">Save &amp; accept</button></div>';return}
+ if(v=="save"||v=="saveacc"){var tx=t.closest(".post").querySelector("textarea").value.trim().slice(0,2000);if(tx.length<3)return;
+  if(v=="saveacc")sgSave(id,{text:tx,status:"accepted"},["text","status"],t);else sgSave(id,{text:tx,status:s.status||"new"},["text","status"],t);return}
+ sgSave(id,{status:v},["status"],t)};
+function sgMine(){var me=FB.auth&&FB.auth.uid,L=(SG||[]).filter(function(s){return me&&s.uid==me});if(!L.length){$("sgMine").innerHTML="";return}
+ $("sgMine").innerHTML='<h2>Your suggestions</h2>'+L.map(function(s){var S=s.status||"new";return'<div class="post" style="border-left:4px solid '+SG_COL[S]+'"><div style="white-space:pre-wrap">'+esc(s.text)+'</div>'+
+  '<div class="small" style="margin-top:4px;color:'+SG_COL[S]+'"><b>'+SG_LAB[S]+'</b> · sent '+fbWhen(s.created)+'</div>'+
+  (S=="needswork"?'<div class="mut small" style="margin-top:4px">An admin has asked for more detail. Edit it and resubmit:</div><textarea class="ta" rows="4" data-mine="'+s.id+'">'+esc(s.text)+'</textarea><div class="btns"><button class="btn sm" data-resub="'+s.id+'">Resubmit</button></div>':'')+'</div>'}).join("")}
+$("sgMine").onclick=function(e){var id=e.target.dataset.resub;if(!id)return;var tx=this.querySelector('textarea[data-mine="'+id+'"]').value.trim().slice(0,2000);if(tx.length<3)return;e.target.textContent="Sending…";
+ fbCommit([{update:{name:fbDoc("suggestions/"+id),fields:FB.enc({text:tx,status:"new"})},updateMask:{fieldPaths:["text","status"]},currentDocument:{exists:true},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){
+  if(ok)sgAll(function(ok2,l){if(ok2){SG=l;sgMine();if(FB.admin)sgRender()}});else e.target.textContent="Couldn't resubmit"})};
+function sgMineShow(){sgAll(function(ok,l){if(ok){SG=l;sgMine();if(FB.admin&&!$("sgAdm").hidden)sgRender()}})}
+$("verBtn").addEventListener("click",function(){setTimeout(sgMineShow,80)});$("sugBtn").addEventListener("click",function(){setTimeout(sgMineShow,80)});
+
+/* ---- Morse ---- */
+var MO={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..",
+ "0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","/":"-..-.","=":"-...-","+":".-.-.","-":"-....-","(":"-.--.",")":"-.--.-","'":".----.",":":"---...","@":".--.-.","!":"-.-.--","&":".-..."},
+ MO_R={};Object.keys(MO).forEach(function(k){MO_R[MO[k]]=k});
+var MO_ORDER="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("").concat(Object.keys(MO).filter(function(k){return!/[A-Z0-9]/.test(k)}));
+$("moRef").innerHTML=MO_ORDER.map(function(k){return'<div data-k="'+esc(k)+'"><b>'+esc(k)+'</b><span>'+MO[k].replace(/\./g,"·").replace(/-/g,"–")+'</span></div>'}).join("")+
+ ['<div><b>SK</b><span>···–·–</span></div>','<div><b>AR</b><span>·–·–·</span></div>','<div><b>BT</b><span>–···–</span></div>','<div><b>KN</b><span>–·––·</span></div>','<div><b>SOS</b><span>···–––···</span></div>'].join("");
+function moEncode(t){return t.toUpperCase().split(/\s+/).filter(Boolean).map(function(w){return w.split("").map(function(c){return MO[c]||""}).filter(Boolean).join(" ")}).join(" / ")}
+$("moTo").onclick=function(){$("moOut").textContent=moEncode($("moText").value)||"(type some text first)"};
+$("moFrom").onclick=function(){var src=$("moText").value.trim();$("moText").value=src.split(/\s*\/\s*|\s{3,}/).map(function(w){return w.trim().split(/\s+/).map(function(c){return MO_R[c.replace(/·/g,".").replace(/[–—_]/g,"-")]||"?"}).join("")}).join(" ")};
+$("moClr").onclick=function(){$("moText").value="";$("moOut").textContent=""};
+$("moRef").onclick=function(e){var d=e.target.closest("div[data-k]");if(d)moPlay(d.dataset.k)};
+var moAC=null;function moCtx(){if(!moAC)moAC=new(window.AudioContext||window.webkitAudioContext)();if(moAC.state=="suspended")moAC.resume();return moAC}
+var moPlaying=null;
+function moPlay(text){var ac=moCtx(),wpm=Math.max(5,Math.min(40,+$("moWpm").value||18)),hz=Math.max(300,Math.min(1200,+$("moHz").value||650)),u=1.2/wpm,t=ac.currentTime+0.1;
+ if(moPlaying){try{moPlaying.stop()}catch(e){}}var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=hz;g.gain.value=0;o.connect(g);g.connect(ac.destination);
+ var code=moEncode(text);code.split("").forEach(function(c){if(c=="."||c=="-"){var d=(c=="."?1:3)*u;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.5,t+0.004);g.gain.setValueAtTime(0.5,t+d-0.004);g.gain.linearRampToValueAtTime(0,t+d);t+=d+u}
+  else if(c==" ")t+=2*u;else if(c=="/")t+=2*u});
+ o.start();o.stop(t+0.05);moPlaying=o;$("moOut").textContent=code}
+$("moPlay").onclick=function(){var t=$("moText").value.trim();if(t)moPlay(t)};
+/* decoder: tone detector (Goertzel on the strongest 300-1500 Hz tone) + adaptive dot length */
+var MD={on:false};
+function moStat(t){$("moStat").textContent=t}
+$("moListen").onclick=function(){if(MD.on){moStop();return}
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){moStat("This browser can't use the microphone.");return}
+ moStat("Starting microphone…");
+ navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(st){
+  var ac=moCtx(),src=ac.createMediaStreamSource(st),an=ac.createAnalyser();an.fftSize=4096;an.smoothingTimeConstant=0.6;src.connect(an);
+  var sp=ac.createScriptProcessor(256,1,1),gain=ac.createGain();gain.gain.value=0;src.connect(sp);sp.connect(gain);gain.connect(ac.destination);
+  MD={on:true,st:st,sp:sp,an:an,src:src,fr:700,floor:1e-6,peak:1e-4,state:false,t:0,last:0,dot:66,sym:"",spec:new Float32Array(an.frequencyBinCount),sr:ac.sampleRate,tick:0};
+  $("moListen").textContent="⏹ Stop listening";$("moListen").style.background="#16a34a";
+  sp.onaudioprocess=function(ev){var x=ev.inputBuffer.getChannelData(0),N=x.length,w=2*Math.PI*MD.fr/MD.sr,cf=2*Math.cos(w),s1=0,s2=0;
+   for(var i=0;i<N;i++){var s0=x[i]+cf*s1-s2;s2=s1;s1=s0}var p=(s1*s1+s2*s2-cf*s1*s2)/(N*N);
+   MD.floor=p<MD.floor?p:MD.floor*1.002+p*0.0005;MD.peak=p>MD.peak?p:MD.peak*0.9995;
+   var dtms=N/MD.sr*1000;MD.t+=dtms;var good=MD.peak>MD.floor*8,th=MD.floor+(MD.peak-MD.floor)*(MD.state?0.25:0.5),on=good&&p>th;
+   if(on!=MD.state){var dur=MD.t-MD.last;MD.last=MD.t;
+    if(MD.state){ if(dur>12){var isDot=dur<MD.dot*2;MD.sym+=isDot?".":"-";MD.dot=MD.dot*0.85+(isDot?dur:dur/3)*0.15;MD.dot=Math.max(25,Math.min(300,MD.dot))}}
+    else{ if(dur>MD.dot*2.5)moFlush(dur>MD.dot*5)}
+    MD.state=on}
+   else if(!MD.state&&MD.sym&&MD.t-MD.last>MD.dot*6)moFlush(true);
+   if(++MD.tick%40==0){MD.an.getFloatFrequencyData(MD.spec);var lo=Math.floor(300*MD.an.fftSize/MD.sr),hi=Math.ceil(1500*MD.an.fftSize/MD.sr),bi=lo;for(var k=lo;k<=hi;k++)if(MD.spec[k]>MD.spec[bi])bi=k;
+    if(!MD.state)MD.fr=bi*MD.sr/MD.an.fftSize;moStat((good?"🔊 Tone ":"Listening… tone ")+Math.round(MD.fr)+" Hz · about "+Math.round(1200/MD.dot)+" WPM")}};
+  moStat("Listening… point the microphone at the radio speaker.")}).catch(function(){moStat("Microphone not allowed – allow it for this app/site and try again.")})};
+function moFlush(word){if(MD.sym){var c=MO_R[MD.sym]||"?";var ta=$("moText");ta.value+=c;ta.scrollTop=ta.scrollHeight;MD.sym=""}
+ if(word){var ta2=$("moText");if(ta2.value&&!/\s$/.test(ta2.value))ta2.value+=" "}}
+function moStop(){try{MD.sp.disconnect();MD.src.disconnect();MD.st.getTracks().forEach(function(t){t.stop()})}catch(e){}MD.on=false;$("moListen").textContent="🎧 Listen & decode Morse";$("moListen").style.background="";moStat("Stopped.")}
+var _showTab32=showTab;showTab=function(t){if(t!="morse"&&MD.on)moStop();_showTab32(t);if(t=="ant")atCalc()};
+
+/* ---- Antenna calculator ---- */
+(function(){var o='<option value="">–</option>';BANDS.forEach(function(b){var f=b.id=="2m"?145.5:b.id=="70cm"?433.5:+((b.lo+b.hi)/2).toFixed(3);o+='<option value="'+f+'">'+b.name+'</option>'});$("atB").innerHTML=o})();
+function atLen(m){return m>=1?m.toFixed(2)+" m ("+(m*3.28084).toFixed(1)+" ft)":(m*100).toFixed(1)+" cm ("+(m*39.37).toFixed(1)+" in)"}
+function atCalc(){var f=+$("atF").value;if(!(f>0.1&&f<3000)){$("atOut").innerHTML='<div class="mut">Enter a frequency in MHz.</div>';return}store("ant_f",String(f));
+ var wl=299.792/f,k=0.95,row=function(n,v,d){return'<tr><td><b>'+n+'</b>'+(d?'<div class="mut small">'+d+'</div>':'')+'</td><td class="f" style="text-align:right;white-space:nowrap">'+v+'</td></tr>'};
+ $("atOut").innerHTML='<table>'+row("Full wavelength",atLen(wl),"Free space")+
+  row("Half-wave dipole – total",atLen(wl/2*k),"Centre fed, 50–75 Ω")+row("Dipole – each leg",atLen(wl/4*k))+
+  row("¼-wave vertical – radiator",atLen(wl/4*k),"Ground plane, ~36 Ω")+row("¼-wave radials (3–4)",atLen(wl/4),"Slope at 45° for ~50 Ω")+
+  row("⅝-wave vertical – radiator",atLen(wl*0.625*k),"Needs a base matching coil")+
+  row("J-pole – long element",atLen(wl*0.75*k),"Total height of the long side")+row("J-pole – short stub",atLen(wl/4*k),"¼-wave matching section")+row("J-pole – feed point",atLen(wl*0.03),"Start here above the bottom, move for lowest SWR")+
+  row("End-fed half-wave",atLen(wl/2*k),"With a 49:1 unun; add a short counterpoise")+row("Random-wire end-fed",atLen(wl*0.35)+" or "+atLen(wl*0.6),"Avoid half-wave multiples; use a 9:1 unun + tuner")+'</table>'}
+$("atF").oninput=atCalc;$("atB").onchange=function(){if(this.value){$("atF").value=this.value;atCalc()}};
+if(store("ant_f"))$("atF").value=store("ant_f");
+
+/* ---- Settings: backup & restore ---- */
+var BK_SKIP=["fb_auth","fb_first","upd_later","notif_asked","adm_calls"];
+function bkMake(){var o={app:"Radio Chat Unlimited M0XOO",ver:APP_VERSION,made:new Date().toISOString(),data:{}};
+ for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(BK_SKIP.indexOf(k)>=0)continue;o.data[k]=localStorage.getItem(k)}
+ if(!$("bkQrz").checked&&o.data.qrz_cfg){try{var q=JSON.parse(o.data.qrz_cfg);delete q.pass;delete q.key;delete q.api;o.data.qrz_cfg=JSON.stringify(q)}catch(e){delete o.data.qrz_cfg}}
+ return JSON.stringify(o)}
+$("bkSave").onclick=function(){var t=bkMake(),n=Object.keys(JSON.parse(t).data).length,fn="RadioChat-backup-"+new Date().toISOString().slice(0,10)+".json";
+ if(IS_APP){try{prompt("rcu:xshare:"+t)}catch(e){}$("bkMsg").textContent="Backup of "+n+" items ready – choose where to save it (e.g. Drive, email to yourself or Notes).";return}
+ var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download=fn;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500);
+ $("bkMsg").textContent="✓ Saved "+fn+" ("+n+" items) to your Downloads."};
+$("bkCopy").onclick=function(){var t=bkMake(),done=function(ok){$("bkMsg").textContent=ok?"✓ Backup text copied – paste it somewhere safe (email to yourself, Notes…).":"Couldn't copy – use Make a backup instead."};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){done(true)},function(){fallback()});else fallback();
+ function fallback(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();done(ok)}};
+function bkRestore(t){var o;try{o=JSON.parse(t)}catch(e){}if(!o||!o.data||o.app!="Radio Chat Unlimited M0XOO"){$("bkRMsg").textContent="That isn't a Radio Chat Unlimited backup.";return}
+ var b=$("bkRestore");if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Tap again to replace this app's data ("+Object.keys(o.data).length+" items, made "+(o.made||"").slice(0,10)+")";$("bkRMsg").textContent="";bkPending=t;return}
+ Object.keys(o.data).forEach(function(k){if(BK_SKIP.indexOf(k)<0)try{localStorage.setItem(k,o.data[k])}catch(e){}});$("bkRMsg").textContent="✓ Restored – reloading…";setTimeout(function(){location.reload()},800)}
+var bkPending=null;
+$("bkRestore").onclick=function(){if(this.dataset.sure&&bkPending)return bkRestore(bkPending);bkRestore($("bkPaste").value.trim())};
+$("bkFile").onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$("bkPaste").value=r.result;delete $("bkRestore").dataset.sure;bkRestore(r.result)};r.readAsText(f)};
+$("bkPaste").oninput=function(){delete $("bkRestore").dataset.sure;$("bkRestore").textContent="Restore from pasted text";bkPending=null};
+$("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
 </script>
 </body></html>

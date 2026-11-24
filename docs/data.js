@@ -1,6 +1,14 @@
 // UK amateur band data — RSGB Band Plan 2026 (January 2026 edition), rsgb.org/bandplans
 // [startMHz, endMHz, bandwidth, category, usage]
 // categories: cw, nb (narrowband/data), all (all modes/phone), bcn (beacons), fm (FM/repeaters), sat (satellite), gap
+// v3.2: conventional FT8 / FT4 dial frequencies (USB), WSJT-X defaults - added to each band's centres of activity
+var DIGI_COA = {"160m":[[1.840,"FT8 (dial, USB)"]],"80m":[[3.573,"FT8 (dial, USB)"],[3.575,"FT4 (dial, USB)"]],
+ "60m":[[5.357,"FT8 (dial, USB) – full licence"]],"40m":[[7.0475,"FT4 (dial, USB)"],[7.074,"FT8 (dial, USB)"]],
+ "30m":[[10.136,"FT8 (dial, USB)"],[10.140,"FT4 (dial, USB)"]],"20m":[[14.074,"FT8 (dial, USB)"],[14.080,"FT4 (dial, USB)"]],
+ "17m":[[18.100,"FT8 (dial, USB)"],[18.104,"FT4 (dial, USB)"]],"15m":[[21.074,"FT8 (dial, USB)"],[21.140,"FT4 (dial, USB)"]],
+ "12m":[[24.915,"FT8 (dial, USB)"],[24.919,"FT4 (dial, USB)"]],"10m":[[28.074,"FT8 (dial, USB)"],[28.180,"FT4 (dial, USB)"]],
+ "6m":[[50.313,"FT8 (dial, USB)"],[50.318,"FT4 (dial, USB)"],[50.323,"FT8 intercontinental DX"]],"4m":[[70.154,"FT8 (dial, USB)"]],
+ "2m":[[144.170,"FT4 (dial, USB)"],[144.174,"FT8 (dial, USB)"]]};
 var BANDS = [
 {id:"160m", name:"160m", lo:1.810, hi:2.000,
  seg:[[1.810,1.838,"200 Hz","cw","CW (telegraphy)"],
@@ -177,7 +185,7 @@ var GB3XO = {
 };
 
 var EMERG_DEFAULTS = [
-  {label:"GB3XO repeater",   f:"433.0250",  mode:"FM",     notes:"Transmit 438.0250, CTCSS 77.0 Hz", prio:1},
+  {label:"GB3XO repeater",   f:"433.0250",  mode:"FM",     notes:"Transmit 438.0250, CTCSS 77.0 Hz (48-hour battery backup)", prio:1},
   {label:"2m - Simplex",     f:"145.250",   mode:"FM",     notes:"67 Hz tone", prio:2},
   {label:"PMR - Ch 7",       f:"446.08125", mode:"FM",     notes:"Family use, for example", prio:3},
   {label:"CB - Ch 7",        f:"27.66125",  mode:"FM",     notes:"UK 27/81 CB"},
@@ -191,9 +199,19 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.1";
+var APP_VERSION = "3.2";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.2", date:"24 Nov 2026", items:[
+   "New Morse tab: listen and decode Morse through the microphone, reference card, text → Morse, play it out loud",
+   "New Antenna tab: dipole, vertical, 5/8, J-pole and end-fed lengths for any frequency",
+   "New Settings tab: backup and restore all your app data",
+   "Scanner: every UK aerodrome airband frequency (651 frequencies, 261 airfields)",
+   "Band Plan: FT8 and FT4 frequencies added to each band",
+   "Announcements: Mark as read and I'll attend (for events) – everyone can see who; edit your own announcements and For Sale listings",
+   "Suggestions: Implemented and Needs more work statuses; admins can edit a suggestion; senders can see theirs and resubmit",
+   "Tap M0XOO at the top to open its QRZ page",
+   "Redditch Emergency: GB3XO 48-hour battery backup noted"]},
  {v:"3.1", date:"23 Nov 2026", items:[
    "Redditch Emergency: CB channel 7 added (27.66125 MHz FM, UK 27/81) - from a suggestion"]},
  {v:"3.0", date:"23 Nov 2026", items:[
@@ -301,3 +319,6 @@ var VERSIONS = [
   "Redditch Emergency frequencies (editable)",
   "CB channels – UK 27/81 and CEPT"]}
 ];
+
+/* v3.2: merge FT8/FT4 into the band plan centres of activity (sorted by frequency) */
+(function(){BANDS.forEach(function(b){var d=DIGI_COA[b.id];if(!d)return;b.coa=(b.coa||[]).concat(d).sort(function(x,y){return x[0]-y[0]})})})();
