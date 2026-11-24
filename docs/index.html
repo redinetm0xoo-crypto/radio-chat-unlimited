@@ -1773,5 +1773,69 @@ var _showTab34=showTab;showTab=function(t){_showTab34(t);if(t=="net"){ntAll(func
 $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
 setInterval(function(){if(!document.hidden&&curTab=="net")ntLoad()},8000);
 ntAll(function(){if(curTab=="act")acRender()});
+
+/* ===================== v3.5: frequency names on Activity ===================== */
+function acName(v){v=+v;if(!(v>0))return"";var n="";
+ if(acSame(v,parseFloat(GB3XO.downlink)))return"GB3XO";if(acSame(v,parseFloat(GB3XO.uplink)))return"GB3XO input";
+ (window.EM||[]).some(function(r){if(acSame(v,acFreqOf(r.f))){n=String(r.label||"").replace(/\s+-\s+/," ");return true}});if(n)return n;
+ var lists=(typeof scAll=="function"?scAll():[]);lists.sort(function(a,b){return(/^Airband/.test(a.name)?1:0)-(/^Airband/.test(b.name)?1:0)});
+ var here=lastPos||REDDITCH,air=null,ad=1e9;
+ lists.some(function(l){var pre=String(l.name||"").split(/\s+[–-]\s+/)[0];if(/^Airband/.test(pre))return false;return(l.rows||[]).some(function(r){if(acSame(v,acFreqOf(r[0]))){var nm=String(r[1]||"");
+  n=(new RegExp("^"+(pre.match(/^[A-Za-z]+/)||["~"])[0],"i").test(nm)?"":pre+" ")+nm;return true}})});if(n)return n.slice(0,40);
+ lists.forEach(function(l){if(!/^Airband/.test(l.name||""))return;(l.rows||[]).forEach(function(r){if(!acSame(v,acFreqOf(r[0])))return;var d=r[4]?miles(here.lat,here.lon,r[4][0],r[4][1]):5e3;if(d<ad){ad=d;air=r}})});
+ if(air)return String(air[1]).replace(/\s*\([A-Z0-9]{4}\)/,"").replace(/ Airport| Aerodrome| Airfield/,"").replace(" – "," ").slice(0,40);
+ if(window.RPT){var p=lastPos||REDDITCH,best=null,bd=1e9;RPT.forEach(function(r){if(acSame(v,r[4])&&r[12]!=null){var d=miles(p.lat,p.lon,r[12],r[13]);if(d<bd){bd=d;best=r}}});
+  if(best&&bd<60)return(best[1]+" "+(best[8]||"")).trim().slice(0,40)}
+ return""}
+function acLabel(d){return d.label||acName(d.freq)}
+/* up to 3 frequencies each: documents activity/{uid}, {uid}_2, {uid}_3 */
+var AC_MAX=3;
+function acSlots(){var u=FB.auth.uid;return[u,u+"_2",u+"_3"]}
+function acMineOf(L){var u=FB.auth&&FB.auth.uid;return u?L.filter(function(d){return d.id==u||d.id==u+"_2"||d.id==u+"_3"}):[]}
+acLoad=function(){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(!ok){$("acSrc").textContent="Can't load activity – no internet?";return}
+  var L=((j&&j.documents)||[]).map(FB.dec).filter(acLive);L.sort(function(a,b){return a.at<b.at?1:-1});AC.list=L;AC.mine=acMineOf(L);AC.me=AC.mine[0]||null;
+  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every 30 s";acRender();acDecorate()});
+ FB.json(FB.base+"/activitylog?orderBy=at%20desc&pageSize=60&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AC.log=((j&&j.documents)||[]).map(FB.dec);acRenderLog()}});
+ ntAll(function(){if(curTab=="act")acRender()})};
+acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
+ var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
+ mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v),lab=acName(v).slice(0,40);msg.textContent="Saving…";
+ FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,mine=acMineOf(AC.list),slot=null;
+  mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v))slot=d.id});
+  if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
+  if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off (✕) first.</span>';return cb&&cb(false)}
+  var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
+  fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]},
+   {update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:c,freq:f,mode:mode,uid:uid,label:lab})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+   msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";acLoad()}cb&&cb(ok)})})};
+function acOffOne(id,cb){FB.del("activity",id,function(ok){if(ok&&QZ.call){var d=AC.list.filter(function(x){return x.id==id})[0];
+  fbCommit([{update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:QZ.call.slice(0,12),freq:"",mode:"off air",uid:FB.auth.uid,label:(d?acFmt(d.freq)+" off":"").slice(0,40)})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){cb&&cb(ok)})}else cb&&cb(ok)})}
+acOff=function(){var msg=$("acMsg"),M=acMineOf(AC.list);if(!M.length){msg.textContent="You're not showing on air.";return}var n=M.length;
+ FB.token(function(t){if(!t){msg.textContent="No connection.";return}M.forEach(function(d){acOffOne(d.id,function(){if(--n==0){msg.textContent="✓ You're shown as off air.";acLoad()}})})})};
+$("acOff").onclick=acOff;
+acRender=function(){var me=FB.auth&&FB.auth.uid,M=acMineOf(AC.list);$("acMeCall").textContent=QZ.call?"– "+QZ.call:"";
+ var mineNets=QZ.call?ntNetsOf(QZ.call):[];
+ $("acMeNow").innerHTML=(M.length?M.map(function(d){var l=acLabel(d);return'<div style="margin:3px 0"><span style="color:#22c55e;font-weight:700">● '+esc(acFmt(d.freq))+' MHz '+esc(d.mode||"")+(l?' · '+esc(l):'')+'</span> <span class="mut">'+adAgo(d.at)+'</span> <button class="x2" data-acoff="'+esc(d.id)+'" style="background:none;border:1px solid var(--line);color:#ef4444;border-radius:8px;padding:2px 8px">✕</button></div>'}).join("")+
+  '<div class="mut small">'+(M.length<AC_MAX?"You can show up to "+AC_MAX+" frequencies – add another below.":"That's the most ("+AC_MAX+") – take one off to add another.")+'</div>':'<span class="mut">Not showing on air. You can show up to '+AC_MAX+' frequencies at once.</span>')+
+  (mineNets.length?'<div style="margin-top:4px">'+mineNets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join(" ")+'</div>':'');
+ var O=AC.list.filter(function(d){return M.indexOf(d)<0});
+ $("acNow").innerHTML=O.map(function(d){var l=acLabel(d),nets=ntNetsOf(d.call);return'<div class="post acc"><div class="fq">'+esc(acFmt(d.freq))+' <span style="font-size:15px">MHz '+esc(d.mode||"")+'</span></div>'+(l?'<div style="font-weight:700;color:#f5a524">'+esc(l)+'</div>':'')+
+  '<div><b>'+esc(d.call)+'</b>'+(d.name?' – '+esc(d.name):'')+(d.note?' · '+esc(d.note):'')+'</div><div class="by">'+adAgo(d.at)+'</div>'+
+  '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
+  '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a>'+nets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join("")+'</div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'};
+$("acMeNow").addEventListener("click",function(e){var id=e.target.dataset.acoff;if(!id)return;e.target.textContent="…";acOffOne(id,function(){acLoad()})});
+acRenderLog=function(){$("acLog").innerHTML=AC.log.length?'<table>'+AC.log.map(function(l){var lb=l.freq?acLabel(l):(l.label||"");return'<tr><td class="small mut" style="white-space:nowrap">'+fbWhen(l.at)+'</td><td><b>'+esc(l.call)+'</b></td><td>'+(l.freq?'<span class="f">'+esc(acFmt(l.freq))+'</span> '+esc(l.mode||""):'<span class="mut">off air</span>')+(lb?' <span class="mut small">· '+esc(lb)+'</span>':'')+'</td></tr>'}).join("")+'</table>':'<div class="mut">Nothing logged yet.</div>'};
+acDecorate=function(){if(acDecoBusy)return;acDecoBusy=true;if(acObs)acObs.disconnect();var M=acMineOf(AC.list),mine=M.map(function(d){return parseFloat(d.freq)}),others={};
+ AC.list.forEach(function(d){if(M.indexOf(d)<0){var k=acFmt(d.freq);others[k]=(others[k]||[]).concat(d.call)}});
+ Array.prototype.forEach.call(document.querySelectorAll("main .f"),function(el){if(el.closest("#atOut")||el.id=="locBig"||el.closest("#act"))return;
+  var old=el.querySelector(".acdot");if(old)old.remove();var v=acCell(el);el.classList.toggle("acme",v!=null&&mine.some(function(m){return acSame(v,m)}));if(v==null)return;
+  var who=null;Object.keys(others).forEach(function(k){if(acSame(parseFloat(k),v))who=(who||[]).concat(others[k])});
+  if(who)el.insertAdjacentHTML("beforeend",'<span class="acdot" title="On air: '+esc(who.join(", "))+'">●</span>')});
+ acDecoBusy=false;if(acObs)acObs.observe(document.querySelector("main"),{childList:true,subtree:true})};
+$("acFreq").insertAdjacentHTML("afterend",'<div id="acFreqName" class="small" style="color:#f5a524;margin-top:4px"></div>');
+$("acFreq").addEventListener("input",function(){var v=acFreqOf(this.value);$("acFreqName").textContent=v!=null&&acName(v)?"= "+acName(v):""});
+document.querySelector("main").addEventListener("click",function(){setTimeout(function(){if(!$("acBar").hidden&&acPend&&!/ · /.test($("acBarTx").textContent)){var n=acName(acPend.f);if(n)$("acBarTx").textContent="📻 "+acPend.f+" MHz "+acPend.m+" · "+n+" – show everyone you're on this?"}},0)},true);
+$("acGo").textContent="📡 Show I'm on this frequency";
+if(curTab=="act")acRender();
 </script>
 </body></html>
