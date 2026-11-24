@@ -35,6 +35,9 @@ select,input{width:100%;background:#0b1424;color:var(--tx);border:1px solid var(
 .bar div{position:absolute;top:0;bottom:0;border-right:1px solid rgba(0,0,0,.35)}
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
 table{width:100%;border-collapse:collapse;font-size:14px}
+.f.acme{outline:2px solid #22c55e;outline-offset:2px;border-radius:4px;background:rgba(34,197,94,.12)}.acdot{color:#22c55e;font-size:12px;margin-left:4px;cursor:pointer}
+#acBar{position:fixed;left:8px;right:8px;bottom:10px;z-index:60;background:#0f1a30;border:2px solid #22c55e;border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;box-shadow:0 6px 24px rgba(0,0,0,.5)}#acBar[hidden]{display:none}#acBarTx{flex:1 1 200px;font-weight:700}
+.acc{border-left:4px solid #22c55e}.acc .fq{font-size:22px;font-weight:800;color:#22c55e}
 .moref{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.moref div{background:#0b1424;border:1px solid var(--line);border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;cursor:pointer}.moref b{font-size:17px}.moref span{font:16px ui-monospace,Menlo,Consolas,monospace;color:#f5a524}
 .acks{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.acks .on{background:#16a34a;color:#fff;border-color:#16a34a}.post .edit{float:right;margin-right:6px;background:none;border:1px solid #60a5fa;color:#60a5fa;border-radius:8px;padding:3px 9px;font-size:12px}
 .emt col{width:auto!important}@media(min-width:700px){.emt{table-layout:fixed}.emt col:nth-child(1){width:34%!important}.emt col:nth-child(2){width:17%!important}.emt col:nth-child(3){width:15%!important}.emt col:nth-child(4){width:28%!important}.emt col:nth-child(5){width:6%!important}}
@@ -131,8 +134,9 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
+<div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
  <h2>Admin sign in</h2>
  <div class="mut small">Your callsign is on the app's admin list. Enter the admin password to delete any post, review suggestions and see the Admin tab on this device. Not an admin? Just tap Skip.</div>
@@ -154,6 +158,23 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </div></div>
 <main>
 <div id="distInfo" class="info" hidden></div>
+
+<section id="act" hidden>
+ <div class="card" id="acMe">
+  <h2>You <span id="acMeCall" class="mut small"></span></h2>
+  <div id="acMeNow" class="small" style="margin-bottom:8px"></div>
+  <div class="row"><input id="acFreq" inputmode="decimal" maxlength="12" placeholder="Frequency in MHz, e.g. 145.500" style="font-size:18px"></div>
+  <div class="chips" id="acModes" style="margin-top:8px"><button data-m="FM">FM</button><button data-m="USB">USB</button><button data-m="LSB">LSB</button><button data-m="AM">AM</button><button data-m="CW">CW</button><button data-m="FT8">FT8</button><button data-m="FT4">FT4</button><button data-m="DMR">DMR</button></div>
+  <div class="row" style="margin-top:8px"><input id="acMode" maxlength="12" placeholder="Mode (tap one above or type)"><input id="acNote" maxlength="80" placeholder="Note (optional), e.g. mobile, calling CQ"></div>
+  <div class="btns"><button class="btn" id="acGo">📡 Show I'm on this frequency</button><button class="btn alt" id="acOff">Off air</button></div>
+  <div id="acMsg" class="small" style="margin-top:6px"></div>
+  <div class="mut small" style="margin-top:6px">Tip: tap any frequency in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO…) to show you're on it. Listings clear themselves after 6 hours.</div>
+ </div>
+ <h2 style="margin:12px 4px 6px">On air now</h2>
+ <div id="acNow"></div>
+ <div class="mut small" id="acSrc" style="text-align:center;margin:6px 0 10px"></div>
+ <div class="card"><h2>Activity log</h2><div id="acLog"></div></div>
+</section>
 
 <section id="band">
  <div class="card">
@@ -1389,7 +1410,7 @@ $("repSel").value=store("repband")||"70cm";if(!$("repSel").value)$("repSel").val
 var _old=store("my_call");if(_old&&!QZ.call){QZ.call=_old.toUpperCase();store("qrz_cfg",JSON.stringify(QZ))}try{localStorage.removeItem("my_call");localStorage.removeItem("call_asked")}catch(e){}
 $("stCall").value=QZ.call||"";meShow();hdRender();if(!myCall())askCall(true);
 emRender();scFill();setRepView(repView);obChips();updCheck(false);lgRetry();locate();
-var t0=store("tab");if(t0=="cb")t0="scan";showTab(t0&&$(t0)?t0:"gb3xo");
+showTab("act");
 
 /* --- v2.8: admin sign in - M0PTN / M7VPE + admin password (the password is only kept in Firebase, checked by the rules) --- */
 /* the admin callsign list lives in Firebase: settings/admins, field "calls" (e.g. M0PTN,M7VPE) - edit it in the console */
@@ -1600,5 +1621,64 @@ $("bkRestore").onclick=function(){if(this.dataset.sure&&bkPending)return bkResto
 $("bkFile").onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$("bkPaste").value=r.result;delete $("bkRestore").dataset.sure;bkRestore(r.result)};r.readAsText(f)};
 $("bkPaste").oninput=function(){delete $("bkRestore").dataset.sure;$("bkRestore").textContent="Restore from pasted text";bkPending=null};
 $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
+
+/* ===================== v3.3: Activity tab ===================== */
+var AC={list:[],log:[],me:null,mode:"FM",timer:null},AC_TTL=6*3600e3;
+function acFreqOf(t){var m=String(t||"").replace(",",".").match(/(\d{1,5}\.\d{1,6})/);if(!m)return null;var v=parseFloat(m[1]);return v>0.01&&v<12000?v:null}
+function acFmt(v){var s=(+v).toFixed(5).replace(/0+$/,"");if((s.split(".")[1]||"").length<3)s=(+v).toFixed(3);return s}
+function acCell(el){var t=(el.textContent||"").replace(/●/g,"");if(/\d\s*[–-]\s*\d/.test(t)&&!/MHz/i.test(t))return null;if(/khz/i.test(t)&&!/mhz/i.test(t)){var k=parseFloat(t.replace(/[^\d.]/g,""));return k>=100&&k<12e6?k/1000:null}if(/hz/i.test(t)&&!/mhz/i.test(t))return null;return acFreqOf(t)}
+function acSame(a,b){return a!=null&&b!=null&&Math.abs(a-b)<0.0006}
+function acLive(d){return d.at&&Date.now()-new Date(d.at)<AC_TTL&&d.freq}
+function acLoad(){var me=FB.auth&&FB.auth.uid;
+ FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(!ok){$("acSrc").textContent="Can't load activity – no internet?";return}
+  var L=((j&&j.documents)||[]).map(FB.dec).filter(acLive);L.sort(function(a,b){return a.at<b.at?1:-1});AC.list=L;AC.me=L.filter(function(d){return d.id==me})[0]||null;
+  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every 30 s";acRender();acDecorate()});
+ FB.json(FB.base+"/activitylog?orderBy=at%20desc&pageSize=60&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AC.log=((j&&j.documents)||[]).map(FB.dec);acRenderLog()}})}
+function acRender(){var me=FB.auth&&FB.auth.uid;$("acMeCall").textContent=QZ.call?"– "+QZ.call:"";
+ $("acMeNow").innerHTML=AC.me?'<span style="color:#22c55e;font-weight:700">● On air: '+esc(acFmt(AC.me.freq))+' MHz '+esc(AC.me.mode||"")+'</span> <span class="mut">since '+fbWhen(AC.me.at)+'</span>':'<span class="mut">Not showing on air.</span>';
+ if(AC.me&&!$("acFreq").value){$("acFreq").value=acFmt(AC.me.freq);$("acMode").value=AC.me.mode||"";$("acNote").value=AC.me.note||""}
+ var O=AC.list.filter(function(d){return d.id!=me});
+ $("acNow").innerHTML=O.map(function(d){return'<div class="post acc"><div class="fq">'+esc(acFmt(d.freq))+' <span style="font-size:15px">MHz '+esc(d.mode||"")+'</span></div>'+
+  '<div><b>'+esc(d.call)+'</b>'+(d.name?' – '+esc(d.name):'')+(d.note?' · '+esc(d.note):'')+'</div><div class="by">'+adAgo(d.at)+'</div>'+
+  '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
+  '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a></div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'}
+function acRenderLog(){$("acLog").innerHTML=AC.log.length?'<table>'+AC.log.map(function(l){return'<tr><td class="small mut" style="white-space:nowrap">'+fbWhen(l.at)+'</td><td><b>'+esc(l.call)+'</b></td><td>'+(l.freq?'<span class="f">'+esc(acFmt(l.freq))+'</span> '+esc(l.mode||""):'<span class="mut">off air</span>')+'</td></tr>'}).join("")+'</table>':'<div class="mut">Nothing logged yet.</div>'}
+function acSet(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
+ var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
+ mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v);msg.textContent="Saving…";
+ FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
+  fbCommit([{update:{name:fbDoc("activity/"+uid),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]},
+   {update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:c,freq:f,mode:mode,uid:uid})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+   msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value=f;$("acMode").value=mode;acLoad()}cb&&cb(ok)})})}
+function acOff(){var msg=$("acMsg");FB.token(function(tok){if(!tok){msg.textContent="No connection.";return}var uid=FB.auth.uid;
+ FB.del("activity",uid,function(ok){if(!ok){msg.textContent="Couldn't clear – no internet?";return}msg.textContent="✓ You're shown as off air.";
+  if(QZ.call)fbCommit([{update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:QZ.call.slice(0,12),freq:"",mode:"off air",uid:uid})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){acLoad()});else acLoad()})})}
+$("acModes").onclick=function(e){var m=e.target.dataset.m;if(!m)return;$("acMode").value=m;Array.prototype.forEach.call(this.children,function(b){b.className=b.dataset.m==m?"on":""})};
+$("acGo").onclick=function(){acSet($("acFreq").value,$("acMode").value,$("acNote").value)};
+$("acOff").onclick=acOff;
+$("acNow").onclick=function(e){var f=e.target.dataset.join;if(!f)return;$("acFreq").value=acFmt(f);$("acMode").value=e.target.dataset.mode||"";$("acNote").value="";acSet(f,e.target.dataset.mode,"");window.scrollTo({top:0,behavior:"smooth"})};
+/* tap any frequency in the app -> offer to show you're on it; mark frequencies people are on */
+var acPend=null,acDecoBusy=false,acObs=null;
+function acDecorate(){if(acDecoBusy)return;acDecoBusy=true;if(acObs)acObs.disconnect();var me=FB.auth&&FB.auth.uid,mine=AC.me?parseFloat(AC.me.freq):null,others={};
+ AC.list.forEach(function(d){if(d.id!=me){var k=acFmt(d.freq);others[k]=(others[k]||[]).concat(d.call)}});
+ Array.prototype.forEach.call(document.querySelectorAll("main .f"),function(el){if(el.closest("#atOut")||el.id=="locBig"||el.closest("#act"))return;
+  var old=el.querySelector(".acdot");if(old)old.remove();var v=acCell(el);el.classList.toggle("acme",acSame(v,mine));if(v==null)return;
+  var who=null;Object.keys(others).forEach(function(k){if(acSame(parseFloat(k),v))who=others[k]});
+  if(who)el.insertAdjacentHTML("beforeend",'<span class="acdot" title="On air: '+esc(who.join(", "))+'">●</span>')});
+ acDecoBusy=false;if(acObs)acObs.observe(document.querySelector("main"),{childList:true,subtree:true})}
+var acDecoT=null;acObs=new MutationObserver(function(){if(acDecoBusy)return;clearTimeout(acDecoT);acDecoT=setTimeout(acDecorate,250)});
+acObs.observe(document.querySelector("main"),{childList:true,subtree:true});
+document.querySelector("main").addEventListener("click",function(e){if(e.target.closest(".acdot")){e.preventDefault();e.stopPropagation();showTab("act");return}
+ var el=e.target.closest(".f");if(!el||el.closest("#atOut")||el.closest("#act")||el.id=="locBig"||e.target.closest("a,button,input"))return;var v=acCell(el);if(v==null)return;
+ var mode="",tr=el.closest("tr");if(tr)Array.prototype.forEach.call(tr.children,function(td){var m=(td.textContent||"").trim().match(/^(NFM|WFM|FM|AM|USB|LSB|SSB|CW|DMR|D-STAR|C4FM|FUSION|NXDN|DPMR|FT8|FT4|DIGITAL)\b/i);if(m&&!mode)mode=m[1].toUpperCase()});
+ if(mode=="SSB")mode=v<10?"LSB":"USB";if(!mode)mode=v>30?"FM":"USB";acPend={f:acFmt(v),m:mode};
+ $("acBarTx").textContent="📻 "+acPend.f+" MHz "+mode+" – show everyone you're on this?";$("acBar").hidden=false},true);
+$("acBarNo").onclick=function(){$("acBar").hidden=true;acPend=null};
+$("acBarYes").onclick=function(){if(!acPend)return;var p=acPend;$("acBarTx").textContent="Saving…";acSet(p.f,p.m,"",function(ok){$("acBarTx").textContent=ok?"✓ You're shown on "+p.f+" MHz "+p.m:"Couldn't save – set your callsign / check internet";setTimeout(function(){$("acBar").hidden=true},ok?1800:3500)});acPend=null};
+var _showTab33=showTab;showTab=function(t){_showTab33(t);if(t=="act")acLoad()};
+$("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
+setInterval(function(){if(!document.hidden&&(curTab=="act"||AC.list.length))acLoad()},30000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)acLoad()});
+acLoad();
 </script>
 </body></html>

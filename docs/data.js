@@ -199,9 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.2";
+var APP_VERSION = "3.3";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.3", date:"24 Nov 2026", items:[
+   "New Activity tab (first tab, opens when you start the app): show everyone the frequency and mode you're on, see who else is on air, and a log of who was on what",
+   "Tap any frequency in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO) to show you're on it – your frequency gets a green box, and a green dot shows where others are",
+   "Listings clear themselves after 6 hours"]},
  {v:"3.2", date:"24 Nov 2026", items:[
    "New Morse tab: listen and decode Morse through the microphone, reference card, text → Morse, play it out loud",
    "New Antenna tab: dipole, vertical, 5/8, J-pole and end-fed lengths for any frequency",
