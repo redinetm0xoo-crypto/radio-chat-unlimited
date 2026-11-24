@@ -199,9 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.8";
+var APP_VERSION = "3.9";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.9", date:"24 Nov 2026", items:[
+   "APRS tab fix: aprs.fi's live map can't work inside the app (it showed 'The site is experiencing problems – parsererror'), so the big button now opens it as its own page – all stations, centred on you about 25 miles across",
+   "APRS tab: new in-app map of you and the app users found on APRS – drag, zoom with + / −, tap a callsign to see it on aprs.fi",
+   "Activity: 'show on aprs.fi' opens that station on aprs.fi's live map"]},
  {v:"3.8", date:"24 Nov 2026", items:[
    "New APRS tab: the aprs.fi live map, centred on you about 25 miles across – zoom in and out on the map; 'Show app users' tracks everyone in the app who is on APRS",
    "Activity: anyone showing on air who is also on APRS shows how far away they are and which way (checks their callsign and -1 to -9, newest position wins)",
