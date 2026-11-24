@@ -199,9 +199,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.5";
+var APP_VERSION = "3.6";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.6", date:"24 Nov 2026", items:[
+   "Tab order: Morse and Antenna moved up – the last tabs are now For Sale, Announcements, Settings, Admin"]},
  {v:"3.5", date:"24 Nov 2026", items:[
    "Activity: frequencies now show their name – e.g. 433.025 shows GB3XO, 27.66125 shows CB Ch 7 – on the On air list, your own box, the log and the 'show everyone' bar",
    "Activity: show up to 3 frequencies at once – take each one off with ✕, or Off air for all"]},
