@@ -133,15 +133,18 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <header>
  <img src="icon.png" alt="">
  <div><h1>Radio Chat Unlimited</h1><a href="https://www.qrz.com/db/M0XOO" style="text-decoration:none"><small>M0XOO</small></a><button id="meBtn" hidden>You: <b id="meCall"></b></button></div>
+ <div id="hdR" style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
  <button id="distBtn" title="Distance from Redditch centre">
   <svg viewBox="0 0 24 24" fill="none" stroke="#f5a524" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#f5a524"/></svg>
   <span id="dist">…</span>
   <span id="locHdr" hidden></span>
  </button>
+ <div id="hdFreqs" hidden style="color:#22c55e;font-size:12px;font-weight:700;text-align:right;line-height:1.3;cursor:pointer" title="Frequencies you're showing on air – tap for Activity"></div>
+ </div>
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -179,6 +182,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
  <h2 style="margin:12px 4px 6px">On air now</h2>
  <div id="acNow"></div>
+ <div id="apNear"></div>
  <div class="mut small" id="acSrc" style="text-align:center;margin:6px 0 10px"></div>
  <div class="card"><h2>Activity log</h2><div id="acLog"></div></div>
 </section>
@@ -518,6 +522,23 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <div id="exStats"></div>
   <div class="mut small" style="margin-top:8px">Questions are written for this app to match the UK Foundation, Intermediate and Full syllabus – they are not the RSGB's own exam questions. Official syllabus and specimen papers: <a href="https://rsgb.org/main/?p=20290" target="_blank">rsgb.org – Exam specifications</a>.</div>
   <div class="btns"><button class="btn sm alt" id="exReset">Reset my scores</button></div>
+ </div>
+</section>
+
+<section id="aprs" hidden>
+ <div class="card">
+  <h2>APRS live map</h2>
+  <div class="btns"><button class="btn sm" id="apMe">📍 Centre on me</button><button class="btn sm alt" id="apUsers">👥 Follow app users</button><a class="btn sm alt" id="apOpen" href="https://aprs.fi/" target="_blank">Open in aprs.fi ↗</a></div>
+  <div id="apWho" class="mut small" style="margin-top:6px"></div>
+ </div>
+ <div id="apMapBox" style="position:relative;height:72vh;min-height:360px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin-bottom:12px"></div>
+ <div class="mut small" style="margin:-6px 4px 12px">Live map and data from <a href="https://aprs.fi/" target="_blank">aprs.fi</a> – starts about 25 miles across; use + / − on the map to zoom.</div>
+ <div class="card">
+  <h2>aprs.fi API key</h2>
+  <div class="mut small">The app has a built-in aprs.fi key (with aprs.fi's OK) to look up app users' APRS positions – callsign and -1 … -9 – for the Activity tab. Positions are shared with everyone and refreshed at most every 5 minutes. You only need your own key if the built-in one stops working (aprs.fi › My account › API key).</div>
+  <div class="row" style="margin-top:8px"><input id="apKey" maxlength="40" placeholder="Optional: your own aprs.fi API key" autocomplete="off"></div>
+  <div class="btns"><button class="btn sm" id="apKeySave">Save key</button><button class="btn sm alt" id="apNow">Look up positions now</button></div>
+  <div id="apMsg" class="small" style="margin-top:6px"></div>
  </div>
 </section>
 
@@ -1911,5 +1932,71 @@ function exStatsRender(){var rows=[];["F","I","A"].forEach(function(l){Object.ke
   return'<tr><td class="small">'+esc(EXAM_LEVELS[r[0]].n)+' – '+esc(EXAM_TOPICS[r[1]].n)+'</td><td class="small" style="text-align:right;white-space:nowrap;color:'+(p>=75?"#22c55e":p>=50?"#eab308":"#ef4444")+'">'+r[2]+' / '+r[3]+' ('+p+'%)</td></tr>'}).join("")+'</table><div class="mut small">Weakest first.</div>'}
 $("exReset").onclick=function(){if(this.dataset.c){EX.stats={};store("ex_stats","{}");delete this.dataset.c;this.textContent="Reset my scores";exStatsRender()}else{this.dataset.c=1;this.textContent="Tap again to reset"}};
 var _showTab37=showTab;showTab=function(t){_showTab37(t);if(t=="exam")exSetup()};
+</script>
+<script>
+/* --- v3.8: APRS - aprs.fi live map tab + app users' APRS positions (base call and -1..-9) shown with distance on Activity --- */
+var AP={near:25,ssids:["","-1","-2","-3","-4","-5","-6","-7","-8","-9"],users:{},pos:{},busy:false,lastRun:+store("ap_last")||0,mapKey:""};
+/* Pete's (M0PTN) aprs.fi key is built in - aprs.fi confirmed this is fine (24 Nov 2026). A key typed in the box overrides it. */
+var AP_KEY_DEFAULT="209605.7aHWBxNlpG57c1";
+function apKey(){return(store("aprs_key")||"").trim()||AP_KEY_DEFAULT}
+$("apKey").value=(store("aprs_key")||"").trim();
+$("apKeySave").onclick=function(){var k=$("apKey").value.trim();store("aprs_key",k);$("apMsg").textContent=k?"✓ Your key saved on this device.":"Using the app's built-in key.";if(k){AP.lastRun=0;apRefresh(true)}};
+$("apNow").onclick=function(){AP.lastRun=0;apRefresh(true)};
+function apMyPos(){if(lastPos)return{lat:lastPos.lat,lon:lastPos.lon,src:"you"};var me=QZ.call&&AP.pos[baseCall(QZ.call)];if(me)return{lat:me.lat,lon:me.lng,src:"your APRS ("+me.n+")"};return null}
+function apZoom(lat,w){var z=Math.log(156543.03*Math.cos(lat*Math.PI/180)*w/40234)/Math.LN2;return Math.max(3,Math.min(18,Math.round(z)))}
+function apMap(q){var box=$("apMapBox"),P=homePos(),w=box.offsetWidth||380;
+ var url=q?"https://aprs.fi/?"+q:"https://aprs.fi/?lat="+P.lat.toFixed(4)+"&lng="+P.lon.toFixed(4)+"&z="+apZoom(P.lat,w)+"&timerange=3600";
+ if(url==AP.mapKey&&box.firstChild)return;AP.mapKey=url;$("apOpen").href=url;
+ box.innerHTML='<iframe src="'+esc(url)+'" style="width:100%;height:100%;border:0" allow="geolocation" title="aprs.fi live map"></iframe>';
+ $("apWho").textContent=q?"Following app users on APRS – all other stations are shown too.":(P.fallback?"Centred on Redditch (turn location on to centre on you).":"Centred on your location.")}
+$("apMe").onclick=function(){AP.mapKey="";apMap()};
+$("apUsers").onclick=function(){var L=Object.keys(AP.pos).filter(function(k){return AP.users[k]}).map(function(k){return AP.pos[k].n}).slice(0,20);
+ if(!L.length){$("apWho").textContent="No app users found on APRS yet"+(apKey()?".":" – add an aprs.fi API key below, or wait for someone who has one.");return}AP.mapKey="";apMap("call="+encodeURIComponent(L.join(","))+"&others=1&timerange=3600")};
+function apShowCall(name){showTab("aprs");AP.mapKey="";apMap("call="+encodeURIComponent(name)+"&others=1&timerange=3600")}
+/* app users: users/{CALL} written by each app once a day */
+function apRegister(){var c=QZ.call&&baseCall(QZ.call);if(!c||!/^[A-Z0-9]{3,12}$/.test(c))return;var k="ap_reg_"+c,t=+store(k)||0;if(Date.now()-t<864e5)return;
+ FB.token(function(tok){if(!tok)return;fbCommit([{update:{name:fbDoc("users/"+c),fields:FB.enc({call:c,name:(store("my_name")||"").slice(0,60)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){if(ok)store(k,String(Date.now()))})})}
+function apLoadFb(cb){var n=2;function done(){if(--n==0)cb&&cb()}
+ FB.json(FB.base+"/users?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.users={};((j&&j.documents)||[]).map(FB.dec).forEach(function(u){if(u.call)AP.users[u.call]=u})}done()});
+ FB.json(FB.base+"/aprs?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.pos={};AP.posAt={};((j&&j.documents)||[]).map(FB.dec).forEach(function(d){AP.posAt[d.call]=d.at;try{var p=d.pos?JSON.parse(d.pos):null;if(p&&p.lat!=null)AP.pos[d.call]=p}catch(e){}})}done()})}
+/* look up every app user (and anyone showing on air) on aprs.fi: CALL, CALL-1 ... CALL-9, newest position wins; 2 callsigns per request (20 names) */
+function apRefresh(force){var key=apKey();apLoadFb(function(){acRender();
+ if(!key||AP.busy)return;if(!force&&Date.now()-AP.lastRun<5*60e3)return;
+ var calls={};Object.keys(AP.users).forEach(function(c){calls[c]=1});(AC.list||[]).forEach(function(d){var b=baseCall(d.call);if(/^[A-Z0-9]{3,12}$/.test(b))calls[b]=1});if(QZ.call)calls[baseCall(QZ.call)]=1;
+ var L=Object.keys(calls).filter(function(c){return force||!AP.posAt||!AP.posAt[c]||Date.now()-new Date(AP.posAt[c])>5*60e3});if(!L.length)return;
+ AP.busy=true;AP.lastRun=Date.now();store("ap_last",String(AP.lastRun));$("apMsg").textContent="Looking up "+L.length+" callsign"+(L.length>1?"s":"")+" on aprs.fi…";
+ var batches=[];for(var i=0;i<L.length;i+=2)batches.push(L.slice(i,i+2));var found=0,fail=0,bi=0;
+ (function next(){if(bi>=batches.length){AP.busy=false;$("apMsg").textContent=fail?"aprs.fi lookup failed ("+fail+" of "+batches.length+") – check the key or try later.":"✓ Checked "+L.length+" callsign"+(L.length>1?"s":"")+" (each with -1 … -9): "+found+" on APRS.";apLoadFb(function(){acRender()});return}
+  var B=batches[bi++],names=[];B.forEach(function(c){AP.ssids.forEach(function(s){names.push(c+s)})});
+  var x=new XMLHttpRequest();x.open("GET","https://api.aprs.fi/api/get?name="+encodeURIComponent(names.join(","))+"&what=loc&apikey="+encodeURIComponent(key)+"&format=json");x.timeout=8000;
+  x.onload=function(){var j=null;try{j=JSON.parse(x.responseText)}catch(e){}if(!j||j.result!="ok"){fail++;return setTimeout(next,1500)}
+   var best={};(j.entries||[]).forEach(function(e){var b=String(e.name||"").toUpperCase().replace(/-\d+$/,"");if(B.indexOf(b)<0||e.lat==null)return;var t=+(e.lasttime||e.time)||0;
+    if(!best[b]||t>best[b].t)best[b]={n:String(e.name).slice(0,12),lat:+(+e.lat).toFixed(5),lng:+(+e.lng).toFixed(5),t:t,sym:String(e.symbol||"").slice(0,2),c:String(e.comment||"").slice(0,60)}});
+   var W=B.map(function(c){if(best[c])found++;return{update:{name:fbDoc("aprs/"+c),fields:FB.enc({call:c,pos:best[c]?JSON.stringify(best[c]):""})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}});
+   fbCommit(W,function(){setTimeout(next,1200)})};
+  x.onerror=x.ontimeout=function(){fail++;setTimeout(next,1500)};x.send()})()})}
+function apProx(call){var p=AP.pos[baseCall(call)],me=apMyPos();if(!p)return null;var age=Date.now()/1000-p.t,r={p:p,age:age};
+ if(me){r.mi=miles(me.lat,me.lon,p.lat,p.lng);r.dir=compass(bearing(me.lat,me.lon,p.lat,p.lng))}return r}
+function apAge(s){return s<90?"just now":s<3600?Math.round(s/60)+" min ago":s<86400?Math.round(s/3600)+" h ago":Math.round(s/86400)+" days ago"}
+function apProxHtml(call){var r=apProx(call);if(!r)return"";
+ return'<div class="small" style="margin-top:4px">📍 '+(r.mi!=null?'<b>'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' miles '+r.dir+'</b> of you · ':'')+'APRS '+esc(r.p.n)+' · '+apAge(r.age)+' <a href="#" data-apcall="'+esc(r.p.n)+'">show on map</a></div>'}
+function hdFreqs(){var M=(typeof acMineOf=="function"?acMineOf(AC.list||[]):[]),el=$("hdFreqs");el.hidden=!M.length;
+ el.innerHTML=M.map(function(d){return"● "+esc(acFmt(d.freq))+" "+esc(d.mode||"")}).join("<br>")}
+$("hdFreqs").onclick=function(){showTab("act")};
+var _acRender38=acRender;acRender=function(){_acRender38();hdFreqs();
+ /* distance on each "on air" box */
+ Array.prototype.forEach.call(document.querySelectorAll("#acNow .post"),function(el){var b=el.querySelector("b");if(!b||el.querySelector("[data-apcall]"))return;var h=apProxHtml(b.textContent);if(h)el.querySelector(".by").insertAdjacentHTML("beforebegin",h)});
+ /* app users on APRS within 25 miles who are NOT already showing on air */
+ var me=apMyPos(),onAir={},myB=QZ.call?baseCall(QZ.call):"";(AC.list||[]).forEach(function(d){onAir[baseCall(d.call)]=1});
+ var near=Object.keys(AP.pos).filter(function(c){return c!=myB&&!onAir[c]&&AP.users[c]}).map(function(c){var r=apProx(c);r.c=c;return r}).filter(function(r){return r.mi!=null&&r.mi<=AP.near&&r.age<86400}).sort(function(a,b){return a.mi-b.mi});
+ $("apNear").innerHTML=(near.length?'<h2 style="margin:12px 4px 6px">Nearby on APRS <span class="mut small">(app users within '+AP.near+' miles)</span></h2>'+near.map(function(r){var u=AP.users[r.c]||{};
+   return'<div class="post"><div class="fq" style="font-size:20px">'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' <span style="font-size:15px">miles '+r.dir+'</span></div><div><b>'+esc(r.c)+'</b>'+(u.name?' – '+esc(u.name):'')+' <span class="mut small">· APRS '+esc(r.p.n)+'</span></div>'+(r.p.c?'<div class="small mut">'+esc(r.p.c)+'</div>':'')+'<div class="by">'+apAge(r.age)+'</div>'+
+   '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-apcall="'+esc(r.p.n)+'">📍 Show on map</button><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(r.c)+'">'+esc(r.c)+' on QRZ</a></div></div>'}).join(""):"")+
+  (me?"":'<div class="mut small" style="text-align:center;margin:6px 0">Turn location on (top right) to see how far away people are.</div>')};
+document.querySelector("#act").addEventListener("click",function(e){var c=e.target.dataset&&e.target.dataset.apcall;if(c){e.preventDefault();apShowCall(c)}});
+var _acLoad38=acLoad;acLoad=function(){_acLoad38();if(curTab=="act")apRefresh(false)};
+var _showTab38=showTab;showTab=function(t){_showTab38(t);if(t=="aprs"&&!AP.mapKey)apMap();if(t=="act")apRefresh(false)};
+setTimeout(apRegister,4000);var _setMyCall38=setMyCall;setMyCall=function(c){_setMyCall38(c);setTimeout(apRegister,500)};
+if(curTab=="act")setTimeout(function(){apRefresh(false)},3000);
 </script>
 </body></html>

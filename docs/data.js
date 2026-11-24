@@ -199,9 +199,15 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.7";
+var APP_VERSION = "3.8";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.8", date:"24 Nov 2026", items:[
+   "New APRS tab: the aprs.fi live map, centred on you about 25 miles across – zoom in and out on the map; 'Show app users' tracks everyone in the app who is on APRS",
+   "Activity: anyone showing on air who is also on APRS shows how far away they are and which way (checks their callsign and -1 to -9, newest position wins)",
+   "Activity: new 'Nearby on APRS' boxes for app users within 25 miles who aren't showing on a frequency (people already on air aren't listed twice)",
+   "Your on-air frequencies now show in green under the location button at the top right – tap them to open Activity",
+   "APRS lookups use a built-in aprs.fi key (with aprs.fi's OK); positions are shared with everyone and refreshed at most every 5 minutes"]},
  {v:"3.7", date:"24 Nov 2026", items:[
    "New Exam tab: Foundation, Intermediate and Full practice – a random question from all sections or one section, or a timed-style practice test with the real question count and pass mark",
    "Exam: wrong answers show the right one, why, and which syllabus section to revise (with a link to the matching tab, e.g. Antenna or Band Plan); your scores are kept, weakest sections first",
