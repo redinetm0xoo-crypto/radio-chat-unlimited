@@ -199,9 +199,14 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.11";
+var APP_VERSION = "3.12";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.12", date:"25 Nov 2026", items:[
+   "New Alerts tab – each person chooses their own alerts: 10 m opening, 6 m / 4 m / 2 m Sporadic E, aurora (K index you choose), an app user on APRS within a distance you choose, and someone showing on air (any distance or only nearby)",
+   "Android: alerts arrive as phone notifications even when the app is closed (checked every 15 minutes); only changes are sent",
+   "Web: alerts work as browser notifications while the page is open",
+   "'Send a test alert' and 'Check now' buttons"]},
  {v:"3.11", date:"25 Nov 2026", items:[
    "Widget is now 1×1: GB3XO, a coloured dot with ON AIR / Idle / Off, and the time it was checked (tap to refresh)",
    "Activity: people on the same frequency and mode now share one box, names separated by commas",

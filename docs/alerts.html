@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>RCU alerts</title></head><body>
+<!-- v3.12: loaded in a hidden WebView by the Android background job every 15 minutes. Does nothing in a normal browser. -->
+<script src="alerts.js"></script>
+<script>
+(function () {
+ if (!/RadioChatUnlimited\//.test(navigator.userAgent)) return;
+ var ended = false;
+ function ask(m) { try { return prompt(m) || ""; } catch (e) { return ""; } }
+ function done() { if (ended) return; ended = true; ask("rcu:xdone"); }
+ setTimeout(done, 90000);
+ var prefs = {}, state = {};
+ try { prefs = JSON.parse(ask("rcu:xget:alerts") || "{}"); } catch (e) {}
+ try { state = JSON.parse(ask("rcu:xget:astate") || "{}"); } catch (e) {}
+ if (!prefs.enabled) return done();
+ ALR.run({prefs: prefs, state: state,
+  post: function (t, x) { ask("rcu:xpost:" + String(t).replace(/\n/g, " ") + "\n" + x); },
+  save: function (s) { ask("rcu:xpref:astate=" + JSON.stringify(s)); },
+  done: done});
+})();
+</script>
+</body></html>
