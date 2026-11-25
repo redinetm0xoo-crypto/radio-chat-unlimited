@@ -151,7 +151,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="alerts">Alerts</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -553,17 +553,21 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
 </section>
 
-<section id="alerts" hidden>
+
+<section id="set" hidden>
  <div class="card">
-  <h2>Alerts</h2>
-  <label class="row" style="align-items:center;gap:10px;font-size:17px;font-weight:700"><input type="checkbox" id="alOn" style="width:22px;height:22px"> Send me alerts</label>
+  <h2>Notifications</h2>
+  <label class="row" style="align-items:center;justify-content:flex-start;gap:10px;font-size:17px;font-weight:700"><input type="checkbox" id="alOn" style="width:22px;height:22px;flex:none;margin:0"> Notifications on</label>
   <div class="mut small" id="alHow"></div>
-  <div class="btns"><button class="btn sm alt" id="alTest">Send a test alert</button><button class="btn sm alt" id="alNow">Check now</button></div>
   <div id="alMsg" class="small" style="margin-top:6px"></div>
  </div>
  <div class="card" id="alOpts">
   <h2>Propagation</h2>
-  <label class="alr"><input type="checkbox" data-al="p10"> 10 m opens <span class="mut small">(hamqsl 12–10 m Fair or Good)</span></label>
+  <div class="mut small">HF bands: alert when hamqsl.com shows the band group Fair or Good (day/night as now).</div>
+  <label class="alr"><input type="checkbox" data-al="p80"> 80 m / 60 m / 40 m open</label>
+  <label class="alr"><input type="checkbox" data-al="p30"> 30 m / 20 m open</label>
+  <label class="alr"><input type="checkbox" data-al="p17"> 17 m / 15 m open</label>
+  <label class="alr"><input type="checkbox" data-al="p10"> 12 m / 10 m open</label>
   <label class="alr"><input type="checkbox" data-al="p6"> 6 m opens <span class="mut small">(Sporadic E in Europe)</span></label>
   <label class="alr"><input type="checkbox" data-al="p4"> 4 m opens <span class="mut small">(Sporadic E)</span></label>
   <label class="alr"><input type="checkbox" data-al="p2"> 2 m opens <span class="mut small">(Sporadic E – rare)</span></label>
@@ -572,13 +576,12 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <h2 style="margin-top:14px">APRS</h2>
   <label class="alr"><input type="checkbox" data-al="aprs"> An app user is on APRS within <select data-aln="aprsMi"><option>2</option><option>5</option><option>10</option><option>15</option><option>25</option></select> miles of me</label>
   <div class="mut small">At most once every 6 hours for each person. Uses your location (or your own APRS position).</div>
+  <h2 style="margin-top:14px">App</h2>
+  <label class="alr"><input type="checkbox" data-al="upd"> A new version of the app is out <span class="mut small">(Android app)</span></label>
   <h2 style="margin-top:14px">On air</h2>
   <label class="alr"><input type="checkbox" data-al="air"> Someone shows on air in Activity</label>
   <label class="alr" style="padding-left:30px">only if they are within <select data-aln="airMi"><option value="0">any distance</option><option>5</option><option>10</option><option>25</option><option>50</option></select> <span class="mut small">(needs their APRS position)</span></label>
  </div>
-</section>
-
-<section id="set" hidden>
  <div class="card">
   <h2>Backup &amp; restore</h2>
   <div class="mut small">Saves everything this app keeps on this phone or PC – callsign, scanner lists, favourites, emergency list, logs, settings – so you can put it back later or on a new phone.</div>
@@ -987,6 +990,8 @@ $("updCheckBtn").onclick=function(){store("upd_later","");updCheck(true)};
 /* web version: no update checks - it always loads the newest version when opened */
 if(WEB){$("updBtns").style.display="none";$("updMsg").innerHTML='This is version '+APP_VERSION+'. The web version updates itself – it always opens the newest version. Using an Android phone? <a href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Get the Android app</a>.'}
 setInterval(function(){updCheck(false)},30*60000);
+/* v3.13: the current version is also kept in Firebase (settings/version, field v) - if it's newer than this app, check GitHub now so the green banner shows */
+if(!WEB)setTimeout(function(){FB.json(FB.base+"/settings/version?key="+FB.key,{cache:"no-store"},function(ok,j){var v=ok&&j&&j.fields&&j.fields.v&&j.fields.v.stringValue;if(v&&ALR.newer(v,APP_VERSION)&&!(UPD&&!newer(v,UPD.tag.replace(/^v/i,"")))){store("upd_t","0");updCheck(false)}})},4000);
 
 /* --- feature suggestions --- */
 $("sugBtn").onclick=function(){$("verBtn").onclick();setTimeout(function(){$("sugCard").scrollIntoView()},50)};
@@ -1885,7 +1890,7 @@ acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML=
   mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v))slot=d.id});
   if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
   if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off (✕) first.</span>';return cb&&cb(false)}
-  var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
+  if(arguments[4])lab=String(arguments[4]).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
   fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]},
    {update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:c,freq:f,mode:mode,uid:uid,label:lab})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
    msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";acLoad()}cb&&cb(ok)})})};
@@ -2096,9 +2101,9 @@ var _ntSaveHd311=$("ntSaveHd").onclick;$("ntSaveHd").onclick=function(){var nm=$
 ntNames(function(){if(typeof ntSelRender=="function")ntSelRender();if(curTab=="act")acRender()});
 </script>
 <script>
-/* --- v3.12: Alerts tab - each user chooses propagation / APRS / on-air alerts (logic in alerts.js) --- */
+/* --- v3.12: Alerts (v3.13: Notifications section inside Settings, master switch only, all HF band groups) - each user chooses propagation / APRS / on-air alerts (logic in alerts.js) --- */
 var AL={p:loadJSON("alerts",{}),busy:false};
-function alPrefs(){var P={},k;for(k in ALR.DEF)P[k]=ALR.DEF[k];for(k in AL.p)P[k]=AL.p[k];P.call=QZ.call||"";P.uid=(FB.auth&&FB.auth.uid)||"";
+function alPrefs(){var P={},k;for(k in ALR.DEF)P[k]=ALR.DEF[k];for(k in AL.p)P[k]=AL.p[k];P.call=QZ.call||"";P.ver=APP_VERSION;P.app=IS_APP?1:0;P.uid=(FB.auth&&FB.auth.uid)||"";
  if(lastPos){P.lat=+lastPos.lat.toFixed(3);P.lon=+lastPos.lon.toFixed(3)}var ok=(store("aprs_key")||"").trim();if(ok)P.key=ok;else delete P.key;return P}
 function alSync(){var P=alPrefs();store("alerts",JSON.stringify(AL.p));if(IS_APP){try{prompt("rcu:xpref:alerts="+JSON.stringify(P))}catch(e){}}}
 function alState(){if(IS_APP){try{return JSON.parse(prompt("rcu:xget:astate")||"{}")}catch(e){return{}}}return loadJSON("astate",{})}
@@ -2111,16 +2116,36 @@ function alRender(){var P=alPrefs();$("alOn").checked=!!AL.p.enabled;
  $("alOpts").style.opacity=AL.p.enabled?1:.5;
  $("alHow").innerHTML=IS_APP?"Your phone checks every 15 minutes in the background, even when the app is closed. Only changes are sent – a band opening, someone newly near you or newly on air.":
   "In a browser, alerts only work while this page is open (checked every 5 minutes). Install the Android app for alerts when it's closed."+(window.Notification&&Notification.permission=="denied"?' <span style="color:#ef4444">Notifications are blocked for this site in your browser settings.</span>':"");
- var st=alState();if(st.cond)$("alCond").textContent="Last check "+new Date(st.cond.at).toTimeString().slice(0,5)+": 10 m "+st.cond.b10+" · 6 m "+st.cond.b6+" · K index "+(st.cond.kp!=null&&!isNaN(st.cond.kp)?st.cond.kp:"?")}
+ var st=alState();if(st.cond)$("alCond").textContent="Last check "+new Date(st.cond.at).toTimeString().slice(0,5)+": 80–40 m "+(st.cond.b80||"?")+" · 30–20 m "+(st.cond.b30||"?")+" · 17–15 m "+(st.cond.b17||"?")+" · 12–10 m "+st.cond.b10+" · 6 m "+st.cond.b6+" · K index "+(st.cond.kp!=null&&!isNaN(st.cond.kp)?st.cond.kp:"?")}
 function alPerm(){if(IS_APP){try{prompt("rcu:xnotif")}catch(e){}}else if(window.Notification&&Notification.permission=="default")Notification.requestPermission().then(alRender)}
 $("alOn").onchange=function(){AL.p.enabled=this.checked;if(this.checked)alPerm();alSync();alRender();if(this.checked)alCheck(true)};
 $("alOpts").addEventListener("change",function(e){var t=e.target;if(t.dataset.al)AL.p[t.dataset.al]=t.checked;else if(t.dataset.aln)AL.p[t.dataset.aln]=+t.value;else return;alSync();alRender()});
-$("alTest").onclick=function(){alPerm();alPost("📡 Test alert","Alerts are working on this "+(IS_APP?"phone":"browser")+".");$("alMsg").textContent="Test sent – check your notifications."};
 function alCheck(quiet){if(AL.busy||!AL.p.enabled)return;AL.busy=true;if(!quiet)$("alMsg").textContent="Checking…";
- ALR.run({prefs:alPrefs(),state:alState(),post:alPost,save:alSave,done:function(out){AL.busy=false;if(!quiet)$("alMsg").textContent=out.length?"✓ Sent "+out.length+" alert"+(out.length>1?"s":"")+".":"✓ Checked – nothing new.";if(curTab=="alerts")alRender()}})}
-$("alNow").onclick=function(){alCheck(false)};
-var _showTab312=showTab;showTab=function(t){_showTab312(t);if(t=="alerts")alRender()};
+ ALR.run({prefs:alPrefs(),state:alState(),post:alPost,save:alSave,done:function(out){AL.busy=false;if(!quiet)$("alMsg").textContent=out.length?"✓ Sent "+out.length+" alert"+(out.length>1?"s":"")+".":"✓ Checked – nothing new.";if(curTab=="set")alRender()}})}
+var _showTab312=showTab;showTab=function(t){_showTab312(t);if(t=="set")alRender()};
 setTimeout(alSync,5000);setInterval(alSync,10*60e3);
 if(WEB)setInterval(function(){if(AL.p.enabled&&window.Notification&&Notification.permission=="granted")alCheck(true)},5*60e3);
+</script>
+<script>
+/* --- v3.13: UK Repeaters - open a repeater and show yourself on air on it (one button per mode); open it again to go off air --- */
+function rpAirFind(r){var v=r.tx;return acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})}
+function rpAirDraw(row,msg){var r=RP.filter(function(x){return x.id==row.dataset.id})[0],d=row.querySelector(".rdet");if(!r||!d||d.hidden)return;
+ var box=d.querySelector(".rpair");if(!box){box=document.createElement("div");box.className="rpair";box.style.marginTop="8px";d.appendChild(box)}
+ var on=rpAirFind(r),modes=r.modes.split("").map(function(c){return MODES[c]}).filter(function(m){return m&&m!="ATV"});if(!modes.length)modes=["FM"];
+ box.innerHTML=(on.length?'<div class="small" style="color:#22c55e;font-weight:700">You\'re showing on air on '+esc(r.call)+' ('+esc(on.map(function(x){return x.mode}).join(", "))+')</div>'+
+   '<div class="btns"><button class="btn sm alt" data-rpoff="'+r.id+'">Off air on '+esc(r.call)+'</button></div>':
+   '<div class="btns">'+modes.map(function(m){return'<button class="btn sm" data-rpon="'+r.id+'" data-rpmode="'+esc(m)+'">📡 On air on '+esc(r.call)+(modes.length>1?' – '+esc(m):'')+'</button>'}).join("")+'</div>')+
+  '<div class="small rpmsg" style="margin-top:4px">'+(msg||"")+'</div>'}
+function rpAirRefresh(row,msg){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)AC.list=((j&&j.documents)||[]).map(FB.dec).filter(acLive);
+ FB.token(function(){rpAirDraw(row,msg)})})}
+var _rnClick313=$("rnList").onclick;
+$("rnList").onclick=function(e){var t=e.target,row=t.closest&&t.closest(".rp");
+ if(row&&(t.dataset.rpon||t.dataset.rpoff)){var r=RP.filter(function(x){return x.id==row.dataset.id})[0],m=row.querySelector(".rpmsg");
+  if(!QZ.call){m.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return}
+  t.disabled=true;t.textContent="…";
+  if(t.dataset.rpon){acSet(r.tx.toFixed(4),t.dataset.rpmode,"",function(ok){rpAirRefresh(row,ok?"✓ Everyone can see you on "+esc(r.call)+" in Activity.":'<span style="color:#ef4444">'+esc($("acMsg").textContent||"Couldn't save.")+'</span>')},(r.call+" "+r.town).trim())}
+  else{var L=rpAirFind(r),n=L.length;if(!n)return rpAirRefresh(row);FB.token(function(tok){if(!tok){m.textContent="No connection.";return}L.forEach(function(d){acOffOne(d.id,function(){if(--n==0)rpAirRefresh(row,"✓ You're off air on "+esc(r.call)+".")})})})}
+  return}
+ _rnClick313.call(this,e);if(row&&!row.querySelector(".rdet").hidden)rpAirRefresh(row)};
 </script>
 </body></html>

@@ -1,4 +1,4 @@
-/* v3.12 Alerts - shared by the Android background check (alerts.html, every 15 min) and the open app / web page.
+/* v3.12 Alerts (v3.13: 80-40, 30-20, 17-15 and 12-10 m band groups) - shared by the Android background check (alerts.html, every 15 min) and the open app / web page.
    Checks: propagation (10 m, 6 m / 4 m / 2 m Sporadic E, aurora) from hamqsl.com, app users near you on APRS (aprs.fi),
    and people showing on air (Firebase). Each user picks what they want in the Alerts tab. Only CHANGES are notified:
    a band opening, someone newly near you (once every 6 h each), someone newly on air. The first run just remembers. */
@@ -6,7 +6,7 @@ var ALR = {
  FS: "https://firestore.googleapis.com/v1/projects/radio-chat-unlimited-m0xoo/databases/(default)/documents/",
  KEY: "AIzaSyA6ClIo52wbC2afxEAJRerCdZLaHhOXdoc",
  APRS_KEY: "209605.7aHWBxNlpG57c1",
- DEF: {p10: true, p6: true, p4: false, p2: false, aur: true, kp: 5, aprs: true, aprsMi: 10, air: true, airMi: 0},
+ DEF: {upd: true, p80: false, p30: false, p17: false, p10: true, p6: true, p4: false, p2: false, aur: true, kp: 5, aprs: true, aprsMi: 10, air: true, airMi: 0},
  get: function (url, cb) {
   var x = new XMLHttpRequest(); try { x.open("GET", url); } catch (e) { return cb(null); } x.timeout = 20000;
   x.onload = function () { cb(x.status >= 200 && x.status < 300 ? x.responseText : null); };
@@ -22,6 +22,8 @@ var ALR = {
    cb(L);
   });
  },
+ newer: function (a, b) { a = String(a).replace(/^v/i, "").split("."); b = String(b).replace(/^v/i, "").split(".");
+  for (var i = 0; i < Math.max(a.length, b.length); i++) { var x = +a[i] || 0, y = +b[i] || 0; if (x != y) return x > y; } return false; },
  base: function (c) { return String(c || "").toUpperCase().replace(/\/.*$/, "").replace(/-\d+$/, ""); },
  isCall: function (c) { return /^([A-Z]{1,2}|\d[A-Z])\d{1,2}[A-Z]{1,4}$/.test(c); },
  miles: function (a, b, c, d) { var R = 3958.8, r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2);
@@ -31,17 +33,19 @@ var ALR = {
  /* hamqsl solar XML -> {b10, b6, b4, b2, aur, kp, txt} */
  prop: function (xml) {
   var x; try { x = new DOMParser().parseFromString(xml, "text/xml"); if (!x.getElementsByTagName("solardata").length) return null; } catch (e) { return null; }
-  var h = new Date().getHours(), tm = h >= 7 && h < 19 ? "day" : "night", b10 = "", ph = {}, i, b = x.getElementsByTagName("band"), p = x.getElementsByTagName("phenomenon");
-  for (i = 0; i < b.length; i++) if (b[i].getAttribute("name") == "12m-10m" && b[i].getAttribute("time") == tm) b10 = b[i].textContent.trim();
+  var h = new Date().getHours(), tm = h >= 7 && h < 19 ? "day" : "night", hf = {}, ph = {}, i, b = x.getElementsByTagName("band"), p = x.getElementsByTagName("phenomenon");
+  for (i = 0; i < b.length; i++) if (b[i].getAttribute("time") == tm) hf[b[i].getAttribute("name")] = b[i].textContent.trim();
+  var b10 = hf["12m-10m"] || "", g = function (n) { return /good|fair/i.test(hf[n] || ""); };
   for (i = 0; i < p.length; i++) ph[p[i].getAttribute("name") + "|" + p[i].getAttribute("location")] = p[i].textContent.trim();
   var open = function (k) { return !!ph[k] && !/closed/i.test(ph[k]); }, kpEl = x.getElementsByTagName("kindex")[0], kp = kpEl ? parseFloat(kpEl.textContent) : NaN;
-  return {b10: /good|fair/i.test(b10), b10t: b10 || "?", b6: open("E-Skip|europe_6m"), b4: open("E-Skip|europe_4m"), b2: open("E-Skip|europe"),
-   aurv: open("vhf-aurora|northern_hemi"), kp: kp, b6t: ph["E-Skip|europe_6m"] || "?"};
+  return {b80: g("80m-40m"), b80t: hf["80m-40m"] || "?", b30: g("30m-20m"), b30t: hf["30m-20m"] || "?", b17: g("17m-15m"), b17t: hf["17m-15m"] || "?",
+   b10: g("12m-10m"), b10t: b10 || "?", b6: open("E-Skip|europe_6m"), b4: open("E-Skip|europe_4m"), b2: open("E-Skip|europe"),
+   aurv: open("vhf-aurora|northern_hemi"), tm: tm, kp: kp, b6t: ph["E-Skip|europe_6m"] || "?"};
  },
  /* run all enabled checks. env: {prefs, state, post(title, text), save(state), done()} */
  run: function (env) {
   var P = {}, k; for (k in ALR.DEF) P[k] = ALR.DEF[k]; for (k in env.prefs || {}) P[k] = env.prefs[k];
-  var S = env.state || {}, first = !S.init, out = [], left = 3, now = Date.now();
+  var S = env.state || {}, first = !S.init, out = [], left = 4, now = Date.now();
   S.prop = S.prop || {}; S.aprs = S.aprs || {}; S.air = S.air || {};
   function note(t, x) { if (!first) out.push([t, x]); }
   function fin() {
@@ -50,18 +54,28 @@ var ALR = {
    if (out.length > 4) { var more = out.slice(3); out = out.slice(0, 3); out.push(["More alerts", more.map(function (o) { return o[1]; }).join(" · ").slice(0, 300)]); }
    out.forEach(function (o) { env.post(o[0], o[1]); }); env.save(S); env.done && env.done(out);
   }
+  /* 0. new app version (Android only): settings/version.v in Firebase, set at each release. Once per version. */
+  var mv = (navigator.userAgent.match(/RadioChatUnlimited\/([\d.]+)/) || [])[1] || P.ver;
+  if (P.upd && mv && P.app) ALR.get(ALR.FS + "settings/version?key=" + ALR.KEY + "&t=" + now, function (t) {
+   var v = ""; try { v = String(ALR.dec(JSON.parse(t).fields.v) || ""); } catch (e) {}
+   if (v && ALR.newer(v, mv) && S.upd != v) { S.upd = v; out.push(["⬆️ Update available – v" + v, "You have v" + mv + ". Open the app and tap the green update banner (or Version history → Check for updates)."]); }
+   fin();
+  }); else fin();
   /* 1. propagation */
-  if (P.p10 || P.p6 || P.p4 || P.p2 || P.aur) ALR.get("https://www.hamqsl.com/solarxml.php?t=" + now, function (t) {
+  if (P.p80 || P.p30 || P.p17 || P.p10 || P.p6 || P.p4 || P.p2 || P.aur) ALR.get("https://www.hamqsl.com/solarxml.php?t=" + now, function (t) {
    var c = t && ALR.prop(t);
    if (c) {
     var aur = c.aurv || (P.kp > 0 && c.kp >= P.kp);
-    [["p10", c.b10, "📡 10 m is open", "HF conditions for 12 m–10 m are " + c.b10t + " – worth a call on 28 MHz."],
+    [["p80", c.b80, "📡 80 m / 60 m / 40 m open", "HF conditions for 80 m–40 m are " + c.b80t + " (" + c.tm + ")."],
+     ["p30", c.b30, "📡 30 m / 20 m open", "HF conditions for 30 m–20 m are " + c.b30t + " (" + c.tm + ")."],
+     ["p17", c.b17, "📡 17 m / 15 m open", "HF conditions for 17 m–15 m are " + c.b17t + " (" + c.tm + ")."],
+     ["p10", c.b10, "📡 12 m / 10 m open", "HF conditions for 12 m–10 m are " + c.b10t + " – worth a call on 28 MHz."],
      ["p6", c.b6, "📡 6 m is open (Sporadic E)", "hamqsl.com reports 6 m Es in Europe (" + c.b6t + ")."],
      ["p4", c.b4, "📡 4 m is open (Sporadic E)", "hamqsl.com reports 4 m Es in Europe."],
      ["p2", c.b2, "📡 2 m is open (Sporadic E)", "hamqsl.com reports 2 m Es in Europe – rare, go and listen!"],
      ["aur", aur, "🌌 Aurora possible", "K index " + (isNaN(c.kp) ? "?" : c.kp) + (c.aurv ? " and hamqsl.com reports VHF aurora" : "") + " – try 6 m / 2 m pointing north."]
     ].forEach(function (r) { if (P[r[0]] && r[1] && !S.prop[r[0]]) note(r[2], r[3]); S.prop[r[0]] = !!r[1]; });
-    S.cond = {b10: c.b10t, b6: c.b6t, kp: c.kp, at: now};
+    S.cond = {b80: c.b80t, b30: c.b30t, b17: c.b17t, b10: c.b10t, b6: c.b6t, kp: c.kp, at: now};
    }
    fin();
   }); else fin();

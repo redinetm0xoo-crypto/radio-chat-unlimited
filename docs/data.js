@@ -199,9 +199,15 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.12";
+var APP_VERSION = "3.13";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.13", date:"25 Nov 2026", items:[
+   "Alerts renamed Notifications and moved into the Settings tab (no separate tab)",
+   "One master Notifications on / off switch at the top – the test and check-now buttons are gone",
+   "Propagation notifications for every HF band group: 80 m / 60 m / 40 m, 30 m / 20 m, 17 m / 15 m and 12 m / 10 m (as well as 6 m, 4 m, 2 m and aurora)",
+   "UK Repeaters: open any repeater and tap 'On air on …' to show yourself on it in Activity (one button per mode); open it again to go off air",
+   "Android: a notification when a new version of the app is out (the current version is now kept in Firebase); turn it off under Settings → Notifications → App"]},
  {v:"3.12", date:"25 Nov 2026", items:[
    "New Alerts tab – each person chooses their own alerts: 10 m opening, 6 m / 4 m / 2 m Sporadic E, aurora (K index you choose), an app user on APRS within a distance you choose, and someone showing on air (any distance or only nearby)",
    "Android: alerts arrive as phone notifications even when the app is closed (checked every 15 minutes); only changes are sent",
