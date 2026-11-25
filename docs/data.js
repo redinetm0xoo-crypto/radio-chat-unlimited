@@ -199,9 +199,15 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.10";
+var APP_VERSION = "3.11";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.11", date:"25 Nov 2026", items:[
+   "Widget is now 1×1: GB3XO, a coloured dot with ON AIR / Idle / Off, and the time it was checked (tap to refresh)",
+   "Activity: people on the same frequency and mode now share one box, names separated by commas",
+   "Activity: typing a frequency picks the usual mode – FT8 / FT4 on their dial frequencies, LSB below 10 MHz, USB above (and on 60 m and the VHF/UHF SSB segments), AM on airband, FM elsewhere",
+   "Activity: 'Nearby on APRS' only lists people heard in the last 12 hours",
+   "Net: 5 nets instead of 3, and each net can have a name (free text) – shown on the net buttons and 'Show net' buttons"]},
  {v:"3.10", date:"24 Nov 2026", items:[
    "APRS: the app now knows everyone who uses it – admins and anyone in the activity log, suggestions, posts and nets, not only people on v3.8+ – so e.g. Paul (M7VPE-9) shows on the map and in Nearby",
    "APRS map is live: positions refresh every minute while the APRS tab is open, with how old each position is on its label",

@@ -196,9 +196,10 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <section id="net" hidden>
  <div class="chips" id="ntSel"></div>
  <div class="card">
+  <div class="row"><label class="small mut" style="flex:1">Net name<input id="ntName" maxlength="40" placeholder="e.g. Tuesday 2m net"></label></div>
   <div class="row"><label class="small mut" style="flex:1">Frequency (MHz)<input id="ntFreq" inputmode="decimal" maxlength="12" placeholder="e.g. 145.250"></label>
   <label class="small mut" style="flex:1">Started<input id="ntStart" maxlength="20" placeholder="e.g. 20:00"></label></div>
-  <div class="btns"><button class="btn sm alt" id="ntNow">Started now</button><button class="btn sm alt" id="ntSaveHd">Save frequency / time</button></div>
+  <div class="btns"><button class="btn sm alt" id="ntNow">Started now</button><button class="btn sm alt" id="ntSaveHd">Save name / frequency / time</button></div>
   <div class="row" style="margin-top:10px"><input id="ntCall" maxlength="12" placeholder="Callsign" autocapitalize="characters" style="text-transform:uppercase;font-size:18px;flex:2"><button class="btn" id="ntAdd">＋ Add</button></div>
   <div id="ntMsg" class="small" style="margin-top:6px"></div>
  </div>
@@ -1755,7 +1756,7 @@ document.addEventListener("visibilitychange",function(){if(!document.hidden)acLo
 acLoad();
 
 /* ===================== v3.4: Net Order ===================== */
-var NT_COUNT=3,NT={sel:store("net_sel")||"net1",docs:{},busy:false,edit:null,drag:null};
+var NT_COUNT=5,NT={sel:store("net_sel")||"net1",docs:{},busy:false,edit:null,drag:null};
 function ntRaw(id,cb){FB.json(FB.base+"/nets/"+id+"?key="+FB.key,{cache:"no-store"},function(ok,j,st){
  if(!ok&&st!=404)return cb(false);var o={id:id,freq:"",started:"",rows:[],cur:"",by:"",at:"",ut:null};
  if(ok&&j&&j.fields){var f=FB.dec(j);o.freq=f.freq||"";o.started=f.started||"";o.cur=f.cur||"";o.by=f.by||"";o.at=f.at||"";try{o.rows=JSON.parse(f.rows||"[]")}catch(e){o.rows=[]}o.ut=j.updateTime}cb(true,o)})}
@@ -1770,7 +1771,7 @@ function ntMutate(fn,tries){tries=tries||0;if(!QZ.call){$("ntMsg").innerHTML='<s
 function ntLoad(){if(NT.drag||NT.edit)return;ntRaw(NT.sel,function(ok,o){if(!ok){$("ntSrc").textContent="Can't load – no internet?";return}NT.docs[NT.sel]=o;ntRender();
  $("ntSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+(o.by?" · last change by "+o.by+" "+fbWhen(o.at):"")+" · refreshes every 8 s"})}
 function ntSelRender(){var h="";for(var i=1;i<=NT_COUNT;i++){var id="net"+i,d=NT.docs[id],n=d?d.rows.filter(function(r){return!r.o}).length:0;
- h+='<button data-n="'+id+'"'+(id==NT.sel?' class="on"':'')+'>Net '+i+(d&&d.freq?' · '+esc(d.freq):'')+(n?' ('+n+')':'')+'</button>'}$("ntSel").innerHTML=h}
+ h+='<button data-n="'+id+'"'+(id==NT.sel?' class="on"':'')+'>'+esc(ntLabel(id))+(d&&d.freq?' · '+esc(d.freq):'')+(n?' ('+n+')':'')+'</button>'}$("ntSel").innerHTML=h}
 function ntRender(){ntSelRender();var o=NT.docs[NT.sel]||{rows:[],cur:"",freq:"",started:""};
  if(document.activeElement!=$("ntFreq"))$("ntFreq").value=o.freq||"";if(document.activeElement!=$("ntStart"))$("ntStart").value=o.started||"";
  var live=o.rows.filter(function(r){return!r.o}),cur=live.filter(function(r){return r.c==o.cur})[0];
@@ -1818,8 +1819,8 @@ $("ntRows").addEventListener("pointerup",ntDrop);$("ntRows").addEventListener("p
 function ntNetsOf(call){var b=baseCall(call),L=[];Object.keys(NT.docs).sort().forEach(function(id){var d=NT.docs[id];if(d.rows.some(function(r){return!r.o&&baseCall(r.c)==b}))L.push(id)});return L}
 var _acRender34=acRender;acRender=function(){_acRender34();
  Array.prototype.forEach.call($("acNow").querySelectorAll(".post"),function(p,k){var me=FB.auth&&FB.auth.uid,O=AC.list.filter(function(d){return d.id!=me}),d=O[k];if(!d)return;
-  ntNetsOf(d.call).forEach(function(id){p.querySelector(".btns").insertAdjacentHTML("beforeend",'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>')})});
- var mine=QZ.call?ntNetsOf(QZ.call):[];if(mine.length)$("acMeNow").insertAdjacentHTML("beforeend",' '+mine.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join(" "))};
+  ntNetsOf(d.call).forEach(function(id){p.querySelector(".btns").insertAdjacentHTML("beforeend",'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>')})});
+ var mine=QZ.call?ntNetsOf(QZ.call):[];if(mine.length)$("acMeNow").insertAdjacentHTML("beforeend",' '+mine.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>'}).join(" "))};
 document.addEventListener("click",function(e){var id=e.target.dataset&&e.target.dataset.shownet;if(!id)return;NT.sel=id;store("net_sel",id);showTab("net")});
 var _acLoad34=acLoad;acLoad=function(){_acLoad34();ntAll(function(){if(curTab=="act")acRender()})};
 var _showTab34=showTab;showTab=function(t){_showTab34(t);if(t=="net"){ntAll(function(){ntSelRender()});ntLoad()}};
@@ -1870,12 +1871,12 @@ acRender=function(){var me=FB.auth&&FB.auth.uid,M=acMineOf(AC.list);$("acMeCall"
  var mineNets=QZ.call?ntNetsOf(QZ.call):[];
  $("acMeNow").innerHTML=(M.length?M.map(function(d){var l=acLabel(d);return'<div style="margin:3px 0"><span style="color:#22c55e;font-weight:700">● '+esc(acFmt(d.freq))+' MHz '+esc(d.mode||"")+(l?' · '+esc(l):'')+'</span> <span class="mut">'+adAgo(d.at)+'</span> <button class="x2" data-acoff="'+esc(d.id)+'" style="background:none;border:1px solid var(--line);color:#ef4444;border-radius:8px;padding:2px 8px">✕</button></div>'}).join("")+
   '<div class="mut small">'+(M.length<AC_MAX?"You can show up to "+AC_MAX+" frequencies – add another below.":"That's the most ("+AC_MAX+") – take one off to add another.")+'</div>':'<span class="mut">Not showing on air. You can show up to '+AC_MAX+' frequencies at once.</span>')+
-  (mineNets.length?'<div style="margin-top:4px">'+mineNets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join(" ")+'</div>':'');
+  (mineNets.length?'<div style="margin-top:4px">'+mineNets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>'}).join(" ")+'</div>':'');
  var O=AC.list.filter(function(d){return M.indexOf(d)<0});
  $("acNow").innerHTML=O.map(function(d){var l=acLabel(d),nets=ntNetsOf(d.call);return'<div class="post acc"><div class="fq">'+esc(acFmt(d.freq))+' <span style="font-size:15px">MHz '+esc(d.mode||"")+'</span></div>'+(l?'<div style="font-weight:700;color:#f5a524">'+esc(l)+'</div>':'')+
   '<div><b>'+esc(d.call)+'</b>'+(d.name?' – '+esc(d.name):'')+(d.note?' · '+esc(d.note):'')+'</div><div class="by">'+adAgo(d.at)+'</div>'+
   '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
-  '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a>'+nets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show net '+id.slice(3)+'</button>'}).join("")+'</div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'};
+  '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a>'+nets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>'}).join("")+'</div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'};
 $("acMeNow").addEventListener("click",function(e){var id=e.target.dataset.acoff;if(!id)return;e.target.textContent="…";acOffOne(id,function(){acLoad()})});
 acRenderLog=function(){$("acLog").innerHTML=AC.log.length?'<table>'+AC.log.map(function(l){var lb=l.freq?acLabel(l):(l.label||"");return'<tr><td class="small mut" style="white-space:nowrap">'+fbWhen(l.at)+'</td><td><b>'+esc(l.call)+'</b></td><td>'+(l.freq?'<span class="f">'+esc(acFmt(l.freq))+'</span> '+esc(l.mode||""):'<span class="mut">off air</span>')+(lb?' <span class="mut small">· '+esc(lb)+'</span>':'')+'</td></tr>'}).join("")+'</table>':'<div class="mut">Nothing logged yet.</div>'};
 acDecorate=function(){if(acDecoBusy)return;acDecoBusy=true;if(acObs)acObs.disconnect();var M=acMineOf(AC.list),mine=M.map(function(d){return parseFloat(d.freq)}),others={};
@@ -2013,18 +2014,19 @@ function apRefresh(force){var key=apKey(),maxAge=curTab=="aprs"?60e3:5*60e3;apLo
 function apProx(call){var p=AP.pos[baseCall(call)],me=apMyPos();if(!p)return null;var age=Date.now()/1000-p.t,r={p:p,age:age};
  if(me){r.mi=miles(me.lat,me.lon,p.lat,p.lng);r.dir=compass(bearing(me.lat,me.lon,p.lat,p.lng))}return r}
 function apAge(s){return s<90?"just now":s<3600?Math.round(s/60)+" min ago":s<86400?Math.round(s/3600)+" h ago":Math.round(s/86400)+" days ago"}
-function apProxHtml(call){var r=apProx(call);if(!r)return"";
- return'<div class="small" style="margin-top:4px">📍 '+(r.mi!=null?'<b>'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' miles '+r.dir+'</b> of you · ':'')+'APRS '+esc(r.p.n)+' · '+apAge(r.age)+' <a href="'+esc(apCallUrl(r.p.n))+'" target="_blank" data-apcall="'+esc(r.p.n)+'">show on aprs.fi ↗</a></div>'}
+function apProxHtml(call,named){var r=apProx(call);if(!r)return"";
+ return'<div class="small" style="margin-top:4px">📍 '+(named?'<b>'+esc(baseCall(call))+'</b> ':'')+(r.mi!=null?'<b>'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' miles '+r.dir+'</b> of you · ':'')+'APRS '+esc(r.p.n)+' · '+apAge(r.age)+' <a href="'+esc(apCallUrl(r.p.n))+'" target="_blank" data-apcall="'+esc(r.p.n)+'">show on aprs.fi ↗</a></div>'}
 function hdFreqs(){var M=(typeof acMineOf=="function"?acMineOf(AC.list||[]):[]),el=$("hdFreqs");el.hidden=!M.length;
  el.innerHTML=M.map(function(d){return"● "+esc(acFmt(d.freq))+" "+esc(d.mode||"")}).join("<br>")}
 $("hdFreqs").onclick=function(){showTab("act")};
-var _acRender38=acRender;acRender=function(){_acRender38();hdFreqs();if(curTab=="aprs")apMap();
+var _acRender38=acRender;acRender=function(){_acRender38();if(typeof acGroupRender=="function")acGroupRender();hdFreqs();if(curTab=="aprs")apMap();
  /* distance on each "on air" box */
- Array.prototype.forEach.call(document.querySelectorAll("#acNow .post"),function(el){var b=el.querySelector("b");if(!b||el.querySelector("[data-apcall]"))return;var h=apProxHtml(b.textContent);if(h)el.querySelector(".by").insertAdjacentHTML("beforebegin",h)});
+ Array.prototype.forEach.call(document.querySelectorAll("#acNow .post"),function(el){if(el.querySelector("[data-apcall]"))return;var B=el.querySelectorAll("b.accall"),h="";
+  Array.prototype.forEach.call(B,function(b){h+=apProxHtml(b.textContent,B.length>1)});if(h)el.querySelector(".by").insertAdjacentHTML("beforebegin",h)});
  /* app users on APRS within 25 miles who are NOT already showing on air */
  var me=apMyPos(),onAir={},myB=QZ.call?baseCall(QZ.call):"";(AC.list||[]).forEach(function(d){onAir[baseCall(d.call)]=1});
- var near=Object.keys(AP.pos).filter(function(c){return c!=myB&&!onAir[c]&&apIsUser(c)}).map(function(c){var r=apProx(c);r.c=c;return r}).filter(function(r){return r.mi!=null&&r.mi<=AP.near&&r.age<86400}).sort(function(a,b){return a.mi-b.mi});
- $("apNear").innerHTML=(near.length?'<h2 style="margin:12px 4px 6px">Nearby on APRS <span class="mut small">(app users within '+AP.near+' miles)</span></h2>'+near.map(function(r){var u={name:apUserName(r.c)};
+ var near=Object.keys(AP.pos).filter(function(c){return c!=myB&&!onAir[c]&&apIsUser(c)}).map(function(c){var r=apProx(c);r.c=c;return r}).filter(function(r){return r.mi!=null&&r.mi<=AP.near&&r.age<12*3600}).sort(function(a,b){return a.mi-b.mi});
+ $("apNear").innerHTML=(near.length?'<h2 style="margin:12px 4px 6px">Nearby on APRS <span class="mut small">(app users within '+AP.near+' miles, heard in the last 12 hours)</span></h2>'+near.map(function(r){var u={name:apUserName(r.c)};
    return'<div class="post"><div class="fq" style="font-size:20px">'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' <span style="font-size:15px">miles '+r.dir+'</span></div><div><b>'+esc(r.c)+'</b>'+(u.name?' – '+esc(u.name):'')+' <span class="mut small">· APRS '+esc(r.p.n)+'</span></div>'+(r.p.c?'<div class="small mut">'+esc(r.p.c)+'</div>':'')+'<div class="by">'+apAge(r.age)+'</div>'+
    '<div class="btns" style="margin-top:6px"><a class="btn sm alt" href="'+esc(apCallUrl(r.p.n))+'" target="_blank" data-apcall="'+esc(r.p.n)+'">📍 Show on aprs.fi ↗</a><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(r.c)+'">'+esc(r.c)+' on QRZ</a></div></div>'}).join(""):"")+
   (me?"":'<div class="mut small" style="text-align:center;margin:6px 0">Turn location on (top right) to see how far away people are.</div>')};
@@ -2033,5 +2035,37 @@ var _showTab38=showTab;showTab=function(t){_showTab38(t);if(t=="aprs"){setTimeou
  clearInterval(AP.live);if(t=="aprs")AP.live=setInterval(function(){if(!document.hidden&&curTab=="aprs")apRefresh(false)},60e3);if(t=="act")apRefresh(false)};
 setTimeout(apRegister,4000);var _setMyCall38=setMyCall;setMyCall=function(c){_setMyCall38(c);setTimeout(apRegister,500)};
 if(curTab=="act")setTimeout(function(){apRefresh(false)},3000);
+</script>
+<script>
+/* --- v3.11: on-air boxes grouped by frequency + mode; mode preselected from the frequency; 5 named nets --- */
+function acGroupRender(){var M=acMineOf(AC.list),O=AC.list.filter(function(d){return M.indexOf(d)<0}),G=[],idx={};
+ O.forEach(function(d){var k=acFmt(d.freq)+"|"+String(d.mode||"").toUpperCase();if(idx[k]==null){idx[k]=G.length;G.push([])}G[idx[k]].push(d)});
+ $("acNow").innerHTML=G.map(function(g){var d=g[0],l=acLabel(d),nets=[];g.forEach(function(x){ntNetsOf(x.call).forEach(function(id){if(nets.indexOf(id)<0)nets.push(id)})});
+  var notes=g.filter(function(x){return x.note});
+  return'<div class="post acc"><div class="fq">'+esc(acFmt(d.freq))+' <span style="font-size:15px">MHz '+esc(d.mode||"")+'</span></div>'+(l?'<div style="font-weight:700;color:#f5a524">'+esc(l)+'</div>':'')+
+  '<div>'+g.map(function(x){return'<b class="accall">'+esc(x.call)+'</b>'+(x.name?' ('+esc(x.name)+')':'')}).join(", ")+(g.length>1?' <span class="mut small">· '+g.length+' on here</span>':'')+'</div>'+
+  (notes.length?'<div class="small mut">'+notes.map(function(x){return(g.length>1?esc(x.call)+': ':'')+esc(x.note)}).join(" · ")+'</div>':'')+
+  '<div class="by">'+adAgo(d.at)+'</div>'+
+  '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
+  g.map(function(x){return'<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(x.call))+'">'+esc(x.call)+' on QRZ</a>'}).join("")+
+  nets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>'}).join("")+'</div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'}
+/* mode from the frequency: digimode dial frequencies from the band plan, else the usual SSB / FM / AM convention */
+function acAutoMode(v){if(v==null)return"";var best=null;Object.keys(DIGI_COA).forEach(function(b){DIGI_COA[b].forEach(function(e){if(Math.abs(e[0]-v)<0.0015&&(!best||Math.abs(e[0]-v)<Math.abs(best[0]-v)))best=e})});
+ if(best)return String(best[1]).split(/[\s(]/)[0].toUpperCase();
+ if(v<30){if(v>=26.9&&v<28)return"FM";if(v>=29.5)return"FM";if(v>=5.25&&v<=5.45)return"USB";return v<10?"LSB":"USB"}
+ if(v>=118&&v<137)return"AM";
+ var ssb=[[50,50.5],[70,70.25],[144,144.5],[432,432.5],[1296,1296.8]];if(ssb.some(function(r){return v>=r[0]&&v<r[1]}))return"USB";return"FM"}
+function acSetMode(m){$("acMode").value=m;Array.prototype.forEach.call($("acModes").children,function(b){b.className=b.dataset.m==m?"on":""})}
+$("acFreq").addEventListener("input",function(){var v=acFreqOf(this.value);if(v==null)return;var m=acAutoMode(v);if(m)acSetMode(m)});
+/* nets: names in their own collection (netnames/net1..net5) so older app versions can't wipe them */
+NT.names={};
+function ntLabel(id){return NT.names[id]||("Net "+id.slice(3))}
+function ntNames(cb){FB.json(FB.base+"/netnames?pageSize=20&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){NT.names={};((j&&j.documents)||[]).map(FB.dec).forEach(function(d){if(d.name)NT.names[d.id.split("/").pop()]=d.name})}cb&&cb()})}
+var _ntAll311=ntAll;ntAll=function(cb){ntNames(function(){_ntAll311(cb)})};
+var _ntRender311=ntRender;ntRender=function(){_ntRender311();if(document.activeElement!=$("ntName"))$("ntName").value=NT.names[NT.sel]||""};
+var _ntSaveHd311=$("ntSaveHd").onclick;$("ntSaveHd").onclick=function(){var nm=$("ntName").value.trim().slice(0,40),id=NT.sel;
+ if(nm!==(NT.names[id]||"")&&QZ.call)FB.token(function(t){if(!t)return;fbCommit([{update:{name:fbDoc("netnames/"+id),fields:FB.enc({name:nm,by:QZ.call.slice(0,12)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){if(ok){NT.names[id]=nm;if(!nm)delete NT.names[id];ntSelRender();if(curTab=="act")acRender()}})});
+ _ntSaveHd311.call(this)};
+ntNames(function(){if(typeof ntSelRender=="function")ntSelRender();if(curTab=="act")acRender()});
 </script>
 </body></html>
