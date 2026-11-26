@@ -199,9 +199,17 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.14";
+var APP_VERSION = "3.15";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.15", date:"26 Nov 2026", items:[
+   "Admins see an ADMIN badge next to their callsign at the top (suggestion M0PTN)",
+   "Net: a named net shows its name on the Net tab button as well as its own button, and the name saves as soon as you leave the box (suggestion 2E0UMK)",
+   "Scanner: PMR446 is now two lists – PMR446 (Analogue) and new PMR446 (Digital) with the 16 DMR446 and 32 dPMR446 channels – both with the 0.5 W / fixed-antenna rules (suggestion 2E0UMK)",
+   "Scanner: '⬇ Download as CSV' on every list, ready to rearrange for your radio's programming software (suggestion 2E0UMK)",
+   "Activity: your last 3 on-air choices (any frequency, repeater or GB3XO) as one-tap buttons (suggestion M0PTN)",
+   "GB3XO: an 'On air on GB3XO' / 'Off air' button (suggestion M0PTN)",
+   "Bottom of the page: the version number now opens just the change history; 'Suggest a feature' opens just the form; new 'Review suggestions' lists everyone's suggestions – default order (new, accepted, needs work / rejected, implemented), last touched, or newest (suggestion 2E0UMK)"]},
  {v:"3.14", date:"26 Nov 2026", items:[
    "Exam tab now uses REAL RSGB questions (with the RSGB's permission) instead of ones written for the app",
    "Full: the whole RSGB Full question bank – 571 questions with all 96 diagrams; the practice test is 58 questions, one from each RSGB exam group like the real paper",

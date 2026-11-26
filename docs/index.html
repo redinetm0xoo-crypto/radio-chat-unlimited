@@ -139,7 +139,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 <body>
 <header>
  <img src="icon.png" alt="">
- <div><h1>Radio Chat Unlimited</h1><a href="https://www.qrz.com/db/M0XOO" style="text-decoration:none"><small>M0XOO</small></a><button id="meBtn" hidden>You: <b id="meCall"></b></button></div>
+ <div><h1>Radio Chat Unlimited</h1><a href="https://www.qrz.com/db/M0XOO" style="text-decoration:none"><small>M0XOO</small></a><button id="meBtn" hidden>You: <b id="meCall"></b><span id="meAdm" hidden style="background:#f59e0b;color:#111;border-radius:6px;padding:0 5px;margin-left:6px;font-size:11px;font-weight:800;vertical-align:middle">ADMIN</span></button></div>
  <div id="hdR" style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
  <button id="distBtn" title="Distance from Redditch centre">
   <svg viewBox="0 0 24 24" fill="none" stroke="#f5a524" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#f5a524"/></svg>
@@ -181,6 +181,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <h2>You <span id="acMeCall" class="mut small"></span></h2>
   <div id="acMeNow" class="small" style="margin-bottom:8px"></div>
   <div class="row"><input id="acFreq" inputmode="decimal" maxlength="12" placeholder="Frequency in MHz, e.g. 145.500" style="font-size:18px"></div>
+  <div class="chips" id="acRecent" style="margin-top:8px"></div>
   <div class="chips" id="acModes" style="margin-top:8px"><button data-m="FM">FM</button><button data-m="USB">USB</button><button data-m="LSB">LSB</button><button data-m="AM">AM</button><button data-m="CW">CW</button><button data-m="FT8">FT8</button><button data-m="FT4">FT4</button><button data-m="DMR">DMR</button></div>
   <div class="row" style="margin-top:8px"><input id="acMode" maxlength="12" placeholder="Mode (tap one above or type)"><input id="acNote" maxlength="80" placeholder="Note (optional), e.g. mobile, calling CQ"></div>
   <div class="btns"><button class="btn" id="acGo">📡 Show I'm on this frequency</button><button class="btn alt" id="acOff">Off air</button></div>
@@ -303,6 +304,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   </div>
   <div class="kv" id="xoKv"></div>
  </div>
+ <div class="card" id="xoAirCard"><div id="xoAir"><button class="btn" disabled>📡 On air on GB3XO</button></div><div id="xoAirMsg" class="small" style="margin-top:6px"></div></div>
  <div class="card" id="xoLive">
   <h2><span id="xoDot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#64748b;margin-right:8px;vertical-align:middle"></span>Live status <span class="mut small">(AllStar node 63824)</span></h2>
   <div id="xoSt" class="big" style="font-size:18px">Checking…</div>
@@ -408,7 +410,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
  <div class="card">
   <select id="scSel"></select>
-  <div class="btns"><button class="btn sm" id="scNew">+ New list</button><button class="btn sm alt" id="scRen" hidden>Rename</button><button class="btn sm alt" id="scDel" hidden>Delete list</button></div>
+  <div class="btns"><button class="btn sm" id="scNew">+ New list</button><button class="btn sm alt" id="scRen" hidden>Rename</button><button class="btn sm alt" id="scDel" hidden>Delete list</button><button class="btn sm alt" id="scCsv">⬇ Download as CSV</button></div>
   <div id="scNote"></div>
   <input id="scFilter" placeholder="Filter this list" style="margin-top:8px">
   <table style="margin-top:6px"><thead><tr><th>MHz</th><th>Name</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="scBody"></tbody></table>
@@ -599,11 +601,12 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </section>
 
 <section id="ver" hidden>
- <div class="card">
+ <div class="card" id="verCard">
   <button class="btn sm alt" id="verBack">← Back</button>
   <h2 style="margin-top:10px">Version history</h2>
   <div class="btns" id="updBtns"><button class="btn sm" id="updCheckBtn">Check for updates</button><a class="btn sm alt" href="https://github.com/redinetm0xoo-crypto/radio-chat-unlimited/releases/latest">Download page (share this)</a></div>
   <div id="updMsg" class="mut small" style="margin-top:6px"></div>
+  <div id="verOut"></div>
  </div>
  <div class="card" id="sugCard">
   <h2>Suggest a feature</h2>
@@ -612,8 +615,15 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <input id="sgCall" placeholder="Your callsign (optional)" style="margin-top:8px" autocapitalize="characters">
   <div class="btns"><button class="btn" id="sgSend">Send suggestion</button></div>
   <div class="mut small" style="margin-top:6px">Sent straight to the app's online database – no login needed. Suggestions are collected for the next version.</div>
-  <div id="verOut"></div>
+  <div id="sgOut" class="small" style="margin-top:6px"></div>
   <div id="sgMine" style="margin-top:10px"></div>
+ </div>
+ <div class="card" id="sgRev" hidden>
+  <h2>Feature suggestions</h2>
+  <div class="chips" id="sgRevOrd"><button data-o="def" class="on">Default order</button><button data-o="time">Last touched</button><button data-o="new">Newest sent</button></div>
+  <div id="sgRevCount" class="small" style="margin-top:8px"></div>
+  <div id="sgRevList" style="margin-top:6px"></div>
+  <div class="mut small" style="margin-top:6px">Default order: new (not yet decided) first, then accepted, then needs more work / rejected, then implemented. "Last touched" = most recently sent, edited or decided first.</div>
  </div>
  <div class="card" id="sgAdm" hidden>
   <h2>All suggestions <span class="mut small">(admins only)</span></h2>
@@ -624,7 +634,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
 </section>
 
-<footer>Built by <a href="https://www.qrz.com/db/M0PTN">M0PTN</a> &nbsp;|&nbsp; <button id="verBtn"></button> &nbsp;|&nbsp; <button id="sugBtn">Suggest a feature</button></footer>
+<footer>Built by <a href="https://www.qrz.com/db/M0PTN">M0PTN</a> &nbsp;|&nbsp; <button id="verBtn"></button> &nbsp;|&nbsp; <button id="sugBtn">Suggest a feature</button> &nbsp;|&nbsp; <button id="revBtn">Review suggestions</button></footer>
 </main>
 
 <script>
@@ -1000,7 +1010,7 @@ if(!WEB)setTimeout(function(){FB.json(FB.base+"/settings/version?key="+FB.key,{c
 
 /* --- feature suggestions --- */
 $("sugBtn").onclick=function(){$("verBtn").onclick();setTimeout(function(){$("sugCard").scrollIntoView()},50)};
-$("sgSend").onclick=function(){var t=$("sgTitle").value.trim(),b=$("sgBody").value.trim(),out=$("verOut");if(!t){$("sgTitle").focus();return}
+$("sgSend").onclick=function(){var t=$("sgTitle").value.trim(),b=$("sgBody").value.trim(),out=$("sgOut");if(!t){$("sgTitle").focus();return}
  var c=($("sgCall").value.trim()||QZ.call||"").toUpperCase().slice(0,12),txt=(t+(b?"\n\n"+b:"")).slice(0,2000);if(txt.length<3){$("sgTitle").focus();return}
  out.textContent="Sending…";FB.add("suggestions",{text:txt,call:c,name:(store("my_name")||"").slice(0,60),ver:(APP_VERSION+(WEB?" web":"")).slice(0,10)},function(ok,err){
   out.textContent=ok?"✓ Thanks – your suggestion has been sent.":"Couldn't send ("+err+") – check your internet connection and try again.";
@@ -1126,7 +1136,7 @@ hdRender();
 function myCall(){return String(QZ.call||"").toUpperCase()}
 function baseCall(c){return String(c||"").toUpperCase().replace(/\/[A-Z0-9]+$/,"").replace(/^[A-Z0-9]+\//,"")}
 function isMe(c){var m=myCall();return!!m&&baseCall(c)==baseCall(m)}
-function meShow(){var m=myCall();$("meBtn").hidden=!m;$("meCall").textContent=m}
+function meShow(){var m=myCall();$("meBtn").hidden=!m;$("meCall").textContent=m;$("meAdm").hidden=!FB.admin}
 function setMyCall(c){c=String(c||"").trim().toUpperCase();QZ.call=c;store("qrz_cfg",JSON.stringify(QZ));$("stCall").value=c;meShow();hdRender()}
 function askCall(force){$("cmCall").value=myCall();$("cmMsg").textContent="";$("callModal").hidden=false;if(force!==undefined)setTimeout(function(){$("cmCall").focus()},100)}
 var cmPending=null;
@@ -1413,7 +1423,7 @@ FB.hello=function(force){if(!force&&Date.now()-FB.lastHello<300000)return;FB.las
   var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/devices/"+FB.auth.uid,fields:FB.enc({call:(QZ.call||"").slice(0,12),name:(store("my_name")||"").slice(0,60),ver:(APP_VERSION+(WEB?" web":"")).slice(0,10)})},
    updateMask:{fieldPaths:["call","name","ver"]},updateTransforms:tr}]};
   FB.json(FB.base+":commit?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:JSON.stringify(body)},function(ok){if(ok&&first)store("fb_first","1")})}
- FB.json(FB.base+"/devices?pageSize=1&key="+FB.key,{headers:{Authorization:"Bearer "+tok}},function(ok){FB.admin=!!ok;var ab=document.querySelector('#tabs button[data-t="adm"]');if(ab)ab.hidden=!FB.admin;if(!FB.admin&&curTab=="adm")showTab("gb3xo");if(!$("ver").hidden&&window.sgAdmShow)sgAdmShow();if(curTab=="ann")anRender();if(curTab=="sale")fsRender()})})};
+ FB.json(FB.base+"/devices?pageSize=1&key="+FB.key,{headers:{Authorization:"Bearer "+tok}},function(ok){FB.admin=!!ok;try{meShow()}catch(e){}var ab=document.querySelector('#tabs button[data-t="adm"]');if(ab)ab.hidden=!FB.admin;if(!FB.admin&&curTab=="adm")showTab("gb3xo");if(!$("ver").hidden&&window.sgAdmShow)sgAdmShow();if(curTab=="ann")anRender();if(curTab=="sale")fsRender()})})};
 function fbWhen(ts){if(!ts)return"";var d=new Date(ts);return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+" "+d.toTimeString().slice(0,5)}
 function fbMine(p){return(FB.auth&&p.uid==FB.auth.uid)||FB.admin}
 /* poster identity: callsign from the app; name from QRZ (if a QRZ login is set) or typed once */
@@ -2172,5 +2182,62 @@ $("rnList").onclick=function(e){var t=e.target,row=t.closest&&t.closest(".rp");
   else{var L=rpAirFind(r),n=L.length;if(!n)return rpAirRefresh(row);FB.token(function(tok){if(!tok){m.textContent="No connection.";return}L.forEach(function(d){acOffOne(d.id,function(){if(--n==0)rpAirRefresh(row,"✓ You're off air on "+esc(r.call)+".")})})})}
   return}
  _rnClick313.call(this,e);if(row&&!row.querySelector(".rdet").hidden)rpAirRefresh(row)};
+</script>
+<script>
+/* ===== v3.15: seven accepted suggestions ===== */
+/* (M0PTN) ADMIN badge next to your callsign at the top - see meShow() */
+/* (2E0UMK) Net names: the selected net's name is shown on the Net tab button too, and the name saves as soon as you leave the box */
+function ntTabLabel(){var b=document.querySelector('#tabs button[data-t="net"]');if(!b)return;var nm=NT.names&&NT.names[NT.sel];b.textContent=nm?"Net: "+(nm.length>18?nm.slice(0,17)+"…":nm):"Net"}
+var _ntSelRender315=ntSelRender;ntSelRender=function(){_ntSelRender315();ntTabLabel()};
+$("ntName").addEventListener("change",function(){var nm=this.value.trim().slice(0,40),id=NT.sel;if(nm===(NT.names[id]||""))return;
+ if(!QZ.call){$("ntMsg").textContent="Set your callsign first (tap You at the top) to name a net.";return}
+ FB.token(function(t){if(!t){$("ntMsg").textContent="No connection – name not saved.";return}
+  fbCommit([{update:{name:fbDoc("netnames/"+id),fields:FB.enc({name:nm,by:QZ.call.slice(0,12)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+   if(ok){NT.names[id]=nm;if(!nm)delete NT.names[id];ntSelRender();$("ntMsg").textContent=nm?"✓ Net named \""+nm+"\".":"✓ Name cleared.";if(curTab=="act")acRender()}
+   else $("ntMsg").textContent="Couldn't save the net name ("+(st==403?"not allowed":"error "+st)+")."})})});
+$("ntName").addEventListener("keydown",function(e){if(e.key=="Enter")this.blur()});
+/* (2E0UMK) PMR446 analogue + digital lists live in scanner.js. Download any scanner list as CSV: */
+$("scCsv").onclick=function(){var l=scCur();if(!l)return;var q=function(v){v=String(v==null?"":v);return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+ var rows=(l.rows||[]).map(function(r){return Array.isArray(r)?r:[r.f,r.n,r.m,r.x]});
+ var csv="MHz,Name,Mode,Notes\r\n"+rows.map(function(r){return[r[0],r[1],r[2],r[3]].map(q).join(",")}).join("\r\n")+"\r\n",fn=String(l.name).replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"_")+".csv";
+ var tip=" Tip: open it in a spreadsheet and move the columns into the order your radio's programming software (CPS) wants before importing.";
+ if(IS_APP){try{prompt("rcu:xshare:"+csv)}catch(e){}$("scMsg").textContent="CSV of "+rows.length+" frequencies ready – choose where to save it."+tip;return}
+ var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=fn;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500);
+ $("scMsg").textContent="✓ Saved "+fn+" ("+rows.length+" frequencies) to your Downloads."+tip};
+/* (M0PTN) Activity: your last 3 on-air choices (any frequency, repeater, GB3XO...) as one-tap buttons */
+var ACR=loadJSON("ac_recent",[]);
+function acRecentRender(){var b=$("acRecent");if(!b)return;b.innerHTML=ACR.length?'<span class="mut small" style="align-self:center">Recent:</span>'+ACR.map(function(r,i){return'<button data-acr="'+i+'">'+esc((r.l?r.l+" ":"")+acFmt(r.f)+(r.m?" "+r.m:""))+'</button>'}).join(""):""}
+var _acSet315=acSet;acSet=function(freq,mode,note,cb,lab){return _acSet315(freq,mode,note,function(ok){if(ok){var v=acFreqOf(freq);if(v!=null){var L=lab||"";if(!L){try{L=acName(v)||""}catch(e){}}
+  ACR=[{f:String(v),m:mode||"",l:String(L).slice(0,30)}].concat(ACR.filter(function(r){return!(acSame(acFreqOf(r.f),v)&&(r.m||"")==(mode||""))})).slice(0,3);store("ac_recent",JSON.stringify(ACR));acRecentRender()}}cb&&cb(ok)},lab)};
+$("acRecent").onclick=function(e){var i=e.target.dataset.acr;if(i==null)return;var r=ACR[+i];if(!r)return;$("acFreq").value=acFmt(r.f);$("acMode").value=r.m||"";$("acNote").value="";acSet(r.f,r.m,"",null,r.l||undefined)};
+acRecentRender();
+/* (M0PTN) GB3XO: On air / Off air button */
+function xoAirFind(){var v=acFreqOf(GB3XO.downlink);return acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})}
+function xoAirDraw(msg){var on=xoAirFind();$("xoAir").innerHTML=on.length?'<div class="small" style="color:#22c55e;font-weight:700;margin-bottom:6px">You\'re showing on air on GB3XO</div><button class="btn alt" id="xoAirOff">Off air on GB3XO</button>':'<button class="btn" id="xoAirOn">📡 On air on GB3XO</button>';$("xoAirMsg").innerHTML=msg||""}
+function xoAirRefresh(msg){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)AC.list=((j&&j.documents)||[]).map(FB.dec).filter(acLive);FB.token(function(){xoAirDraw(msg)})})}
+$("xoAir").onclick=function(e){var t=e.target;if(t.id!="xoAirOn"&&t.id!="xoAirOff")return;
+ if(!QZ.call){$("xoAirMsg").innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return}
+ t.disabled=true;t.textContent="…";
+ if(t.id=="xoAirOn")acSet(GB3XO.downlink,"FM","",function(ok){xoAirRefresh(ok?"✓ Everyone can see you on GB3XO in Activity.":'<span style="color:#ef4444">'+esc($("acMsg").textContent||"Couldn't save.")+'</span>')},"GB3XO Redditch");
+ else{var L=xoAirFind(),n=L.length;if(!n)return xoAirRefresh();FB.token(function(tok){if(!tok){$("xoAirMsg").textContent="No connection.";return}L.forEach(function(d){acOffOne(d.id,function(){if(--n==0)xoAirRefresh("✓ You're off air on GB3XO.")})})})}};
+var _showTab315=showTab;showTab=function(t){_showTab315(t);if(t=="gb3xo")xoAirRefresh()};
+/* (2E0UMK) Footer: version number = change history only; Suggest a feature = the form (+ your own); Review suggestions = everyone's, sortable */
+var SGR_ORD="def";
+function verMode(m){$("verCard").hidden=m!="ver";$("sugCard").hidden=m!="sug";$("sgRev").hidden=m!="rev";if(m!="rev")$("sgAdm").hidden=true;else $("sgAdm").hidden=!FB.admin;if(m=="rev")sgRevLoad()}
+function sgTouched(s){return[s.at,s.created,s.edited].filter(Boolean).sort().pop()||""}
+function sgRevRender(){var L=(SG||[]).slice(),rank={new:0,accepted:1,needswork:2,rejected:3,implemented:4},st=function(s){return s.status||"new"};
+ if(SGR_ORD=="def")L.sort(function(a,b){return(rank[st(a)]-rank[st(b)])||(sgTouched(b)<sgTouched(a)?-1:1)});
+ else if(SGR_ORD=="time")L.sort(function(a,b){return sgTouched(b)<sgTouched(a)?-1:1});
+ else L.sort(function(a,b){return(b.created||"")<(a.created||"")?-1:1});
+ var n={};L.forEach(function(s){n[st(s)]=(n[st(s)]||0)+1});
+ $("sgRevCount").innerHTML="<b>"+L.length+"</b> suggestions · "+(n.new||0)+" new · "+(n.accepted||0)+" accepted · "+(n.implemented||0)+" implemented · "+(n.needswork||0)+" need more work · "+(n.rejected||0)+" rejected";
+ $("sgRevList").innerHTML=L.map(function(s){var S=st(s);return'<div class="post" style="border-left:4px solid '+SG_COL[S]+'"><div style="white-space:pre-wrap">'+esc(s.text)+'</div>'+
+  '<div class="by">'+(s.call?'<b>'+esc(s.call)+'</b>':'(no callsign)')+' · sent '+fbWhen(s.created)+'</div>'+
+  '<div class="small" style="margin-top:4px;color:'+SG_COL[S]+'"><b>'+SG_LAB[S]+'</b>'+(s.at&&S!="new"?' · '+fbWhen(s.at):'')+'</div></div>'}).join("")||'<div class="mut">None yet.</div>'}
+function sgRevLoad(){$("sgRevCount").textContent="Loading…";sgAll(function(ok,l){if(!ok){$("sgRevCount").textContent="Can't load – no internet?";return}SG=l;sgRevRender();if(FB.admin)sgRender()})}
+$("sgRevOrd").onclick=function(e){var o=e.target.dataset.o;if(!o)return;SGR_ORD=o;Array.prototype.forEach.call(this.children,function(b){b.className=b.dataset.o==o?"on":""});sgRevRender()};
+$("verBtn").addEventListener("click",function(){setTimeout(function(){verMode("ver")},150)});
+$("sugBtn").addEventListener("click",function(){setTimeout(function(){verMode("sug");$("sugCard").scrollIntoView()},150)});
+$("revBtn").onclick=function(){$("verBtn").onclick();lsStop&&lsStop();setTimeout(function(){verMode("rev");window.scrollTo(0,0)},150)};
 </script>
 </body></html>

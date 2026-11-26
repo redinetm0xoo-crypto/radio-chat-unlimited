@@ -495,8 +495,8 @@ var SCAN_BUILTIN = [
 },
 {
 "id": "pmr446",
-"name": "PMR446",
-"note": "Licence-free, 0.5 W ERP, fixed antenna. Channels 1–16 then calling-channel conventions (source: hfunderground.com). ★ = highlighted by M0PTN.",
+"name": "PMR446 (Analogue)",
+"note": "Licence-exempt, analogue FM. Max 0.5 W ERP with the radio's own fixed (non-detachable) antenna – no external antennas or amplifiers. Channels 1–16 then calling-channel conventions (source: hfunderground.com). Tones/codes vary by manufacturer; scanners ignore them. ★ = highlighted by M0PTN.",
 "rows": [
 [
 "446.00625",
@@ -737,6 +737,301 @@ var SCAN_BUILTIN = [
 "Ch 8 – Mountain Channel Italy 8/16",
 "FM",
 "114.8 Hz (code 16)"
+]
+]
+},
+{
+"id": "pmr446d",
+"name": "PMR446 (Digital)",
+"note": "Licence-exempt digital PMR446 (since 1 Jan 2018 across 446.0–446.2 MHz). Max 0.5 W ERP with the radio's own fixed (non-detachable) antenna – no external antennas or amplifiers. DMR446 = DMR Tier 1, 16 channels at 12.5 kHz on the same frequencies as analogue PMR446. dPMR446 = 32 channels at 6.25 kHz from 446.003125 MHz. Colour codes, talkgroups and IDs differ by manufacturer – CC1 / TG99 is shown as the most common DMR446 default. Scanners ignore them. Sources: Kenwood PMR446 white paper, hfunderground.com, radioreference.com.",
+"rows": [
+[
+"446.00625",
+"DMR446 Ch 1",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.01875",
+"DMR446 Ch 2",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.03125",
+"DMR446 Ch 3",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.04375",
+"DMR446 Ch 4",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.05625",
+"DMR446 Ch 5",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.06875",
+"DMR446 Ch 6",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.08125",
+"DMR446 Ch 7",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.09375",
+"DMR446 Ch 8",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.10625",
+"DMR446 Ch 9",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.11875",
+"DMR446 Ch 10",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.13125",
+"DMR446 Ch 11",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.14375",
+"DMR446 Ch 12",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.15625",
+"DMR446 Ch 13",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.16875",
+"DMR446 Ch 14",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.18125",
+"DMR446 Ch 15",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.19375",
+"DMR446 Ch 16",
+"DMR",
+"Tier 1 · CC1 · TG99 (common default)"
+],
+[
+"446.003125",
+"dPMR446 Ch 1",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.009375",
+"dPMR446 Ch 2",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.015625",
+"dPMR446 Ch 3",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.021875",
+"dPMR446 Ch 4",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.028125",
+"dPMR446 Ch 5",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.034375",
+"dPMR446 Ch 6",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.040625",
+"dPMR446 Ch 7",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.046875",
+"dPMR446 Ch 8",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.053125",
+"dPMR446 Ch 9",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.059375",
+"dPMR446 Ch 10",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.065625",
+"dPMR446 Ch 11",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.071875",
+"dPMR446 Ch 12",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.078125",
+"dPMR446 Ch 13",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.084375",
+"dPMR446 Ch 14",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.090625",
+"dPMR446 Ch 15",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.096875",
+"dPMR446 Ch 16",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.103125",
+"dPMR446 Ch 17",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.109375",
+"dPMR446 Ch 18",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.115625",
+"dPMR446 Ch 19",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.121875",
+"dPMR446 Ch 20",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.128125",
+"dPMR446 Ch 21",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.134375",
+"dPMR446 Ch 22",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.140625",
+"dPMR446 Ch 23",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.146875",
+"dPMR446 Ch 24",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.153125",
+"dPMR446 Ch 25",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.159375",
+"dPMR446 Ch 26",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.165625",
+"dPMR446 Ch 27",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.171875",
+"dPMR446 Ch 28",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.178125",
+"dPMR446 Ch 29",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.184375",
+"dPMR446 Ch 30",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.190625",
+"dPMR446 Ch 31",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
+],
+[
+"446.196875",
+"dPMR446 Ch 32",
+"dPMR",
+"6.25 kHz · CC/ID off (common default)"
 ]
 ]
 },
