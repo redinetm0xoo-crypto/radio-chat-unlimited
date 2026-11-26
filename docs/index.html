@@ -317,14 +317,14 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <a class="btn" style="display:block" id="xoQrz">Open GB3XO on QRZ.com</a>
  <div class="card" id="xoAdm" hidden style="margin-top:12px;border-color:#f59e0b">
   <h2>🔁 GB3XO reset <span class="mut small">(admins only)</span></h2>
-  <div class="mut small">Texts <b>Off</b> to the repeater's switch, waits 10 seconds, then texts <b>On</b>. Sent from your own phone (normal text charges, free on most plans). Android app only.</div>
+  <div class="mut small">Opens your Messages app with <b>Off</b> ready to the repeater's switch – tap Send and come back. 10 seconds later it opens <b>On</b> – tap Send again. Sent from your own phone (normal text charges, free on most plans). Android app only.</div>
   <div class="btns"><button class="btn" id="xoReset" style="background:#b45309">Reset</button></div>
   <div id="xoResetMsg" class="small" style="margin-top:6px"></div>
   <div id="xoResetLog" class="mut small" style="margin-top:6px"></div>
  </div>
  <div class="card" id="gwAdm" hidden style="border-color:#f59e0b">
   <h2>MB7IXO Gateway <span class="mut small">(Alvechurch) · admins only</span></h2>
-  <div class="mut small">Texts <b>On</b> or <b>Off</b> to the gateway's switch from your own phone. Android app only.</div>
+  <div class="mut small">Opens your Messages app with <b>On</b> or <b>Off</b> ready to the gateway's switch – tap Send. Sent from your own phone. Android app only.</div>
   <div class="btns"><button class="btn" id="gwOn">On</button><button class="btn alt" id="gwOff">Off</button></div>
   <div id="gwMsg" class="small" style="margin-top:6px"></div>
  </div>
@@ -2331,22 +2331,32 @@ function xoAdmShow(){$("xoAdm").hidden=$("gwAdm").hidden=!FB.admin;if(!FB.admin)
 function xoCfg(cb){if(XCFG)return cb(XCFG);fbAuthGet("adminconfig/gb3xo",function(ok,j){if(ok&&j&&j.fields){XCFG=FB.dec(j);cb(XCFG)}else cb(null)})}
 function xoResetLog(){fbAuthGet("resets?orderBy=at%20desc&pageSize=5",function(ok,j){if(!ok)return;var L=((j&&j.documents)||[]).map(FB.dec);
  $("xoResetLog").innerHTML=L.length?"Last resets: "+L.map(function(r){return esc(r.call)+" "+fbWhen(r.at)+(r.ok=="failed"?" (failed)":"")}).join(" · "):""})}
-function smsSend(num,a,b,msgEl,cb){if(!IS_APP){msgEl.innerHTML='<span style="color:#ef4444">Texts can only be sent from the Android app – open Radio Chat Unlimited on your phone.</span>';return}
- var r="";try{r=prompt("rcu:xsms:"+num+"|"+a+"|"+(b||"-"))}catch(e){r="err"}
- if(r=="perm"){msgEl.innerHTML='Android is asking for permission to send texts – tap <b>Allow</b>, then press the button again.';return}
- if(r!="ok"){msgEl.innerHTML='<span style="color:#ef4444">Couldn\'t send the text (is there a SIM / signal?).</span>';return}
+function smsSend(num,txt,msgEl,cb){if(!IS_APP){msgEl.innerHTML='<span style="color:#ef4444">Texts can only be sent from the Android app – open Radio Chat Unlimited on your phone.</span>';return}
+ var r="";try{r=prompt("rcu:xsms:"+num+"|"+txt)}catch(e){r="err"}
+ if(r!="ok"){msgEl.innerHTML='<span style="color:#ef4444">Couldn\'t open the Messages app.</span>';return}
  cb&&cb()}
-window.smsOn=function(ok){if(!window._smsWait)return;var w=window._smsWait;window._smsWait=null;clearInterval(w.t);
- w.el.innerHTML=ok?'✓ <b>On</b> sent '+new Date().toTimeString().slice(0,8)+' – GB3XO has been reset.':'<span style="color:#ef4444">"Off" was sent but "On" failed – press Reset again, or text On to the switch.</span>';
- fbCommit([{update:{name:fbDoc("resets/"+Date.now().toString(36)),fields:FB.enc({call:(QZ.call||"?").slice(0,12),ok:ok?"sent":"failed"})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){xoResetLog()})};
+var XR=null;/* reset in progress: {st:"off"|"wait"|"on", t:timer} */
+function xrLog(ok){fbCommit([{update:{name:fbDoc("resets/"+Date.now().toString(36)),fields:FB.enc({call:(QZ.call||"?").slice(0,12),ok:ok?"sent":"failed"})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){xoResetLog()})}
+function xrOff(){var el=$("xoResetMsg");if(XR&&XR.t)clearInterval(XR.t);XR={st:"off"};
+ el.innerHTML='📱 Messages opened with <b>Off</b> – tap <b>Send</b>, then come back here.<div class="btns"><button class="btn" id="xrSent">✓ Off sent – start the 10 s</button><button class="btn alt" id="xrStop">Cancel</button></div>';
+ $("xrSent").onclick=xrWait;$("xrStop").onclick=function(){if(XR&&XR.t)clearInterval(XR.t);XR=null;el.textContent="Reset cancelled."}}
+function xrWait(){if(!XR||XR.st!="off")return;var el=$("xoResetMsg"),n=10;XR.st="wait";
+ el.innerHTML='✓ <b>Off</b> sent '+new Date().toTimeString().slice(0,8)+' – opening <b>On</b> in <span id="xoCd">10</span> s…';
+ var me=XR;me.t=setInterval(function(){if(XR!==me){clearInterval(me.t);return}n--;var c=$("xoCd");if(c)c.textContent=Math.max(0,n);if(n<=0){clearInterval(me.t);xrOn()}},1000)}
+function xrOn(){var el=$("xoResetMsg");xoCfg(function(c){smsSend(c.sms,"On",el,function(){XR={st:"on"};xrLog(true);
+ el.innerHTML='📱 Messages opened with <b>On</b> – tap <b>Send</b> to bring GB3XO back.<div class="btns"><button class="btn alt" id="xrAgain">Open the On text again</button></div>';
+ $("xrAgain").onclick=function(){xoCfg(function(c){smsSend(c.sms,"On",el)})}})})}
+/* coming back from the Messages app after "Off" starts the 10 s by itself */
+function xrBack(){if(XR&&XR.st=="off"&&XR.away&&Date.now()-XR.away>2500)xrWait()}
+document.addEventListener("visibilitychange",function(){if(!XR)return;if(document.hidden){if(!XR.away)XR.away=Date.now()}else xrBack()});
+window.addEventListener("blur",function(){if(XR&&!XR.away)XR.away=Date.now()});window.addEventListener("focus",xrBack);
 $("xoReset").onclick=function(){var el=$("xoResetMsg");if(!FB.admin)return;
- if(!confirm("Reset GB3XO?\n\nThis texts \"Off\" to the repeater's switch, then \"On\" 10 seconds later. GB3XO will drop for about 10 seconds."))return;
+ if(!confirm("Reset GB3XO?\n\nYour Messages app opens with \"Off\" to the repeater's switch – tap Send and come back. 10 seconds later it opens \"On\" – tap Send again. GB3XO drops for about 10 seconds."))return;
  el.textContent="Getting the switch number…";xoCfg(function(c){if(!c||!c.sms){el.innerHTML='<span style="color:#ef4444">The switch number isn\'t set up in Firebase (adminconfig/gb3xo → sms).</span>';return}
-  smsSend(c.sms,"Off","On",el,function(){var n=10,w={el:el};window._smsWait=w;el.innerHTML='✓ <b>Off</b> sent '+new Date().toTimeString().slice(0,8)+' – sending <b>On</b> in <span id="xoCd">10</span> s…';
-   w.t=setInterval(function(){n--;var c=$("xoCd");if(c)c.textContent=Math.max(0,n);if(n<=-20&&window._smsWait===w){window._smsWait=null;clearInterval(w.t);el.innerHTML='"Off" was sent; the phone didn\'t confirm "On" – check GB3XO is back, and press Reset again if not.'}},1000)})})};
-function gwSend(word){var el=$("gwMsg");if(!FB.admin)return;if(!confirm("Text \""+word+"\" to the MB7IXO gateway switch?"))return;
+  smsSend(c.sms,"Off",el,xrOff)})};
+function gwSend(word){var el=$("gwMsg");if(!FB.admin)return;
  el.textContent="Getting the switch number…";xoCfg(function(c){if(!c||!c.gw){el.innerHTML='<span style="color:#ef4444">The gateway number isn\'t set up in Firebase (adminconfig/gb3xo → gw).</span>';return}
-  smsSend(c.gw,word,"",el,function(){el.innerHTML='✓ <b>'+word+'</b> sent to MB7IXO at '+new Date().toTimeString().slice(0,8)+'.'})})}
+  smsSend(c.gw,word,el,function(){el.innerHTML='📱 Messages opened with <b>'+word+'</b> to the MB7IXO switch – tap <b>Send</b>.'})})}
 $("gwOn").onclick=function(){gwSend("On")};$("gwOff").onclick=function(){gwSend("Off")};
 var _meShow316=meShow;meShow=function(){_meShow316();if(typeof curTab!="undefined"&&curTab=="gb3xo")xoAdmShow()};
 </script>
