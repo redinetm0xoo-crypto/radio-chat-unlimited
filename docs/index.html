@@ -346,6 +346,11 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <h2>📊 Usage</h2>
   <div id="usStats" class="mut small">Loading…</div>
  </div>
+ <div class="card" id="fuCard">
+  <h2>🗄️ Database allowance &amp; cost</h2>
+  <div id="fuBody" class="mut small">Open this tab to load.</div>
+  <div class="btns" style="margin-top:8px"><button class="btn sm alt" id="fuRefresh">Refresh</button><a class="btn sm alt" id="fuBill" href="https://console.cloud.google.com/billing/linkedaccount?project=radio-chat-unlimited-m0xoo" target="_blank" rel="noopener">Real bill (Google Cloud) ↗</a></div>
+ </div>
  <div class="card">
   <h2>Admins</h2>
   <div id="adAdmins" style="font-weight:800;font-size:17px;color:#f5a524;margin-bottom:12px"></div>
@@ -2367,5 +2372,32 @@ $("acBarYes").onclick=function(){if(!acPend)return;var p=acPend,v=acFreqOf(p.f);
   $("acBarGo").onclick=function(){$("acBar").hidden=true;acBarSet("","Yes, show me",true);showTab("act");window.scrollTo({top:0,behavior:"smooth"})};return}
  acBarSet("Saving…","",false);acSet(p.f,p.m,"",function(ok){acBarSet(ok?"✓ You're shown on "+esc(p.f)+" MHz "+esc(p.m):'<span style="color:#ef4444">'+esc($("acMsg").textContent||"Couldn't save – check your internet.")+'</span>',"",false);
   setTimeout(function(){$("acBar").hidden=true;acBarSet("","Yes, show me",true)},ok?1800:4000)})};
+</script>
+<script>
+/* ===== v3.19: Admin tab - Firebase database allowance + estimated cost (from the rcuUsage cloud function) ===== */
+var FU_URL="https://rcuusage-1008201666373.europe-west2.run.app",FU={at:0,data:null,busy:false};
+function fuNum(n){return Math.round(n||0).toLocaleString("en-GB")}
+function fuBar(label,v,max){var p=Math.min(100,Math.round((v||0)/max*100)),col=p>=90?"#ef4444":p>=70?"#f59e0b":"#22c55e";
+ return'<div style="margin:6px 0"><div style="display:flex;justify-content:space-between"><b>'+label+'</b><span>'+fuNum(v)+' / '+fuNum(max)+' <span class="mut">('+p+'%)</span></span></div>'+
+  '<div style="height:10px;background:var(--line);border-radius:6px;overflow:hidden"><div style="height:100%;width:'+p+'%;background:'+col+'"></div></div></div>'}
+function fuRender(){var d=FU.data,el=$("fuBody");if(!d){return}
+ if(!d.ok){el.innerHTML='<span style="color:#ef4444">Couldn\'t load the figures ('+esc(d.error||"error")+').</span>';return}
+ var reset=new Date(d.resetsAt),F=d.free,m=d.month;
+ var over7=function(x){return x.reads>F.reads||x.writes>F.writes||x.deletes>F.deletes};
+ el.innerHTML='<div class="small mut">Today so far – the free allowance resets at '+reset.toTimeString().slice(0,5)+' (UK time). Figures can be a few minutes behind.</div>'+
+  fuBar("Reads",d.today.reads,F.reads)+fuBar("Writes",d.today.writes,F.writes)+fuBar("Deletes",d.today.deletes,F.deletes)+
+  (d.last7&&d.last7.length?'<div style="margin-top:10px"><b>Last 7 days</b><table style="width:100%;font-size:13px;margin-top:4px"><tr class="mut"><td>Day</td><td style="text-align:right">Reads</td><td style="text-align:right">Writes</td><td style="text-align:right">Deletes</td></tr>'+
+   d.last7.slice().reverse().map(function(x){var o=over7(x);return'<tr'+(o?' style="color:#f59e0b"':'')+'><td>'+esc(new Date(x.date+"T12:00:00Z").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}))+(o?' ⚠':'')+'</td><td style="text-align:right">'+fuNum(x.reads)+'</td><td style="text-align:right">'+fuNum(x.writes)+'</td><td style="text-align:right">'+fuNum(x.deletes)+'</td></tr>'}).join("")+'</table></div>':'')+
+  '<div style="margin-top:10px"><b>This month</b>: '+fuNum(m.reads)+' reads · '+fuNum(m.writes)+' writes · '+fuNum(m.deletes)+' deletes<br>'+
+  'Estimated cost: <b>$'+(m.estUsd<0.01&&m.estUsd>0?"<0.01":m.estUsd.toFixed(2))+'</b> <span class="mut">('+(m.overDays?m.overDays+' day'+(m.overDays>1?'s':'')+' over the free allowance':'no days over the free allowance')+')</span></div>'+
+  '<div class="small mut" style="margin-top:6px">'+esc(d.note||"")+' Updated '+new Date(d.updated).toTimeString().slice(0,5)+'.</div>'}
+function fuLoad(force){if(!FB.admin||FU.busy)return;if(!force&&FU.data&&Date.now()-FU.at<5*60e3)return fuRender();
+ if(FU_URL.indexOf("http")!==0){$("fuBody").textContent="Not set up yet.";return}
+ FU.busy=true;$("fuBody").textContent="Loading…";
+ FB.token(function(tok){if(!tok){FU.busy=false;$("fuBody").textContent="No connection.";return}
+  fetch(FU_URL,{headers:{Authorization:"Bearer "+tok},cache:"no-store"}).then(function(r){return r.json().catch(function(){return{ok:false,error:"HTTP "+r.status}})}).then(function(j){FU.busy=false;FU.at=Date.now();FU.data=j;fuRender()})
+   .catch(function(){FU.busy=false;$("fuBody").textContent="Couldn't reach the usage service – no internet?"})})}
+$("fuRefresh").onclick=function(){fuLoad(true)};
+var _showTab319=showTab;showTab=function(t){_showTab319(t);if(t=="adm")fuLoad(false)};
 </script>
 </body></html>

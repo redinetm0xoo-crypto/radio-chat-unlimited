@@ -199,9 +199,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.18";
+var APP_VERSION = "3.19";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.19", date:"26 Nov 2026", items:[
+   "Behind the scenes: keeps an eye on the app's database allowance so it doesn't run out again"]},
  {v:"3.18", date:"26 Nov 2026", items:[
    "On air: tapping a frequency you're already on (Scanner, Emergency, Band Plan...) now offers \"Off air\"",
    "On air: if you already show 3 frequencies, the tap-a-frequency bar says so (with a button to open Activity) instead of a wrong \"check internet\" message",
