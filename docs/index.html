@@ -193,7 +193,6 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <div id="acNow"></div>
  <div id="apNear"></div>
  <div class="mut small" id="acSrc" style="text-align:center;margin:6px 0 10px"></div>
- <div class="card"><h2>Activity log</h2><div id="acLog"></div></div>
 </section>
 
 <section id="net" hidden>
@@ -728,7 +727,7 @@ function setDist(m,err,acc){
  if(!$("distInfo").hidden)$("distInfo").textContent=distState;
 }
 $("distBtn").onclick=function(){var d=$("distInfo");d.hidden=!d.hidden;d.textContent=distState||"Finding your location…";if(!d.hidden)locate()};
-locate();setInterval(locate,30000);
+locate();setInterval(function(){if(!document.hidden)locate()},30000);
 
 /* ---------- band plan ---------- */
 var sel=$("bandSel");
@@ -998,7 +997,7 @@ var _drawMap=drawMap;drawMap=function(){_drawMap();var c=$("map");obDraw(c.getCo
 var _showTab=showTab;showTab=function(t){_showTab(t);if(t=="rep"&&repView=="near")rnRender(true)};
 $("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
 var _condShow=condShow;condShow=function(){obChips();_condShow();obSummary();obLoad(false)};
-setInterval(function(){if(curTab=="cond")obLoad(false)},5*60000+5000);
+setInterval(function(){if(curTab=="cond"&&!document.hidden)obLoad(false)},5*60000+5000);
 
 /* --- update check (GitHub Releases) --- */
 function vnum(s){return String(s).replace(/^[^0-9]*/,"").split(".").map(function(x){return parseInt(x,10)||0})}
@@ -1409,6 +1408,10 @@ var FB={key:"AIzaSyA6ClIo52wbC2afxEAJRerCdZLaHhOXdoc",proj:"radio-chat-unlimited
  auth:loadJSON("fb_auth",null),busy:null};
 FB.base="https://firestore.googleapis.com/v1/projects/"+FB.proj+"/databases/(default)/documents";
 FB.json=function(url,opt,cb){fetch(url,opt).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}cb(r.ok,j,r.status)})}).catch(function(){cb(false,null,0)})};
+/* v3.17: every database request carries this phone's sign-in, so the database rules can turn away versions older than 3.17 */
+(function(){var raw=FB.json;FB.json=function(url,opt,cb){opt=opt||{};var hd=opt.headers||{};
+ if(String(url).indexOf(FB.base)!==0||hd.Authorization||hd.authorization)return raw(url,opt,cb);
+ FB.token(function(tok){var o={},k;for(k in opt)o[k]=opt[k];o.headers={};for(k in hd)o.headers[k]=hd[k];if(tok)o.headers.Authorization="Bearer "+tok;raw(url,o,cb)})}})();
 FB.token=function(cb){var a=FB.auth;
  if(a&&a.idToken&&a.exp>Date.now()+60000)return cb(a.idToken);
  if(FB.busy){FB.busy.push(cb);return}FB.busy=[cb];
@@ -1773,8 +1776,7 @@ function acLive(d){return d.at&&Date.now()-new Date(d.at)<AC_TTL&&d.freq}
 function acLoad(){var me=FB.auth&&FB.auth.uid;
  FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(!ok){$("acSrc").textContent="Can't load activity – no internet?";return}
   var L=((j&&j.documents)||[]).map(FB.dec).filter(acLive);L.sort(function(a,b){return a.at<b.at?1:-1});AC.list=L;AC.me=L.filter(function(d){return d.id==me})[0]||null;
-  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every 30 s";acRender();acDecorate()});
- FB.json(FB.base+"/activitylog?orderBy=at%20desc&pageSize=60&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AC.log=((j&&j.documents)||[]).map(FB.dec);acRenderLog()}})}
+  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every minute";acRender();acDecorate()});}
 function acRender(){var me=FB.auth&&FB.auth.uid;$("acMeCall").textContent=QZ.call?"– "+QZ.call:"";
  $("acMeNow").innerHTML=AC.me?'<span style="color:#22c55e;font-weight:700">● On air: '+esc(acFmt(AC.me.freq))+' MHz '+esc(AC.me.mode||"")+'</span> <span class="mut">since '+fbWhen(AC.me.at)+'</span>':'<span class="mut">Not showing on air.</span>';
  if(AC.me&&!$("acFreq").value){$("acFreq").value=acFmt(AC.me.freq);$("acMode").value=AC.me.mode||"";$("acNote").value=AC.me.note||""}
@@ -1783,17 +1785,16 @@ function acRender(){var me=FB.auth&&FB.auth.uid;$("acMeCall").textContent=QZ.cal
   '<div><b>'+esc(d.call)+'</b>'+(d.name?' – '+esc(d.name):'')+(d.note?' · '+esc(d.note):'')+'</div><div class="by">'+adAgo(d.at)+'</div>'+
   '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
   '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a></div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'}
-function acRenderLog(){$("acLog").innerHTML=AC.log.length?'<table>'+AC.log.map(function(l){return'<tr><td class="small mut" style="white-space:nowrap">'+fbWhen(l.at)+'</td><td><b>'+esc(l.call)+'</b></td><td>'+(l.freq?'<span class="f">'+esc(acFmt(l.freq))+'</span> '+esc(l.mode||""):'<span class="mut">off air</span>')+'</td></tr>'}).join("")+'</table>':'<div class="mut">Nothing logged yet.</div>'}
+function acRenderLog(){}
 function acSet(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
  var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
  mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v);msg.textContent="Saving…";
  FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
-  fbCommit([{update:{name:fbDoc("activity/"+uid),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]},
-   {update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:c,freq:f,mode:mode,uid:uid})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  fbCommit([{update:{name:fbDoc("activity/"+uid),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
    msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value=f;$("acMode").value=mode;acLoad()}cb&&cb(ok)})})}
 function acOff(){var msg=$("acMsg");FB.token(function(tok){if(!tok){msg.textContent="No connection.";return}var uid=FB.auth.uid;
  FB.del("activity",uid,function(ok){if(!ok){msg.textContent="Couldn't clear – no internet?";return}msg.textContent="✓ You're shown as off air.";
-  if(QZ.call)fbCommit([{update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:QZ.call.slice(0,12),freq:"",mode:"off air",uid:uid})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){acLoad()});else acLoad()})})}
+  acLoad()})})}
 $("acModes").onclick=function(e){var m=e.target.dataset.m;if(!m)return;$("acMode").value=m;Array.prototype.forEach.call(this.children,function(b){b.className=b.dataset.m==m?"on":""})};
 $("acGo").onclick=function(){acSet($("acFreq").value,$("acMode").value,$("acNote").value)};
 $("acOff").onclick=acOff;
@@ -1818,8 +1819,9 @@ $("acBarNo").onclick=function(){$("acBar").hidden=true;acPend=null};
 $("acBarYes").onclick=function(){if(!acPend)return;var p=acPend;$("acBarTx").textContent="Saving…";acSet(p.f,p.m,"",function(ok){$("acBarTx").textContent=ok?"✓ You're shown on "+p.f+" MHz "+p.m:"Couldn't save – set your callsign / check internet";setTimeout(function(){$("acBar").hidden=true},ok?1800:3500)});acPend=null};
 var _showTab33=showTab;showTab=function(t){_showTab33(t);if(t=="act")acLoad()};
 $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
-setInterval(function(){if(!document.hidden&&(curTab=="act"||AC.list.length))acLoad()},30000);
-document.addEventListener("visibilitychange",function(){if(!document.hidden)acLoad()});
+/* v3.17: refresh only while the Activity tab is open and on screen, every 60 s (was every 30 s on any tab = too many Firebase reads) */
+setInterval(function(){if(!document.hidden&&curTab=="act")acLoad("tick")},60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&curTab=="act")acLoad("tick")});
 acLoad();
 
 /* ===================== v3.4: Net Order ===================== */
@@ -1836,7 +1838,7 @@ function ntMutate(fn,tries){tries=tries||0;if(!QZ.call){$("ntMsg").innerHTML='<s
   fbCommit([w],function(ok2,st){if(ok2){NT.docs[id]=o;ntRender();ntLoad();return}
    if((st==400||st==409||st==412)&&tries<3)return ntMutate(fn,tries+1);$("ntMsg").textContent="Couldn't save ("+(st==403?"not allowed":"error "+st)+").";ntLoad()})})}
 function ntLoad(){if(NT.drag||NT.edit)return;ntRaw(NT.sel,function(ok,o){if(!ok){$("ntSrc").textContent="Can't load – no internet?";return}NT.docs[NT.sel]=o;ntRender();
- $("ntSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+(o.by?" · last change by "+o.by+" "+fbWhen(o.at):"")+" · refreshes every 8 s"})}
+ $("ntSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+(o.by?" · last change by "+o.by+" "+fbWhen(o.at):"")+" · refreshes every 15 s"})}
 function ntSelRender(){var h="";for(var i=1;i<=NT_COUNT;i++){var id="net"+i,d=NT.docs[id],n=d?d.rows.filter(function(r){return!r.o}).length:0;
  h+='<button data-n="'+id+'"'+(id==NT.sel?' class="on"':'')+'>'+esc(ntLabel(id))+(d&&d.freq?' · '+esc(d.freq):'')+(n?' ('+n+')':'')+'</button>'}$("ntSel").innerHTML=h}
 function ntRender(){ntSelRender();var o=NT.docs[NT.sel]||{rows:[],cur:"",freq:"",started:""};
@@ -1892,7 +1894,7 @@ document.addEventListener("click",function(e){var id=e.target.dataset&&e.target.
 var _acLoad34=acLoad;acLoad=function(){_acLoad34();ntAll(function(){if(curTab=="act")acRender()})};
 var _showTab34=showTab;showTab=function(t){_showTab34(t);if(t=="net"){ntAll(function(){ntSelRender()});ntLoad()}};
 $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
-setInterval(function(){if(!document.hidden&&curTab=="net")ntLoad()},8000);
+setInterval(function(){if(!document.hidden&&curTab=="net")ntLoad()},15000);
 ntAll(function(){if(curTab=="act")acRender()});
 
 /* ===================== v3.5: frequency names on Activity ===================== */
@@ -1913,11 +1915,13 @@ function acLabel(d){return d.label||acName(d.freq)}
 var AC_MAX=3;
 function acSlots(){var u=FB.auth.uid;return[u,u+"_2",u+"_3"]}
 function acMineOf(L){var u=FB.auth&&FB.auth.uid;return u?L.filter(function(d){return d.id==u||d.id==u+"_2"||d.id==u+"_3"}):[]}
-acLoad=function(){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(!ok){$("acSrc").textContent="Can't load activity – no internet?";return}
+acLoad=function(why){var logDue=curTab=="act"&&(why!="tick"||Date.now()-(AC.logAt||0)>5*60000);FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(!ok){$("acSrc").textContent="Can't load activity – no internet?";return}
   var L=((j&&j.documents)||[]).map(FB.dec).filter(acLive);L.sort(function(a,b){return a.at<b.at?1:-1});AC.list=L;AC.mine=acMineOf(L);AC.me=AC.mine[0]||null;
-  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every 30 s";acRender();acDecorate()});
- FB.json(FB.base+"/activitylog?orderBy=at%20desc&pageSize=60&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AC.log=((j&&j.documents)||[]).map(FB.dec);acRenderLog()}});
+  $("acSrc").textContent="Updated "+new Date().toTimeString().slice(0,5)+" · refreshes every minute";acRender();acDecorate()});
+ if(!logDue)return;AC.logAt=Date.now();
  ntAll(function(){if(curTab=="act")acRender()})};
+/* v3.17: opening Repeaters or GB3XO refreshes who is on air (one small read) */
+var _showTab317=showTab;showTab=function(t){_showTab317(t);if(t=="rep"||t=="gb3xo")acLoad("tick")};
 acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
  var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
  mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v),lab=acName(v).slice(0,40);msg.textContent="Saving…";
@@ -1926,11 +1930,9 @@ acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML=
   if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
   if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off (✕) first.</span>';return cb&&cb(false)}
   if(arguments[4])lab=String(arguments[4]).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
-  fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]},
-   {update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:c,freq:f,mode:mode,uid:uid,label:lab})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
    msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";acLoad()}cb&&cb(ok)})})};
-function acOffOne(id,cb){FB.del("activity",id,function(ok){if(ok&&QZ.call){var d=AC.list.filter(function(x){return x.id==id})[0];
-  fbCommit([{update:{name:fbDoc("activitylog/"+FB.rid()),fields:FB.enc({call:QZ.call.slice(0,12),freq:"",mode:"off air",uid:FB.auth.uid,label:(d?acFmt(d.freq)+" off":"").slice(0,40)})},currentDocument:{exists:false},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){cb&&cb(ok)})}else cb&&cb(ok)})}
+function acOffOne(id,cb){FB.del("activity",id,function(ok){cb&&cb(ok)})}
 acOff=function(){var msg=$("acMsg"),M=acMineOf(AC.list);if(!M.length){msg.textContent="You're not showing on air.";return}var n=M.length;
  FB.token(function(t){if(!t){msg.textContent="No connection.";return}M.forEach(function(d){acOffOne(d.id,function(){if(--n==0){msg.textContent="✓ You're shown as off air.";acLoad()}})})})};
 $("acOff").onclick=acOff;
@@ -1945,7 +1947,7 @@ acRender=function(){var me=FB.auth&&FB.auth.uid,M=acMineOf(AC.list);$("acMeCall"
   '<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-join="'+esc(d.freq)+'" data-mode="'+esc(d.mode||"")+'">Join them on '+esc(acFmt(d.freq))+'</button>'+
   '<a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(d.call))+'">'+esc(d.call)+' on QRZ</a>'+nets.map(function(id){return'<button class="btn sm" data-shownet="'+id+'">Show '+esc(ntLabel(id))+'</button>'}).join("")+'</div></div>'}).join("")||'<div class="card mut">Nobody else is showing on air right now.</div>'};
 $("acMeNow").addEventListener("click",function(e){var id=e.target.dataset.acoff;if(!id)return;e.target.textContent="…";acOffOne(id,function(){acLoad()})});
-acRenderLog=function(){$("acLog").innerHTML=AC.log.length?'<table>'+AC.log.map(function(l){var lb=l.freq?acLabel(l):(l.label||"");return'<tr><td class="small mut" style="white-space:nowrap">'+fbWhen(l.at)+'</td><td><b>'+esc(l.call)+'</b></td><td>'+(l.freq?'<span class="f">'+esc(acFmt(l.freq))+'</span> '+esc(l.mode||""):'<span class="mut">off air</span>')+(lb?' <span class="mut small">· '+esc(lb)+'</span>':'')+'</td></tr>'}).join("")+'</table>':'<div class="mut">Nothing logged yet.</div>'};
+acRenderLog=function(){};
 acDecorate=function(){if(acDecoBusy)return;acDecoBusy=true;if(acObs)acObs.disconnect();var M=acMineOf(AC.list),mine=M.map(function(d){return parseFloat(d.freq)}),others={};
  AC.list.forEach(function(d){if(M.indexOf(d)<0){var k=acFmt(d.freq);others[k]=(others[k]||[]).concat(d.call)}});
  Array.prototype.forEach.call(document.querySelectorAll("main .f"),function(el){if(el.closest("#atOut")||el.id=="locBig"||el.closest("#act"))return;
@@ -2062,10 +2064,10 @@ function apShowCall(name){window.open(apCallUrl(name),"_blank")}
 /* app users: users/{CALL} written by each app once a day */
 function apRegister(){var c=QZ.call&&baseCall(QZ.call);if(!c||!/^[A-Z0-9]{3,12}$/.test(c))return;var k="ap_reg_"+c,t=+store(k)||0;if(Date.now()-t<864e5)return;
  FB.token(function(tok){if(!tok)return;fbCommit([{update:{name:fbDoc("users/"+c),fields:FB.enc({call:c,name:(store("my_name")||"").slice(0,60)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok){if(ok)store(k,String(Date.now()))})})}
-/* known app users = anyone who opened v3.8+ (users) + admins + everyone seen in the activity log, suggestions, posts and nets */
+/* known app users = anyone who opened v3.8+ (users) + admins + everyone seen in suggestions, posts and nets (v3.17: activity log removed) */
 AP.known={};AP.knownAt=0;
 function apAddKnown(c,name){c=baseCall(c);if(!/^([A-Z]{1,2}|\d[A-Z])\d{1,2}[A-Z]{1,4}$/.test(c))return;if(!AP.known[c])AP.known[c]={call:c,name:""};if(name&&!AP.known[c].name)AP.known[c].name=String(name).slice(0,60)}
-function apLoadKnown(cb){if(Date.now()-AP.knownAt<10*60e3)return cb&&cb();var L=["settings/admins","activitylog?orderBy=at%20desc&pageSize=300","suggestions?pageSize=300","announcements?pageSize=100","forsale?pageSize=100","nets?pageSize=20","operators?pageSize=300"],n=L.length;
+function apLoadKnown(cb){if(Date.now()-AP.knownAt<10*60e3)return cb&&cb();var L=["settings/admins","suggestions?pageSize=300","announcements?pageSize=100","forsale?pageSize=100","nets?pageSize=20","operators?pageSize=300"],n=L.length;
  L.forEach(function(q){FB.json(FB.base+"/"+q+(q.indexOf("?")<0?"?":"&")+"key="+FB.key,{cache:"no-store"},function(ok,j){if(ok&&j){var D=j.documents?j.documents.map(FB.dec):(j.fields?[FB.dec(j)]:[]);
    D.forEach(function(d){if(d.calls)String(d.calls).split(",").forEach(function(c){apAddKnown(c.trim())});if(d.call&&q.indexOf("operators")!=0)apAddKnown(d.call,d.name);if(d.by&&q.indexOf("nets")==0)apAddKnown(d.by);
     if(d.rows){try{JSON.parse(d.rows).forEach(function(r){apAddKnown(r.call||r.c,r.name||r.n)})}catch(e){}}})}
@@ -2291,7 +2293,7 @@ $("bcSend").onclick=function(){var t=$("bcText").value.trim();if(!t){$("bcText")
   if(ok){$("bcText").value="";bcLoad(function(){bcRender();bcBanner()})}})};
 $("bcList").onclick=function(e){var id=e.target.dataset.bcdel;if(!id||!confirm("Delete this message? (Phones that were already notified keep the notification.)"))return;
  FB.del("broadcasts",id.split("/").pop(),function(ok){bcLoad(function(){bcRender();bcBanner()})})};
-bcLoad(bcBanner);setInterval(function(){bcLoad(bcBanner)},5*60000);
+bcLoad(bcBanner);setInterval(function(){if(!document.hidden)bcLoad(bcBanner)},5*60000);
 /* --- Usage stats (from the devices list) + callsign-change resets, in the Admin tab --- */
 function usRender(){if(!AD||!AD.length){$("usStats").textContent="No data yet.";return}
  var now=Date.now(),D=864e5,ago=function(t){return t?now-new Date(t):1e15},n=function(f){return AD.filter(f).length},

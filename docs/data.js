@@ -199,9 +199,16 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.16";
+var APP_VERSION = "3.17";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.17", date:"27 Nov 2026", items:[
+   "Fix: on 26 Nov the app used up its daily database allowance, so announcements, on-air and nets stopped loading for the evening. The app now uses far less:",
+   "On air list refreshes every minute while the Activity tab is open (was every 30 s on every tab)",
+   "Activity log removed (it was the biggest user of the allowance) - the on air list still shows who's on now",
+   "Net tab: the live list refreshes every 15 s (was 8 s)",
+   "Versions older than 3.17 can no longer load anything from the app's database - everyone needs to update to 3.17",
+   "Android: the app pauses when it's in the background (unless the scanner / listener is running) - less data and battery"]},
  {v:"3.16", date:"26 Nov 2026", items:[
    "Notifications: messages about the app and the repeaters now show as a banner at the top and as a phone notification (turn off under Settings → Notifications)",
    "Callsign changes: each phone can change its callsign twice (e.g. Foundation → Intermediate → Full) (suggestion 2E0UMK)"]},

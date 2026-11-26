@@ -7,8 +7,31 @@ var ALR = {
  KEY: "AIzaSyA6ClIo52wbC2afxEAJRerCdZLaHhOXdoc",
  APRS_KEY: "209605.7aHWBxNlpG57c1",
  DEF: {bc: true, upd: true, p80: false, p30: false, p17: false, p10: true, p6: true, p4: false, p2: false, aur: true, kp: 5, aprs: true, aprsMi: 10, air: true, airMi: 0},
+ /* v3.17: database reads carry a sign-in token (the rules turn away versions older than 3.17).
+    Uses the app's own sign-in ("fb_auth", shared with the open app); if there isn't one, a separate one ("alr_auth"). */
+ tok: function (cb) {
+  var L = function (k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
+  var key = "fb_auth", a = L(key); if (!a || !a.refresh) { key = "alr_auth"; a = L(key); }
+  if (a && a.idToken && a.exp > Date.now() + 60000) return cb(a.idToken);
+  var save = function (uid, id, rf, exp) { try { localStorage.setItem(key, JSON.stringify({uid: uid, idToken: id, refresh: rf, exp: Date.now() + (+exp || 3600) * 1000})); } catch (e) {} cb(id); };
+  var x = new XMLHttpRequest(); x.timeout = 20000; x.onerror = x.ontimeout = function () { cb(null); };
+  if (a && a.refresh) {
+   x.open("POST", "https://securetoken.googleapis.com/v1/token?key=" + ALR.KEY); x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+   x.onload = function () { try { var j = JSON.parse(x.responseText); if (j.id_token) return save(j.user_id, j.id_token, j.refresh_token, j.expires_in); } catch (e) {} cb(null); };
+   x.send("grant_type=refresh_token&refresh_token=" + encodeURIComponent(a.refresh)); return;
+  }
+  key = "alr_auth";
+  x.open("POST", "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + ALR.KEY); x.setRequestHeader("Content-Type", "application/json");
+  x.onload = function () { try { var j = JSON.parse(x.responseText); if (j.idToken) return save(j.localId, j.idToken, j.refreshToken, j.expiresIn); } catch (e) {} cb(null); };
+  x.send('{"returnSecureToken":true}');
+ },
  get: function (url, cb) {
+  if (String(url).indexOf(ALR.FS) === 0) return ALR.tok(function (t) { ALR.raw(url, cb, t); });
+  ALR.raw(url, cb, null);
+ },
+ raw: function (url, cb, tok) {
   var x = new XMLHttpRequest(); try { x.open("GET", url); } catch (e) { return cb(null); } x.timeout = 20000;
+  if (tok) try { x.setRequestHeader("Authorization", "Bearer " + tok); } catch (e) {}
   x.onload = function () { cb(x.status >= 200 && x.status < 300 ? x.responseText : null); };
   x.onerror = x.ontimeout = function () { cb(null); }; x.send();
  },
