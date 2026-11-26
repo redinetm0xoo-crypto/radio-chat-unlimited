@@ -436,6 +436,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   </div>
   <div class="card">
    <div class="row"><input id="qlCall" placeholder="Callsign e.g. M0PTN" autocapitalize="characters" style="text-transform:uppercase"><button class="btn" id="qlGo" style="flex:0 0 auto">Look up</button></div>
+   <div id="qlHist" class="chips" style="margin-top:8px"></div>
    <div id="qlOut"></div>
   </div>
  <div class="card" id="hdCard">
@@ -521,6 +522,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <h2>Exam practice</h2>
   <div class="seg" id="exLv"><button data-l="F" class="on">Foundation</button><button data-l="I">Intermediate</button><button data-l="A">Full</button><button data-l="*">All</button></div>
   <label class="small mut">Section<select id="exTp"></select></label>
+  <label class="small mut">Practice test<select id="exPaper"></select></label>
   <div class="btns" style="margin-top:10px"><button class="btn" id="exRand">🎲 Random question</button><button class="btn alt" id="exTest">📝 Practice test</button></div>
   <div class="mut small" id="exInfo" style="margin-top:6px"></div>
  </div>
@@ -528,7 +530,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <div class="card">
   <h2>Your scores</h2>
   <div id="exStats"></div>
-  <div class="mut small" style="margin-top:8px">Questions are written for this app to match the UK Foundation, Intermediate and Full syllabus – they are not the RSGB's own exam questions. Official syllabus and specimen papers: <a href="https://rsgb.org/main/?p=20290" target="_blank">rsgb.org – Exam specifications</a>.</div>
+  <div class="mut small" style="margin-top:8px" id="exSrc"></div>
   <div class="btns"><button class="btn sm alt" id="exReset">Reset my scores</button></div>
  </div>
 </section>
@@ -930,12 +932,15 @@ $("repSeg").onclick=function(e){if(e.target.dataset.v)setRepView(e.target.datase
 var OBB=[["160",1.8,2.0],["80",3.5,4.0],["60",5.25,5.45],["40",7.0,7.3],["30",10.1,10.15],["20",14.0,14.35],["17",18.068,18.168],["15",21.0,21.45],["12",24.89,24.99],["10",28.0,29.7],["6",50,54],["4",70,71]];
 var OBC={"160":"#a78bfa","80":"#60a5fa","60":"#22d3ee","40":"#4ade80","30":"#a3e635","20":"#facc15","17":"#fb923c","15":"#f87171","12":"#f472b6","10":"#e879f9","6":"#ffffff","4":"#cbd5e1"};
 var WSB={1:"160",3:"80",5:"60",7:"40",10:"30",14:"20",18:"17",21:"15",24:"12",28:"10",50:"6",70:"4"};
-var OB=loadJSON("ob_cache",null),obBand=store("ob_band")||"all",obBusy=false;
+var OB=loadJSON("ob_cache",null),obBusy=false;
+/* v3.14: choose several bands (suggestion 2E0UMK) - empty list = All; saved on this device */
+var obSel=loadJSON("ob_bands",null);if(!Array.isArray(obSel)){var _ob=store("ob_band");obSel=_ob&&_ob!="all"?[_ob]:[]}
 function obBandOf(hz){var m=hz/1e6;for(var i=0;i<OBB.length;i++)if(m>=OBB[i][1]&&m<=OBB[i][2])return OBB[i][0];return null}
 function region(lat,lon){if(lat<-60)return"Antarctica";if(lon<-25)return lat>=13?"North America":"South America";
  if(lon<60&&lat>=35)return"Europe";if(lon<=60&&lat<35)return(lon>=34&&lat>=12)?"Middle East":"Africa";if(lon>=110&&lat<-10||lon>=150)return"Oceania";return"Asia"}
-function obChips(){$("obChips").innerHTML=[["all","All"]].concat(OBB.map(function(b){return[b[0],b[0]+"m"]})).map(function(c){return'<button data-b="'+c[0]+'" class="'+(obBand==c[0]?'on':'')+'"'+(c[0]!="all"?' style="border-left:4px solid '+OBC[c[0]]+'"':'')+'>'+c[1]+'</button>'}).join("")}
-$("obChips").onclick=function(e){if(e.target.dataset.b){obBand=e.target.dataset.b;store("ob_band",obBand);obChips();drawMap()}};
+function obChips(){$("obChips").innerHTML=[["all","All"]].concat(OBB.map(function(b){return[b[0],b[0]+"m"]})).map(function(c){return'<button data-b="'+c[0]+'" class="'+((c[0]=="all"?!obSel.length:obSel.indexOf(c[0])>=0)?'on':'')+'"'+(c[0]!="all"?' style="border-left:4px solid '+OBC[c[0]]+'"':'')+'>'+c[1]+'</button>'}).join("")}
+$("obChips").onclick=function(e){var b=e.target.dataset.b;if(!b)return;if(b=="all")obSel=[];else{var i=obSel.indexOf(b);if(i>=0)obSel.splice(i,1);else obSel.push(b);if(obSel.length==OBB.length)obSel=[]}
+ store("ob_bands",JSON.stringify(obSel));obChips();drawMap()};
 function obGrid(){var h=homePos();return toGrid(h.lat,h.lon)}
 function obLoad(force){var g=obGrid();
  if(obBusy)return;if(OB&&OB.grid==g&&Date.now()-OB.t<5*60000){if(force)$("obStatus").textContent="Spots are less than 5 minutes old – next refresh allowed at "+new Date(OB.t+5*60000).toTimeString().slice(0,5)+".";return}
@@ -961,7 +966,7 @@ function obSummary(){if(!OB){$("obSum").innerHTML="";return}var by={};OB.spots.f
   var regs=Object.keys(b.reg).sort(function(x,y){return b.reg[y]-b.reg[x]}).slice(0,3).join(", ");var g=b.best>10?'<span class="Good">SSB</span>':b.best>-1?'<span class="Fair">CW</span>':'<span class="Poor">Digital only</span>';
   h+='<tr><td><i class="dot" style="background:'+OBC[bb[0]]+'"></i>'+bb[0]+'m</td><td>'+b.n+'</td><td>'+esc(regs)+'<div class="mut small">'+esc(Object.keys(b.modes).join(", "))+'</div></td><td>'+(b.best>-99?b.best+' dB<br>':'')+g+'</td></tr>'});
  $("obSum").innerHTML=h+'</table>'}
-function obDraw(ctx,W,H){if(!OB)return;ctx.lineWidth=1.2;OB.spots.forEach(function(s){if(obBand!="all"&&s[0]!=obBand)return;
+function obDraw(ctx,W,H){if(!OB)return;ctx.lineWidth=1.2;OB.spots.forEach(function(s){if(obSel.length&&obSel.indexOf(s[0])<0)return;
  var x1=(s[4]+180)/360*W,y1=(90-s[3])/180*H,lon2=s[6];if(lon2-s[4]>180)lon2-=360;if(s[4]-lon2>180)lon2+=360;var x2=(lon2+180)/360*W,y2=(90-s[5])/180*H;
  ctx.strokeStyle=OBC[s[0]]+"aa";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.fillStyle=OBC[s[0]];ctx.beginPath();ctx.arc(x2,y2,2.2,0,7);ctx.fill()})}
 var _drawMap=drawMap;drawMap=function(){_drawMap();var c=$("map");obDraw(c.getContext("2d"),c.width,c.height);
@@ -1027,7 +1032,13 @@ function qlRender(c,x,msg){var f=function(t){return xget(x,t)},h="";
  if(msg)h+='<div class="info">'+esc(msg)+'</div>';
  h+='<div class="btns"><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(c)+'">Open '+esc(c)+' on QRZ.com</a><button class="btn sm" id="qlLog">Log QSO with '+esc(c)+'</button></div>';
  $("qlOut").innerHTML=h;$("qlLog").onclick=function(){qzSegSet("log");$("lgCall").value=c;if(x){$("lgName").value=(xget(x,"fname")||"").split(" ")[0];$("lgGrid").value=xget(x,"grid")}lgNow()}}
-$("qlGo").onclick=function(){var c=$("qlCall").value.trim().toUpperCase().replace(/[^A-Z0-9\/]/g,"");if(!c)return;$("qlOut").innerHTML='<div class="mut" style="margin-top:8px">Looking up…</div>';
+/* v3.14: remember the last 10 callsigns looked up (suggestion M0PTN) - saved on this device */
+var QLH=loadJSON("ql_hist",[]);
+function qlHist(){$("qlHist").innerHTML=QLH.length?'<span class="mut small" style="align-self:center">Recent:</span>'+QLH.map(function(c){return'<button data-qh="'+esc(c)+'">'+esc(c)+'</button>'}).join("")+'<button data-qh="" title="Clear the list">✕ Clear</button>':""}
+function qlHistAdd(c){QLH=[c].concat(QLH.filter(function(x){return x!=c})).slice(0,10);store("ql_hist",JSON.stringify(QLH));qlHist()}
+$("qlHist").onclick=function(e){var c=e.target.dataset.qh;if(c==null)return;if(!c){QLH=[];store("ql_hist","[]");qlHist();return}$("qlCall").value=c;$("qlGo").onclick()};
+qlHist();
+$("qlGo").onclick=function(){var c=$("qlCall").value.trim().toUpperCase().replace(/[^A-Z0-9\/]/g,"");if(!c)return;qlHistAdd(c);$("qlOut").innerHTML='<div class="mut" style="margin-top:8px">Looking up…</div>';
  qzLogin(function(k,er){if(!k)return qlRender(c,null,er);
   post("https://xmldata.qrz.com/xml/current/",{s:k,callsign:c},function(t){if(!t)return qlRender(c,null,"Couldn't reach QRZ.");var x=new DOMParser().parseFromString(t,"text/xml"),e=xget(x,"Error");
    if(!xget(x,"Key"))qzKey=null;qlRender(c,xget(x,"call")?x:null,e||xget(x,"Message"))})})};
@@ -1925,8 +1936,8 @@ $("acGo").textContent="📡 Show I'm on this frequency";
 if(curTab=="act")acRender();
 </script>
 <script>
-/* --- v3.7: Exam practice (questions in exam.js) --- */
-var EX={lv:store("ex_lv")||"F",tp:store("ex_tp")||"",mode:null,cur:null,test:null,recent:[],stats:loadJSON("ex_stats",{})};
+/* --- v3.7: Exam practice (questions in exam.js) - v3.14: real RSGB questions (Full bank + Foundation/Intermediate mock papers), diagrams, RSGB mock papers as tests --- */
+var EX={lv:store("ex_lv")||"F",tp:store("ex_tp")||"",mode:null,cur:null,test:null,recent:[],stats:loadJSON("ex_stats2",{}),paper:store("ex_paper")||""};
 function exPool(){return EXAM.filter(function(x){return(EX.lv=="*"||x.l==EX.lv)&&(!EX.tp||x.t==EX.tp)})}
 function exShuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function exSetup(){Array.prototype.forEach.call($("exLv").children,function(b){b.classList.toggle("on",b.dataset.l==EX.lv)});
@@ -1934,26 +1945,40 @@ function exSetup(){Array.prototype.forEach.call($("exLv").children,function(b){b
  if(EX.tp&&!sel.querySelector('option[value="'+EX.tp+'"]'))EX.tp="";sel.value=EX.tp;
  var n=exPool().length,L=EXAM_LEVELS[EX.lv];
  $("exInfo").textContent=n+" question"+(n==1?"":"s")+" in this choice."+(L?" Real "+L.n+" exam: "+L.q+" questions, pass mark "+L.pass+" ("+Math.round(L.pass/L.q*100)+"%).":"");
- $("exTest").disabled=!L;$("exTest").title=L?"":"Pick a level for a practice test";exStatsRender()}
+ var ps=$("exPaper"),opts=[];
+ if(EX.lv=="A")opts=[["groups","Full mock exam – 58 questions, one from each RSGB exam group (like the real paper)"],["rand","58 random questions from the Full bank"]];
+ else if(L){Object.keys(EXAM_PAPERS).forEach(function(k){if(EXAM_PAPERS[k].l==EX.lv)opts.push([k,"RSGB "+EXAM_PAPERS[k].n+" (as published)"])});opts.push(["rand",L.q+" random questions from all three "+L.n+" mock papers"])}
+ ps.innerHTML=opts.map(function(o){return'<option value="'+o[0]+'">'+esc(o[1])+'</option>'}).join("");ps.disabled=!L;
+ if(opts.some(function(o){return o[0]==EX.paper}))ps.value=EX.paper;else if(opts.length)ps.value=opts[0][0];
+ $("exTest").disabled=!L;$("exTest").title=L?"":"Pick a level for a practice test";
+ $("exSrc").innerHTML='Real RSGB exam questions, © Radio Society of Great Britain, used with the RSGB\'s permission. <b>Full</b>: the RSGB Full question bank, syllabus V1.6b (<a href="'+EXAM_SOURCE.full+'" target="_blank">rsgb.services</a>, copied '+EXAM_SOURCE.got+'). <b>Foundation</b> and <b>Intermediate</b>: the RSGB\'s mock papers 1–3 (<a href="'+EXAM_SOURCE.mocks+'" target="_blank">rsgb.org/mock-exams</a>) – the RSGB hasn\'t published those two question banks yet. Questions may change: always check the latest on the RSGB site.'+(L?' In the exam you get the RSGB reference booklet: <a href="'+L.ref+'" target="_blank">'+esc(L.n)+' booklet (PDF)</a>.':'');
+ exStatsRender()}
+$("exPaper").onchange=function(){EX.paper=this.value;store("ex_paper",EX.paper)};
 $("exLv").onclick=function(e){var l=e.target.dataset.l;if(!l)return;EX.lv=l;store("ex_lv",l);exSetup()};
 $("exTp").onchange=function(){EX.tp=this.value;store("ex_tp",EX.tp);exSetup()};
-function exRecord(x,ok){var k=x.l+"."+x.t,s=EX.stats[k]||[0,0];s[1]++;if(ok)s[0]++;EX.stats[k]=s;store("ex_stats",JSON.stringify(EX.stats))}
+function exRecord(x,ok){var k=x.l+"."+x.t,s=EX.stats[k]||[0,0];s[1]++;if(ok)s[0]++;EX.stats[k]=s;store("ex_stats2",JSON.stringify(EX.stats))}
+function exRef(x){return(x.p?"RSGB "+EXAM_PAPERS[x.p].n+", question "+x.n:"RSGB Full question bank, ref "+x.r)+" · syllabus "+x.s+(x.tp?" ("+x.tp+")":"")}
 function exQHtml(x,head){var ord=exShuf([0,1,2,3]);x._ord=ord;
- return'<div class="mut small">'+head+' · '+esc(EXAM_LEVELS[x.l].n)+' · '+esc(EXAM_TOPICS[x.t].n)+'</div><div class="exq">'+esc(x.q)+'</div>'+ord.map(function(i){return'<button class="exo" data-o="'+i+'">'+esc(x.o[i])+'</button>'}).join("")+'<div id="exFb"></div>'}
+ return'<div class="mut small">'+head+' · '+esc(EXAM_LEVELS[x.l].n)+' · '+esc(EXAM_TOPICS[x.t].n)+'</div><div class="exq" style="white-space:pre-line">'+esc(x.q)+'</div>'+
+  (x.img?'<img src="rsgb/'+esc(x.img)+'" alt="Diagram for this question" style="display:block;max-width:100%;max-height:60vh;margin:6px auto 8px;background:#fff;border-radius:6px;padding:4px">':'')+
+  ord.map(function(i){return'<button class="exo" data-o="'+i+'">'+esc(x.o[i])+'</button>'}).join("")+'<div id="exFb"></div>'}
 function exRevise(x){var T=EXAM_TOPICS[x.t];return'<div class="small" style="margin-top:6px">📖 Revise: <b>'+esc(T.n)+'</b> in the '+esc(EXAM_LEVELS[x.l].n)+' syllabus'+(T.tab?' · <a href="#" data-extab="'+T.tab+'">open the '+esc(document.querySelector('#tabs button[data-t="'+T.tab+'"]').textContent)+' tab</a>':'')+'</div>'}
 function exRandom(){var P=exPool();if(!P.length)return;var C=P.filter(function(x){return EX.recent.indexOf(x)<0});if(!C.length){EX.recent=[];C=P}
  var x=C[Math.floor(Math.random()*C.length)];EX.recent.push(x);if(EX.recent.length>Math.min(15,P.length-1))EX.recent.shift();
  EX.mode="rand";EX.cur=x;$("exCard").hidden=false;$("exCard").innerHTML=exQHtml(x,"Random question");$("exCard").scrollIntoView({block:"nearest"})}
-function exStart(){var L=EXAM_LEVELS[EX.lv];if(!L)return;var P=exShuf(exPool()),n=Math.min(L.q,P.length);
- EX.mode="test";EX.test={qs:P.slice(0,n),i:0,right:0,wrong:[],pass:Math.ceil(n*L.pass/L.q),full:n==L.q};exTestShow()}
+function exStart(){var L=EXAM_LEVELS[EX.lv];if(!L)return;var pap=$("exPaper").value,all=EXAM.filter(function(x){return x.l==EX.lv}),qs;
+ if(pap=="groups"){var by={};exShuf(all).forEach(function(x){if(!by[x.g])by[x.g]=x});qs=Object.keys(by).map(function(k){return by[k]}).sort(function(a,b){return a.s<b.s?-1:a.s>b.s?1:0})}
+ else if(EXAM_PAPERS[pap])qs=all.filter(function(x){return x.p==pap}).sort(function(a,b){return a.n-b.n});
+ else qs=exShuf(all).slice(0,L.q);
+ var n=qs.length;EX.mode="test";EX.test={qs:qs,i:0,right:0,wrong:[],pass:Math.ceil(n*L.pass/L.q),full:n==L.q,name:EXAM_PAPERS[pap]?EXAM_PAPERS[pap].n:pap=="groups"?"Full mock exam":"Random test"};exTestShow()}
 function exTestShow(){var T=EX.test,x=T.qs[T.i];EX.cur=x;$("exCard").hidden=false;
- $("exCard").innerHTML='<div class="exbar"><i style="width:'+Math.round(T.i/T.qs.length*100)+'%"></i></div>'+exQHtml(x,"Question "+(T.i+1)+" of "+T.qs.length)+'<div class="btns"><button class="btn sm alt" id="exQuit">Stop test</button></div>';
+ $("exCard").innerHTML='<div class="exbar"><i style="width:'+Math.round(T.i/T.qs.length*100)+'%"></i></div>'+exQHtml(x,esc(T.name)+" · question "+(T.i+1)+" of "+T.qs.length)+'<div class="btns"><button class="btn sm alt" id="exQuit">Stop test</button></div>';
  $("exCard").scrollIntoView({block:"nearest"})}
 function exTestEnd(){var T=EX.test,n=T.qs.length,ok=T.right>=T.pass,by={};
  T.qs.forEach(function(x){var b=by[x.t]||(by[x.t]=[0,0]);b[1]++});T.qs.forEach(function(x){if(T.wrong.indexOf(x)<0)by[x.t][0]++});
- $("exCard").innerHTML='<h2>'+(ok?"✅ Pass":"❌ Not yet")+' – '+T.right+' / '+n+'</h2><div class="mut small">Pass mark '+T.pass+' / '+n+(T.full?"":" (scaled from the real exam's "+EXAM_LEVELS[EX.lv].pass+" / "+EXAM_LEVELS[EX.lv].q+" – this app has "+n+" "+EXAM_LEVELS[EX.lv].n+" questions so far)")+'</div>'+
+ $("exCard").innerHTML='<h2>'+(ok?"✅ Pass":"❌ Not yet")+' – '+T.right+' / '+n+'</h2><div class="mut small">Pass mark '+T.pass+' / '+n+(T.full?"":" (scaled from the real exam's "+EXAM_LEVELS[EX.lv].pass+" / "+EXAM_LEVELS[EX.lv].q+")")+'</div>'+
   '<table style="margin-top:8px">'+Object.keys(by).map(function(k){var b=by[k];return'<tr><td>'+esc(EXAM_TOPICS[k].n)+'</td><td style="text-align:right">'+b[0]+' / '+b[1]+'</td></tr>'}).join("")+'</table>'+
-  (T.wrong.length?'<h2 style="margin-top:10px">To revise</h2>'+T.wrong.map(function(x){return'<div style="padding:6px 0;border-bottom:1px solid var(--line)"><b>'+esc(x.q)+'</b><div class="small" style="color:#22c55e">✓ '+esc(x.o[x.a])+'</div><div class="small mut">'+esc(x.e)+'</div>'+exRevise(x)+'</div>'}).join(""):"")+
+  (T.wrong.length?'<h2 style="margin-top:10px">To revise</h2>'+T.wrong.map(function(x){return'<div style="padding:6px 0;border-bottom:1px solid var(--line)"><b>'+esc(x.q)+'</b><div class="small" style="color:#22c55e">✓ '+esc(x.o[x.a])+'</div><div class="small mut">'+esc(exRef(x))+'</div>'+exRevise(x)+'</div>'}).join(""):"")+
   '<div class="btns"><button class="btn" id="exAgain">Another test</button></div>';EX.test=null}
 $("exCard").addEventListener("click",function(e){var t=e.target;
  if(t.dataset.extab){e.preventDefault();showTab(t.dataset.extab);return}
@@ -1964,7 +1989,7 @@ $("exCard").addEventListener("click",function(e){var t=e.target;
  Array.prototype.forEach.call($("exCard").querySelectorAll(".exo"),function(b){b.disabled=true;if(+b.dataset.o==x.a)b.classList.add("ok");else if(b==t)b.classList.add("no")});
  exRecord(x,ok);if(EX.mode=="test"){if(ok)EX.test.right++;else EX.test.wrong.push(x)}
  var last=EX.mode=="test"&&EX.test.i==EX.test.qs.length-1;
- $("exFb").innerHTML='<div style="margin-top:8px;font-weight:700;color:'+(ok?"#22c55e":"#ef4444")+'">'+(ok?"✓ Correct":"✗ Not quite – the answer is: "+esc(x.o[x.a]))+'</div><div class="small" style="margin-top:4px">'+esc(x.e)+'</div>'+(ok?"":exRevise(x))+
+ $("exFb").innerHTML='<div style="margin-top:8px;font-weight:700;color:'+(ok?"#22c55e":"#ef4444")+'">'+(ok?"✓ Correct":"✗ Not quite – the answer is: "+esc(x.o[x.a]))+'</div><div class="small mut" style="margin-top:4px">'+esc(exRef(x))+'</div>'+(ok?"":exRevise(x))+
   '<div class="btns"><button class="btn" id="exNext">'+(EX.mode=="rand"?"Next question →":last?"See my result":"Next →")+'</button></div>';exStatsRender()});
 $("exRand").onclick=exRandom;$("exTest").onclick=exStart;
 function exStatsRender(){var rows=[];["F","I","A"].forEach(function(l){Object.keys(EXAM_TOPICS).forEach(function(t){var s=EX.stats[l+"."+t];if(s&&s[1])rows.push([l,t,s[0],s[1]])})});
@@ -1972,7 +1997,7 @@ function exStatsRender(){var rows=[];["F","I","A"].forEach(function(l){Object.ke
  var tot=rows.reduce(function(a,r){return[a[0]+r[2],a[1]+r[3]]},[0,0]);
  $("exStats").innerHTML='<div class="small">Overall '+tot[0]+' / '+tot[1]+' ('+Math.round(tot[0]/tot[1]*100)+'%)</div><table style="margin-top:6px">'+rows.sort(function(a,b){return a[2]/a[3]-b[2]/b[3]}).map(function(r){var p=Math.round(r[2]/r[3]*100);
   return'<tr><td class="small">'+esc(EXAM_LEVELS[r[0]].n)+' – '+esc(EXAM_TOPICS[r[1]].n)+'</td><td class="small" style="text-align:right;white-space:nowrap;color:'+(p>=75?"#22c55e":p>=50?"#eab308":"#ef4444")+'">'+r[2]+' / '+r[3]+' ('+p+'%)</td></tr>'}).join("")+'</table><div class="mut small">Weakest first.</div>'}
-$("exReset").onclick=function(){if(this.dataset.c){EX.stats={};store("ex_stats","{}");delete this.dataset.c;this.textContent="Reset my scores";exStatsRender()}else{this.dataset.c=1;this.textContent="Tap again to reset"}};
+$("exReset").onclick=function(){if(this.dataset.c){EX.stats={};store("ex_stats2","{}");delete this.dataset.c;this.textContent="Reset my scores";exStatsRender()}else{this.dataset.c=1;this.textContent="Tap again to reset"}};
 var _showTab37=showTab;showTab=function(t){_showTab37(t);if(t=="exam")exSetup()};
 </script>
 <script>

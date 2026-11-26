@@ -199,9 +199,16 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.13";
+var APP_VERSION = "3.14";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.14", date:"26 Nov 2026", items:[
+   "Exam tab now uses REAL RSGB questions (with the RSGB's permission) instead of ones written for the app",
+   "Full: the whole RSGB Full question bank – 571 questions with all 96 diagrams; the practice test is 58 questions, one from each RSGB exam group like the real paper",
+   "Foundation and Intermediate: the RSGB's three published mock papers for each level (78 and 138 questions) – take a paper as published or a random mix",
+   "Each answer shows the RSGB reference and syllabus item; links to the RSGB reference booklet you get in the exam",
+   "Conditions: pick several bands at once in 'World day / night & open bands' (e.g. just 12 m and 17 m) – remembered on your device (suggestion 2E0UMK)",
+   "QRZ: your last 10 callsign look-ups are shown as buttons under the search box (suggestion M0PTN)"]},
  {v:"3.13", date:"25 Nov 2026", items:[
    "Alerts renamed Notifications and moved into the Settings tab (no separate tab)",
    "One master Notifications on / off switch at the top – the test and check-now buttons are gone",
