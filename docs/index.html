@@ -1928,10 +1928,10 @@ acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML=
  FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,mine=acMineOf(AC.list),slot=null;
   mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v))slot=d.id});
   if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
-  if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off (✕) first.</span>';return cb&&cb(false)}
+  if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off '+(curTab=="act"?'(✕) first.':'first (✕ in the Activity tab).')+'</span>';return cb&&cb(false)}
   if(arguments[4])lab=String(arguments[4]).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
   fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
-   msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";acLoad()}cb&&cb(ok)})})};
+   msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";$("acNote").value="";acLoad()}cb&&cb(ok)})})};
 function acOffOne(id,cb){FB.del("activity",id,function(ok){cb&&cb(ok)})}
 acOff=function(){var msg=$("acMsg"),M=acMineOf(AC.list);if(!M.length){msg.textContent="You're not showing on air.";return}var n=M.length;
  FB.token(function(t){if(!t){msg.textContent="No connection.";return}M.forEach(function(d){acOffOne(d.id,function(){if(--n==0){msg.textContent="✓ You're shown as off air.";acLoad()}})})})};
@@ -1958,7 +1958,7 @@ acDecorate=function(){if(acDecoBusy)return;acDecoBusy=true;if(acObs)acObs.discon
 $("acFreq").insertAdjacentHTML("afterend",'<div id="acFreqName" class="small" style="color:#f5a524;margin-top:4px"></div>');
 $("acFreq").addEventListener("input",function(){var v=acFreqOf(this.value);$("acFreqName").textContent=v!=null&&acName(v)?"= "+acName(v):""});
 document.querySelector("main").addEventListener("click",function(){setTimeout(function(){if(!$("acBar").hidden&&acPend&&!/ · /.test($("acBarTx").textContent)){var n=acName(acPend.f);if(n)$("acBarTx").textContent="📻 "+acPend.f+" MHz "+acPend.m+" · "+n+" – show everyone you're on this?"}},0)},true);
-$("acGo").textContent="📡 Show I'm on this frequency";
+$("acGo").textContent="📡 Show I'm on this frequency";$("acOff").textContent="Off air (all)";
 if(curTab=="act")acRender();
 </script>
 <script>
@@ -2225,7 +2225,7 @@ var ACR=loadJSON("ac_recent",[]);
 function acRecentRender(){var b=$("acRecent");if(!b)return;b.innerHTML=ACR.length?'<span class="mut small" style="align-self:center">Recent:</span>'+ACR.map(function(r,i){return'<button data-acr="'+i+'">'+esc((r.l?r.l+" ":"")+acFmt(r.f)+(r.m?" "+r.m:""))+'</button>'}).join(""):""}
 var _acSet315=acSet;acSet=function(freq,mode,note,cb,lab){return _acSet315(freq,mode,note,function(ok){if(ok){var v=acFreqOf(freq);if(v!=null){var L=lab||"";if(!L){try{L=acName(v)||""}catch(e){}}
   ACR=[{f:String(v),m:mode||"",l:String(L).slice(0,30)}].concat(ACR.filter(function(r){return!(acSame(acFreqOf(r.f),v)&&(r.m||"")==(mode||""))})).slice(0,3);store("ac_recent",JSON.stringify(ACR));acRecentRender()}}cb&&cb(ok)},lab)};
-$("acRecent").onclick=function(e){var i=e.target.dataset.acr;if(i==null)return;var r=ACR[+i];if(!r)return;$("acFreq").value=acFmt(r.f);$("acMode").value=r.m||"";$("acNote").value="";acSet(r.f,r.m,"",null,r.l||undefined)};
+$("acRecent").onclick=function(e){var i=e.target.dataset.acr;if(i==null)return;var r=ACR[+i];if(!r)return;var v=acFreqOf(r.f),cur=acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})[0],nt=cur&&cur.note||"";$("acFreq").value=acFmt(r.f);acSetMode(r.m||"");$("acNote").value=nt;acSet(r.f,r.m,nt,null,r.l||undefined)};
 acRecentRender();
 /* (M0PTN) GB3XO: On air / Off air button */
 function xoAirFind(){var v=acFreqOf(GB3XO.downlink);return acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})}
@@ -2314,5 +2314,58 @@ var _adRender316=adRender;adRender=function(){_adRender316();usRender();
 $("adList").addEventListener("click",function(e){var id=e.target.dataset.chgreset;if(!id)return;var b=e.target;b.disabled=true;b.textContent="…";
  fbCommit([{update:{name:fbDoc("devices/"+id),fields:{chg:fbInt(0)}},updateMask:{fieldPaths:["chg"]}}],function(ok,st){if(ok){AD.forEach(function(u){if(String(u.id).split("/").pop()==id)u.chg=0});adRender()}else{b.textContent="Failed ("+st+")"}})});
 var _showTab316=showTab;showTab=function(t){_showTab316(t);if(t=="adm"&&FB.admin){bcLoad(bcRender)}};
+</script>
+<script>
+/* ===== v3.18: on-air fixes from the 26 Nov test ===== */
+function acAdopt(L){AC.list=L;AC.mine=acMineOf(L);AC.me=AC.mine[0]||null;try{meShow()}catch(e){}}
+function acMineAt(v){return acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})}
+function acOthersAt(v){var M=acMineOf(AC.list||[]);return(AC.list||[]).filter(function(d){return M.indexOf(d)<0&&acSame(acFreqOf(d.freq),v)})}
+function acWhoHtml(L){return L.length?'<div class="small" style="margin-top:6px"><span style="color:#22c55e">●</span> On air now: '+L.map(function(d){return'<b>'+esc(d.call)+'</b>'+(d.mode?' '+esc(d.mode):'')+' <span class="mut">'+adAgo(d.at)+'</span>'}).join(", ")+'</div>':''}
+/* (6) GB3XO + repeater refreshes also update "your frequencies" (not just the list) */
+xoAirRefresh=function(msg){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)acAdopt(((j&&j.documents)||[]).map(FB.dec).filter(acLive));FB.token(function(){xoAirDraw(msg)})})};
+rpAirRefresh=function(row,msg){FB.json(FB.base+"/activity?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)acAdopt(((j&&j.documents)||[]).map(FB.dec).filter(acLive));FB.token(function(){rpAirDraw(row,msg)})})};
+/* (11) GB3XO card shows who else is on air on it */
+var _xoAirDraw318=xoAirDraw;xoAirDraw=function(msg){_xoAirDraw318(msg);var w=acOthersAt(acFreqOf(GB3XO.downlink));if(w.length)$("xoAir").insertAdjacentHTML("beforeend",acWhoHtml(w))};
+/* (9)+(11) repeaters: when you're on, offer "Switch to <mode>" for the other modes; show who else is on air on it */
+rpAirDraw=function(row,msg){var r=RP.filter(function(x){return x.id==row.dataset.id})[0],d=row.querySelector(".rdet");if(!r||!d||d.hidden)return;
+ var box=d.querySelector(".rpair");if(!box){box=document.createElement("div");box.className="rpair";box.style.marginTop="8px";d.appendChild(box)}
+ var on=rpAirFind(r),modes=r.modes.split("").map(function(c){return MODES[c]}).filter(function(m){return m&&m!="ATV"});if(!modes.length)modes=["FM"];
+ var cur=on.map(function(x){return String(x.mode||"").toUpperCase()}),other=modes.filter(function(m){return cur.indexOf(m.toUpperCase())<0});
+ box.innerHTML=(on.length?'<div class="small" style="color:#22c55e;font-weight:700">You\'re showing on air on '+esc(r.call)+' ('+esc(on.map(function(x){return x.mode}).join(", "))+')</div>'+
+   '<div class="btns"><button class="btn sm alt" data-rpoff="'+r.id+'">Off air on '+esc(r.call)+'</button>'+other.map(function(m){return'<button class="btn sm alt" data-rpon="'+r.id+'" data-rpmode="'+esc(m)+'">Switch to '+esc(m)+'</button>'}).join("")+'</div>':
+   '<div class="btns">'+modes.map(function(m){return'<button class="btn sm" data-rpon="'+r.id+'" data-rpmode="'+esc(m)+'">📡 On air on '+esc(r.call)+(modes.length>1?' – '+esc(m):'')+'</button>'}).join("")+'</div>')+
+  acWhoHtml(acOthersAt(r.tx))+'<div class="small rpmsg" style="margin-top:4px">'+(msg||"")+'</div>'};
+/* (10) the 30-second location update redraws the repeater list - keep open repeaters open */
+var _rnRender318=rnRender;rnRender=function(keep){var open=Array.prototype.map.call(document.querySelectorAll("#rnList .rp"),function(row){var d=row.querySelector(".rdet");return d&&!d.hidden?row.dataset.id:null}).filter(Boolean);
+ _rnRender318(keep);open.forEach(function(id){var cs=document.querySelector('#rnList .rp[data-id="'+id+'"] .cs');if(cs)cs.click()})};
+/* (2) taking one frequency off with its X: clear old messages, confirm which one */
+$("acMeNow").addEventListener("click",function(e){var id=e.target.dataset&&e.target.dataset.acoff;if(!id)return;e.stopPropagation();
+ var d=(AC.list||[]).filter(function(x){return x.id==id})[0],what=d?acFmt(d.freq)+" MHz"+(acLabel(d)?" ("+acLabel(d)+")":""):"that frequency";
+ e.target.textContent="…";$("acMsg").textContent="Taking "+what+" off…";acOffOne(id,function(ok){$("acMsg").innerHTML=ok?"✓ You're off air on "+esc(what)+".":'<span style="color:#ef4444">Couldn\'t take it off – no internet?</span>';acLoad()})},true);
+/* (4) mode buttons follow the Mode box (typed, Join them, Recent) */
+function acModeSync(){var m=String($("acMode").value||"").trim().toUpperCase();Array.prototype.forEach.call($("acModes").children,function(b){b.className=b.dataset.m&&b.dataset.m.toUpperCase()==m?"on":""})}
+$("acMode").addEventListener("input",acModeSync);$("acNow").addEventListener("click",function(){setTimeout(acModeSync,0)});$("acRecent").addEventListener("click",function(){setTimeout(acModeSync,0)});
+var _acSet318=acSet;acSet=function(freq,mode,note,cb,lab){return _acSet318(freq,mode,note,function(ok){acModeSync();cb&&cb(ok)},lab)};acModeSync();
+/* (12) frequency box: spot kHz and double dots before saving */
+function acKhzGuess(raw){var t=String(raw||"").trim().replace(",",".").replace(/\s*(k?hz|mhz)$/i,"");if(!/^\d+(\.\d+)?$/.test(t))return null;var v=parseFloat(t);
+ var micro=[[1240,1325],[2300,2450],[3400,3410],[5650,5850],[10000,10500]];if(v>=1000&&!micro.some(function(r){return v>=r[0]&&v<=r[1]})){var m=v/1000;return m>=0.1&&m<=30?m:(v>=30000&&v<=12000000?v/1000:null)}return null}
+$("acGo").onclick=function(){var raw=$("acFreq").value,msg=$("acMsg");
+ if((String(raw).match(/[.,]/g)||[]).length>1){msg.innerHTML='<span style="color:#ef4444">That frequency has more than one dot – enter it like 145.500</span>';$("acFreq").focus();return}
+ var g=acKhzGuess(raw);if(g!=null){var gf=acFmt(g);msg.innerHTML='Frequencies are in MHz – did you mean <b>'+esc(gf)+' MHz</b>? <button class="btn sm" id="acUseGuess">Yes, use '+esc(gf)+'</button>';
+  $("acUseGuess").onclick=function(){$("acFreq").value=gf;$("acFreq").dispatchEvent(new Event("input"));acSet(gf,$("acMode").value,$("acNote").value)};return}
+ acSet($("acFreq").value,$("acMode").value,$("acNote").value)};
+/* (1)+(5) the "tap any frequency" bar: if you're already on it offer Off air; if you already show 3, say so properly */
+function acBarSet(txt,btn,showYes){$("acBarTx").innerHTML=txt;$("acBarYes").textContent=btn||"Yes, show me";$("acBarYes").hidden=!showYes;$("acBarNo").textContent=showYes?"Not now":"Close"}
+document.querySelector("main").addEventListener("click",function(){setTimeout(function(){if($("acBar").hidden||!acPend)return;var v=acFreqOf(acPend.f),n=acName(acPend.f),lbl=esc(acPend.f)+" MHz "+esc(acPend.m)+(n?" · "+esc(n):"");
+  if(acMineAt(v).length){acPend.off=true;acBarSet("📻 "+lbl+" – you're showing on air on this.","Off air on "+esc(acPend.f),true)}
+  else{acPend.off=false;acBarSet("📻 "+lbl+" – show everyone you're on this?","Yes, show me",true)}},20)},true);
+$("acBarNo").onclick=function(){$("acBar").hidden=true;acPend=null;acBarSet("","Yes, show me",true)};
+$("acBarYes").onclick=function(){if(!acPend)return;var p=acPend,v=acFreqOf(p.f);acPend=null;
+ if(p.off){var L=acMineAt(v),k=L.length;if(!k){$("acBar").hidden=true;return}acBarSet("Taking you off "+esc(p.f)+" MHz…","",false);
+  FB.token(function(t){if(!t){acBarSet('<span style="color:#ef4444">No connection.</span>',"",false);return}L.forEach(function(d){acOffOne(d.id,function(){if(--k==0){acBarSet("✓ You're off air on "+esc(p.f)+" MHz","",false);acLoad("tick");setTimeout(function(){$("acBar").hidden=true;acBarSet("","Yes, show me",true)},1800)}})})});return}
+ if(!acMineAt(v).length&&acMineOf(AC.list||[]).length>=AC_MAX){acBarSet('<span style="color:#f59e0b">You\'re already showing '+AC_MAX+' frequencies – take one off first.</span> <button class="btn sm" id="acBarGo">Open Activity</button>',"",false);
+  $("acBarGo").onclick=function(){$("acBar").hidden=true;acBarSet("","Yes, show me",true);showTab("act");window.scrollTo({top:0,behavior:"smooth"})};return}
+ acBarSet("Saving…","",false);acSet(p.f,p.m,"",function(ok){acBarSet(ok?"✓ You're shown on "+esc(p.f)+" MHz "+esc(p.m):'<span style="color:#ef4444">'+esc($("acMsg").textContent||"Couldn't save – check your internet.")+'</span>',"",false);
+  setTimeout(function(){$("acBar").hidden=true;acBarSet("","Yes, show me",true)},ok?1800:4000)})};
 </script>
 </body></html>

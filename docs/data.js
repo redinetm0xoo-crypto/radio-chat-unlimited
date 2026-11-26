@@ -199,9 +199,20 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.17";
+var APP_VERSION = "3.18";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.18", date:"26 Nov 2026", items:[
+   "On air: tapping a frequency you're already on (Scanner, Emergency, Band Plan...) now offers \"Off air\"",
+   "On air: if you already show 3 frequencies, the tap-a-frequency bar says so (with a button to open Activity) instead of a wrong \"check internet\" message",
+   "On air: taking one frequency off with its ✕ now confirms which one, and clears old messages",
+   "On air: the mode buttons light up to match the mode you type or pick (Join them, Recent)",
+   "On air: the note clears after you save, and Recent keeps the note already on that frequency",
+   "On air: the frequency box spots kHz (e.g. 7047.5 → \"did you mean 7.0475 MHz?\") and typos like 145.5.5",
+   "Repeaters: an opened repeater no longer closes by itself every 30 seconds",
+   "Repeaters: once you're on air on a multi-mode repeater you can \"Switch to\" another mode in one tap",
+   "Repeaters and GB3XO: shows who else is on air on that repeater right now",
+   "\"Off air\" button renamed \"Off air (all)\" - it takes you off every frequency you're showing"]},
  {v:"3.17", date:"27 Nov 2026", items:[
    "Fix: on 26 Nov the app used up its daily database allowance, so announcements, on-air and nets stopped loading for the evening. The app now uses far less:",
    "On air list refreshes every minute while the Activity tab is open (was every 30 s on every tab)",
