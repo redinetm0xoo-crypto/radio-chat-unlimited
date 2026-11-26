@@ -208,10 +208,17 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  <div class="card" style="padding:6px 0">
   <div id="ntTurn" style="padding:4px 12px 8px"></div>
   <div id="ntRows"></div>
-  <div class="btns" style="padding:0 12px"><button class="btn" id="ntNext">▶ Next station</button><button class="btn sm alt" id="ntEmpty">Empty the list</button></div>
+  <div class="btns" style="padding:0 12px"><button class="btn" id="ntNext">▶ Next station</button><button class="btn sm alt" id="ntLogSave">Clear &amp; save to log</button><button class="btn sm alt" id="ntEmpty">Empty the list</button></div>
   <div class="mut small" style="padding:6px 12px">Go down the list, then back to the top. Drag ☰ to change the order. <b>Out</b> moves someone to the bottom in red (drag them back up, or tap Back). ✕ removes them. Names and locations come from QRZ – or tap ✎ to add them; they're remembered for next time. Everyone using the app sees the same list.</div>
  </div>
  <div class="mut small" id="ntSrc" style="text-align:center;margin:6px 0"></div>
+ <div class="card" id="nlCard">
+  <h3 style="margin:0 0 6px">📒 Net log</h3>
+  <div class="mut small">Finished nets – tap <b>Clear &amp; save to log</b> above when a net is over. Newest first.</div>
+  <div id="nlList" style="margin-top:8px"></div>
+  <div class="btns"><button class="btn sm alt" id="nlRefresh">Refresh</button><button class="btn sm alt" id="nlMore" hidden>Show more</button></div>
+  <div class="mut small" id="nlMsg" style="margin-top:4px"></div>
+ </div>
 </section>
 
 <section id="band">
@@ -2399,5 +2406,46 @@ function fuLoad(force){if(!FB.admin||FU.busy)return;if(!force&&FU.data&&Date.now
    .catch(function(){FU.busy=false;$("fuBody").textContent="Couldn't reach the usage service – no internet?"})})}
 $("fuRefresh").onclick=function(){fuLoad(true)};
 var _showTab319=showTab;showTab=function(t){_showTab319(t);if(t=="adm")fuLoad(false)};
+
+/* ===== v3.20: Net log - "Clear & save to log" stores the finished net in netlog (1 write) and empties the list.
+   The log is read ONLY when the Net page is opened, or Refresh / Show more is tapped (20 per read). No timer. ===== */
+var NL={list:[],next:"",busy:false};
+function nlRender(){var adm=!!(FB.admin);
+ $("nlList").innerHTML=NL.list.length?NL.list.map(function(e,k){var R=e.rows||[],live=R.filter(function(r){return!r.o});
+  return'<div class="post" style="margin:6px 0"><div><b>'+esc(e.name||"Net")+'</b>'+(e.freq?' · '+esc(e.freq)+' MHz':'')+(e.started?' · started '+esc(e.started):'')+
+   (adm?' <button class="x2" data-nldel="'+k+'" style="color:#ef4444;float:right">✕</button>':'')+'</div>'+
+   '<div class="mut small">'+esc(fbWhen(e.at))+' · saved by '+esc(e.by||"?")+' · '+R.length+' station'+(R.length==1?'':'s')+(R.length>live.length?' ('+(R.length-live.length)+' out)':'')+'</div>'+
+   '<details><summary class="small">Stations</summary><ol class="small" style="margin:4px 0;padding-left:22px">'+R.map(function(r){return'<li'+(r.o?' style="color:#ef4444"':'')+'>'+esc(r.c)+(r.n?' – '+esc(r.n):'')+(r.l?' <span class="mut">('+esc(r.l)+')</span>':'')+(r.o?' – out':'')+'</li>'}).join("")+'</ol></details></div>'}).join("")
+  :'<div class="mut small">No saved nets yet.</div>';
+ $("nlMore").hidden=!NL.next}
+function nlLoad(more){if(NL.busy)return;NL.busy=true;$("nlMsg").textContent="Loading the log…";
+ var u=FB.base+"/netlog?pageSize=20&orderBy="+encodeURIComponent("at desc")+"&key="+FB.key+(more&&NL.next?"&pageToken="+encodeURIComponent(NL.next):"");
+ FB.json(u,{cache:"no-store"},function(ok,j,st){NL.busy=false;if(!ok){$("nlMsg").textContent=st==403?"Can't read the log – reopen the app to sign in again.":"Can't load the log – no internet?";return}
+  var L=((j&&j.documents)||[]).map(function(d){var f=FB.dec(d);try{f.rows=JSON.parse(f.rows||"[]")}catch(e){f.rows=[]}return f});
+  NL.list=more?NL.list.concat(L):L;NL.next=(j&&j.nextPageToken)||"";nlRender();
+  $("nlMsg").textContent="Loaded "+new Date().toTimeString().slice(0,5)+" – doesn't refresh by itself, tap Refresh."})}
+function nlSave(tries){tries=tries||0;var m=$("ntMsg");if(!QZ.call){m.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return}
+ var id=NT.sel;ntRaw(id,function(ok,o){if(!ok){m.textContent="No connection.";return}
+  if(!o.rows.length){m.textContent="Nothing to save – the list is empty.";return}
+  var rows=o.rows.map(function(r){return{c:r.c,n:r.n||"",l:r.l||"",o:r.o?1:0}}),
+   lid=new Date().toISOString().replace(/[^0-9]/g,"").slice(0,14)+"-"+Math.random().toString(36).slice(2,7),
+   e={net:id,name:ntLabel(id).slice(0,40),freq:(o.freq||"").slice(0,12),started:(o.started||"").slice(0,20),rows:JSON.stringify(rows).slice(0,20000),n:String(rows.length),by:QZ.call.slice(0,12)};
+  var w1={update:{name:fbDoc("netlog/"+lid),fields:FB.enc(e)},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}],currentDocument:{exists:false}},
+   w2={update:{name:fbDoc("nets/"+id),fields:FB.enc({freq:(o.freq||"").slice(0,12),started:"",rows:"[]",cur:"",by:QZ.call.slice(0,12)})},
+    updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}],currentDocument:o.ut?{updateTime:o.ut}:{exists:false}};
+  m.textContent="Saving…";
+  fbCommit([w1,w2],function(ok2,st){if(ok2){o.rows=[];o.cur="";o.started="";NT.docs[id]=o;ntRender();ntLoad();
+    e.id=lid;e.rows=rows;e.at=new Date().toISOString();NL.list.unshift(e);nlRender();
+    m.textContent="✓ "+ntLabel(id)+" saved to the Net log ("+rows.length+" station"+(rows.length==1?"":"s")+") and the list emptied.";return}
+   if((st==400||st==409||st==412)&&tries<3)return nlSave(tries+1);m.textContent="Couldn't save ("+(st==403?"not allowed":"error "+st)+").";ntLoad()})})}
+$("ntLogSave").onclick=function(){var b=this;if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Tap again to save & empty "+ntLabel(NT.sel);
+  setTimeout(function(){delete b.dataset.sure;b.textContent="Clear & save to log"},4000);return}
+ delete b.dataset.sure;b.textContent="Clear & save to log";nlSave()};
+$("nlRefresh").onclick=function(){nlLoad(false)};
+$("nlMore").onclick=function(){nlLoad(true)};
+$("nlList").onclick=function(ev){var t=ev.target,k=t.dataset&&t.dataset.nldel;if(k===undefined)return;
+ if(!t.dataset.sure){t.dataset.sure="1";t.textContent="Delete?";setTimeout(function(){if(t.isConnected){delete t.dataset.sure;t.textContent="✕"}},3500);return}
+ var e=NL.list[+k];if(!e)return;FB.del("netlog",e.id,function(ok){if(ok){NL.list.splice(+k,1);nlRender()}else $("nlMsg").textContent="Couldn't delete."})};
+var _showTab320=showTab;showTab=function(t){_showTab320(t);if(t=="net")nlLoad(false)};
 </script>
 </body></html>
