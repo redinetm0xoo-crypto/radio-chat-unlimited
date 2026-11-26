@@ -174,6 +174,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
 </div></div>
 <main>
+<div id="bcBanner" hidden style="margin:8px 0;padding:10px 12px;border-radius:10px;background:#1e3a5f;border:1px solid #3b82f6;position:relative"><div style="font-weight:800">📢 <span id="bcBFrom"></span></div><div id="bcBText" style="white-space:pre-wrap;margin-top:4px"></div><button id="bcBX" title="Dismiss" style="position:absolute;top:6px;right:8px;background:none;border:0;color:var(--tx);font-size:18px">✕</button></div>
 <div id="distInfo" class="info" hidden></div>
 
 <section id="act" hidden>
@@ -314,6 +315,19 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
  <div class="card"><h2>Radio set-up</h2><div id="xoSet"></div></div>
  <a class="btn" style="display:block" id="xoQrz">Open GB3XO on QRZ.com</a>
+ <div class="card" id="xoAdm" hidden style="margin-top:12px;border-color:#f59e0b">
+  <h2>🔁 GB3XO reset <span class="mut small">(admins only)</span></h2>
+  <div class="mut small">Texts <b>Off</b> to the repeater's switch, waits 10 seconds, then texts <b>On</b>. Sent from your own phone (normal text charges, free on most plans). Android app only.</div>
+  <div class="btns"><button class="btn" id="xoReset" style="background:#b45309">Reset</button></div>
+  <div id="xoResetMsg" class="small" style="margin-top:6px"></div>
+  <div id="xoResetLog" class="mut small" style="margin-top:6px"></div>
+ </div>
+ <div class="card" id="gwAdm" hidden style="border-color:#f59e0b">
+  <h2>MB7IXO Gateway <span class="mut small">(Alvechurch) · admins only</span></h2>
+  <div class="mut small">Texts <b>On</b> or <b>Off</b> to the gateway's switch from your own phone. Android app only.</div>
+  <div class="btns"><button class="btn" id="gwOn">On</button><button class="btn alt" id="gwOff">Off</button></div>
+  <div id="gwMsg" class="small" style="margin-top:6px"></div>
+ </div>
 </section>
 
 <section id="qth" hidden>
@@ -334,6 +348,18 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </section>
 
 <section id="adm" hidden>
+ <div class="card" id="bcCard">
+  <h2>📢 Message everyone</h2>
+  <div class="mut small">Goes to every app user: a banner at the top of the app, and a phone notification (Android app, within about 15 minutes) for anyone who has Notifications on. Up to 300 characters.</div>
+  <textarea id="bcText" maxlength="300" rows="3" placeholder="e.g. GB3XO off air tonight 7–9 pm for maintenance" style="width:100%;margin-top:8px;background:#0b1424;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:16px;font-family:inherit"></textarea>
+  <div class="btns"><button class="btn" id="bcSend">Send to everyone</button></div>
+  <div id="bcMsg" class="small" style="margin-top:6px"></div>
+  <div id="bcList" style="margin-top:8px"></div>
+ </div>
+ <div class="card" id="stCard">
+  <h2>📊 Usage</h2>
+  <div id="usStats" class="mut small">Loading…</div>
+ </div>
  <div class="card">
   <h2>Admins</h2>
   <div id="adAdmins" style="font-weight:800;font-size:17px;color:#f5a524;margin-bottom:12px"></div>
@@ -582,6 +608,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <div class="mut small">At most once every 6 hours for each person. Uses your location (or your own APRS position).</div>
   <h2 style="margin-top:14px">App</h2>
   <label class="alr"><input type="checkbox" data-al="upd"> A new version of the app is out <span class="mut small">(Android app)</span></label>
+  <label class="alr"><input type="checkbox" data-al="bc"> Messages from the app's admins</label>
   <h2 style="margin-top:14px">On air</h2>
   <label class="alr"><input type="checkbox" data-al="air"> Someone shows on air in Activity</label>
   <label class="alr" style="padding-left:30px">only if they are within <select data-aln="airMi"><option value="0">any distance</option><option>5</option><option>10</option><option>25</option><option>50</option></select> <span class="mut small">(needs their APRS position)</span></label>
@@ -1406,7 +1433,7 @@ FB.token=function(cb){var a=FB.auth;
  FB.json("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json"},body:'{"returnSecureToken":true}'},function(ok,j){
   if(ok&&j&&j.idToken)save(j.localId,j.idToken,j.refreshToken,j.expiresIn);else done(null)})};
 FB.enc=function(o){var f={};Object.keys(o).forEach(function(k){f[k]={stringValue:String(o[k])}});return f};
-FB.dec=function(d){var o={id:d.name.split("/").pop()},f=d.fields||{};Object.keys(f).forEach(function(k){var v=f[k];o[k]=v.stringValue!==undefined?v.stringValue:(v.timestampValue||"")});return o};
+FB.dec=function(d){var o={id:d.name.split("/").pop()},f=d.fields||{};Object.keys(f).forEach(function(k){var v=f[k];o[k]=v.stringValue!==undefined?v.stringValue:v.integerValue!==undefined?+v.integerValue:(v.timestampValue||"")});return o};
 FB.rid=function(){var c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<20;i++)s+=c.charAt(Math.floor(Math.random()*c.length));return s};
 FB.add=function(coll,data,cb){FB.token(function(tok){if(!tok)return cb(false,"no connection");data.uid=FB.auth.uid;
  var body={writes:[{update:{name:"projects/"+FB.proj+"/databases/(default)/documents/"+coll+"/"+FB.rid(),fields:FB.enc(data)},currentDocument:{exists:false},
@@ -1492,7 +1519,7 @@ if(IS_APP){try{prompt("rcu:xsched")}catch(e){}}
 document.addEventListener("visibilitychange",function(){if(!document.hidden){latestCheck();FB.hello();if(curTab=="ann")anLoad();if(curTab=="sale")fsLoad()}});
 
 
-/* --- v2.5: Admin tab (admins only) - app users from Firebase "devices" --- */
+/* --- v2.5: Admin tab (admins only) - app users from Firebase "devices" (v3.16: + usage stats, broadcast, callsign-change resets) --- */
 var AD=[];
 function adAgo(ts){if(!ts)return"–";var s=(Date.now()-new Date(ts))/1000;if(s<90)return"just now";if(s<3600)return Math.round(s/60)+" min ago";if(s<86400)return Math.round(s/3600)+" h ago";return Math.round(s/86400)+" days ago"}
 function adLoad(){$("adCount").textContent="Loading…";FB.token(function(tok){if(!tok){$("adCount").textContent="No connection.";return}
@@ -2239,5 +2266,88 @@ $("sgRevOrd").onclick=function(e){var o=e.target.dataset.o;if(!o)return;SGR_ORD=
 $("verBtn").addEventListener("click",function(){setTimeout(function(){verMode("ver")},150)});
 $("sugBtn").addEventListener("click",function(){setTimeout(function(){verMode("sug");$("sugCard").scrollIntoView()},150)});
 $("revBtn").onclick=function(){$("verBtn").onclick();lsStop&&lsStop();setTimeout(function(){verMode("rev");window.scrollTo(0,0)},150)};
+</script>
+<script>
+/* ===== v3.16 ===== */
+function fbAuthGet(path,cb){FB.token(function(tok){if(!tok)return cb(false,null);FB.json(FB.base+"/"+path+(path.indexOf("?")<0?"?":"&")+"key="+FB.key,{headers:{Authorization:"Bearer "+tok},cache:"no-store"},function(ok,j,st){cb(ok,j,st)})})}
+function fbInt(n){return{integerValue:String(n)}}
+/* --- (2E0UMK) Callsign changes: once this phone has a callsign, changing it to a DIFFERENT one uses 1 of 2 changes; an admin can reset. --- */
+function ccBase(c){return String(c||"").toUpperCase().split("/")[0]}
+function ccChange(nc,msgEl,ok){var oc=myCall();nc=String(nc||"").trim().toUpperCase();
+ if(!oc||!nc||ccBase(oc)==ccBase(nc)||store("consent")!="1"||!window.FB)return ok();
+ msgEl.textContent="Checking…";
+ FB.token(function(tok){if(!tok){msgEl.textContent="No connection – can't change your callsign right now.";return}
+  fbAuthGet("devices/"+FB.auth.uid,function(g,j){var d=g&&j?FB.dec(j):{},used=+(j&&j.fields&&j.fields.chg&&j.fields.chg.integerValue||0),cur=ccBase(d.call||oc);
+   if(g&&d.call&&ccBase(d.call)==ccBase(nc)){msgEl.textContent="";return ok()}
+   if(used>=2){msgEl.innerHTML='<span style="color:#ef4444">You\'ve used both callsign changes on this phone. Ask an admin to reset them (Admin tab).</span>';return}
+   if(!confirm("Change your callsign from "+cur+" to "+nc+"?\n\nEach phone can change its callsign twice (e.g. Foundation → Intermediate → Full). This uses change "+(used+1)+" of 2."+(used==1?" After this an admin has to reset it.":""))){msgEl.textContent="Not changed.";return}
+   var w={update:{name:fbDoc("devices/"+FB.auth.uid),fields:{call:{stringValue:nc.slice(0,12)},chg:fbInt(used+1)}},updateMask:{fieldPaths:["call","chg"]},updateTransforms:[{fieldPath:"seen",setToServerValue:"REQUEST_TIME"}]};
+   if(!g){w.update.fields.chg=fbInt(0);w.update.fields.name={stringValue:(store("my_name")||"").slice(0,60)};w.updateMask.fieldPaths=["call","chg","name"]}
+   fbCommit([w],function(c,st){if(c){msgEl.textContent=g?"✓ Callsign changed ("+(2-used-1)+" change"+(used==0?"":"s")+" left).":"✓ Callsign saved.";ok()}
+    else msgEl.innerHTML='<span style="color:#ef4444">Couldn\'t change your callsign ('+(st==403?"no changes left – ask an admin":"error "+st)+').</span>'})})})}
+var _cmSave316=$("cmSave").onclick;$("cmSave").onclick=function(){var c=$("cmCall").value.trim().toUpperCase(),self=this;if(!/^[A-Z0-9]{1,3}[0-9][A-Z]{1,4}(\/[A-Z0-9]+)?$/.test(c))return _cmSave316.call(self);ccChange(c,$("cmMsg"),function(){_cmSave316.call(self)})};
+var _stSave316=$("stSave").onclick;$("stSave").onclick=function(){var c=$("stCall").value.trim().toUpperCase(),self=this,old=myCall();if(!old||ccBase(old)==ccBase(c))return _stSave316.call(self);
+ $("stCall").value=old;ccChange(c,$("stMsg"),function(){$("stCall").value=c;_stSave316.call(self);if(window.FB)FB.hello(true)})};
+/* --- Admin broadcast: send, list, delete; banner for everyone --- */
+var BC=[];
+function bcLoad(cb){FB.json(FB.base+"/broadcasts?orderBy=at%20desc&pageSize=10&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok)BC=((j&&j.documents)||[]).map(FB.dec);cb&&cb()})}
+function bcBanner(){var b=BC.filter(function(x){return x.at&&Date.now()-new Date(x.at)<48*3600e3})[0];
+ if(!b||store("bc_seen")==b.at){$("bcBanner").hidden=true;return}
+ $("bcBFrom").textContent=(b.call||"Admin")+" · "+fbWhen(b.at);$("bcBText").textContent=b.text;$("bcBanner").hidden=false}
+$("bcBX").onclick=function(){var b=BC[0];if(b)store("bc_seen",b.at);$("bcBanner").hidden=true};
+function bcRender(){$("bcList").innerHTML=BC.length?'<div class="mut small">Sent recently:</div>'+BC.map(function(b){return'<div class="post"><div style="white-space:pre-wrap">'+esc(b.text)+'</div><div class="by"><b>'+esc(b.call||"")+'</b> · '+fbWhen(b.at)+' <button class="btn sm alt" data-bcdel="'+esc(b.id)+'" style="float:right;padding:2px 8px">Delete</button></div></div>'}).join(""):""}
+$("bcSend").onclick=function(){var t=$("bcText").value.trim();if(!t){$("bcText").focus();return}
+ if(!QZ.call){$("bcMsg").textContent="Set your callsign first.";return}
+ if(!confirm("Send this to everyone who uses the app?\n\n"+t))return;
+ $("bcMsg").textContent="Sending…";fbCommit([{update:{name:fbDoc("broadcasts/"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),fields:FB.enc({text:t.slice(0,300),call:QZ.call.slice(0,12)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  $("bcMsg").textContent=ok?"✓ Sent. It shows at the top of the app now, and as a notification on Android phones within about 15 minutes.":"Couldn't send ("+(st==403?"admins only":"error "+st)+").";
+  if(ok){$("bcText").value="";bcLoad(function(){bcRender();bcBanner()})}})};
+$("bcList").onclick=function(e){var id=e.target.dataset.bcdel;if(!id||!confirm("Delete this message? (Phones that were already notified keep the notification.)"))return;
+ FB.del("broadcasts",id.split("/").pop(),function(ok){bcLoad(function(){bcRender();bcBanner()})})};
+bcLoad(bcBanner);setInterval(function(){bcLoad(bcBanner)},5*60000);
+/* --- Usage stats (from the devices list) + callsign-change resets, in the Admin tab --- */
+function usRender(){if(!AD||!AD.length){$("usStats").textContent="No data yet.";return}
+ var now=Date.now(),D=864e5,ago=function(t){return t?now-new Date(t):1e15},n=function(f){return AD.filter(f).length},
+  act1=n(function(u){return ago(u.seen)<D}),act7=n(function(u){return ago(u.seen)<7*D}),act30=n(function(u){return ago(u.seen)<30*D}),
+  new7=n(function(u){return ago(u.first)<7*D}),new30=n(function(u){return ago(u.first)<30*D}),
+  live=AD.filter(function(u){return ago(u.seen)<30*D}),web=live.filter(function(u){return/web/.test(u.ver||"")}).length,apk=live.length-web,
+  V={};live.forEach(function(u){var v=(u.ver||"old").replace(/\s*web$/,"");V[v]=(V[v]||0)+1});
+ var vs=Object.keys(V).sort(function(a,b){return ALR.newer(a,b)?-1:1}),old=live.filter(function(u){return!/web/.test(u.ver||"")&&(!u.ver||ALR.newer(APP_VERSION,u.ver))}).length,
+  row=function(l,v){return'<tr><td>'+l+'</td><td style="text-align:right"><b>'+v+'</b></td></tr>'},maxv=Math.max.apply(null,vs.map(function(v){return V[v]}));
+ $("usStats").innerHTML='<table style="margin-top:4px">'+row("Total users (phones / browsers)",AD.length)+row("Used the app in the last 24 hours",act1)+row("… last 7 days",act7)+row("… last 30 days",act30)+row("New in the last 7 days",new7)+row("New in the last 30 days",new30)+
+  row("Android app (active last 30 days)",apk)+row("Web app (active last 30 days)",web)+row("Android users on an old version (need to update)",old)+'</table>'+
+  '<div style="margin-top:10px"><b>Versions in use</b> <span class="mut small">(last 30 days)</span></div>'+vs.map(function(v){return'<div class="small" style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:52px">v'+esc(v)+'</span><span style="flex:1;background:#0b1424;border-radius:4px;height:12px"><span style="display:block;height:12px;border-radius:4px;background:'+(v==APP_VERSION?'#22c55e':'#3b82f6')+';width:'+Math.round(100*V[v]/maxv)+'%"></span></span><b>'+V[v]+'</b></div>'}).join("")+
+  '<div class="mut small" style="margin-top:6px">Each phone and each browser counts once. Green = the current version (v'+APP_VERSION+'). Web users always get the latest version.</div>'}
+var _adRender316=adRender;adRender=function(){_adRender316();usRender();
+ var L=$("adList").querySelectorAll(".rp"),q=$("adSearch").value.trim().toUpperCase(),F=AD.filter(function(u){return!q||(u.call||"").toUpperCase().indexOf(q)>=0||(u.name||"").toUpperCase().indexOf(q)>=0});
+ F.forEach(function(u,i){var el=L[i];if(!el)return;var c=+(u.chg||0),id=String(u.id||"").split("/").pop();
+  var x=document.createElement("div");x.className="mut small";x.innerHTML='Callsign changes used: <b>'+c+' of 2</b>'+(c>0?' <button class="btn sm alt" data-chgreset="'+esc(id)+'" style="padding:2px 8px;margin-left:6px">Reset</button>':'')+' <span class="mut" style="font-size:11px">'+esc(id)+'</span>';el.appendChild(x)})};
+$("adList").addEventListener("click",function(e){var id=e.target.dataset.chgreset;if(!id)return;var b=e.target;b.disabled=true;b.textContent="…";
+ fbCommit([{update:{name:fbDoc("devices/"+id),fields:{chg:fbInt(0)}},updateMask:{fieldPaths:["chg"]}}],function(ok,st){if(ok){AD.forEach(function(u){if(String(u.id).split("/").pop()==id)u.chg=0});adRender()}else{b.textContent="Failed ("+st+")"}})});
+var _showTab316=showTab;showTab=function(t){_showTab316(t);if(t=="adm"&&FB.admin){bcLoad(bcRender)}if(t=="gb3xo")xoAdmShow()};
+/* --- GB3XO reset + MB7IXO gateway (admins only, Android app): numbers are in Firebase adminconfig/gb3xo (admin-only) --- */
+var XCFG=null;
+function xoAdmShow(){$("xoAdm").hidden=$("gwAdm").hidden=!FB.admin;if(!FB.admin)return;xoResetLog()}
+function xoCfg(cb){if(XCFG)return cb(XCFG);fbAuthGet("adminconfig/gb3xo",function(ok,j){if(ok&&j&&j.fields){XCFG=FB.dec(j);cb(XCFG)}else cb(null)})}
+function xoResetLog(){fbAuthGet("resets?orderBy=at%20desc&pageSize=5",function(ok,j){if(!ok)return;var L=((j&&j.documents)||[]).map(FB.dec);
+ $("xoResetLog").innerHTML=L.length?"Last resets: "+L.map(function(r){return esc(r.call)+" "+fbWhen(r.at)+(r.ok=="failed"?" (failed)":"")}).join(" · "):""})}
+function smsSend(num,a,b,msgEl,cb){if(!IS_APP){msgEl.innerHTML='<span style="color:#ef4444">Texts can only be sent from the Android app – open Radio Chat Unlimited on your phone.</span>';return}
+ var r="";try{r=prompt("rcu:xsms:"+num+"|"+a+"|"+(b||"-"))}catch(e){r="err"}
+ if(r=="perm"){msgEl.innerHTML='Android is asking for permission to send texts – tap <b>Allow</b>, then press the button again.';return}
+ if(r!="ok"){msgEl.innerHTML='<span style="color:#ef4444">Couldn\'t send the text (is there a SIM / signal?).</span>';return}
+ cb&&cb()}
+window.smsOn=function(ok){if(!window._smsWait)return;var w=window._smsWait;window._smsWait=null;clearInterval(w.t);
+ w.el.innerHTML=ok?'✓ <b>On</b> sent '+new Date().toTimeString().slice(0,8)+' – GB3XO has been reset.':'<span style="color:#ef4444">"Off" was sent but "On" failed – press Reset again, or text On to the switch.</span>';
+ fbCommit([{update:{name:fbDoc("resets/"+Date.now().toString(36)),fields:FB.enc({call:(QZ.call||"?").slice(0,12),ok:ok?"sent":"failed"})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(){xoResetLog()})};
+$("xoReset").onclick=function(){var el=$("xoResetMsg");if(!FB.admin)return;
+ if(!confirm("Reset GB3XO?\n\nThis texts \"Off\" to the repeater's switch, then \"On\" 10 seconds later. GB3XO will drop for about 10 seconds."))return;
+ el.textContent="Getting the switch number…";xoCfg(function(c){if(!c||!c.sms){el.innerHTML='<span style="color:#ef4444">The switch number isn\'t set up in Firebase (adminconfig/gb3xo → sms).</span>';return}
+  smsSend(c.sms,"Off","On",el,function(){var n=10,w={el:el};window._smsWait=w;el.innerHTML='✓ <b>Off</b> sent '+new Date().toTimeString().slice(0,8)+' – sending <b>On</b> in <span id="xoCd">10</span> s…';
+   w.t=setInterval(function(){n--;var c=$("xoCd");if(c)c.textContent=Math.max(0,n);if(n<=-20&&window._smsWait===w){window._smsWait=null;clearInterval(w.t);el.innerHTML='"Off" was sent; the phone didn\'t confirm "On" – check GB3XO is back, and press Reset again if not.'}},1000)})})};
+function gwSend(word){var el=$("gwMsg");if(!FB.admin)return;if(!confirm("Text \""+word+"\" to the MB7IXO gateway switch?"))return;
+ el.textContent="Getting the switch number…";xoCfg(function(c){if(!c||!c.gw){el.innerHTML='<span style="color:#ef4444">The gateway number isn\'t set up in Firebase (adminconfig/gb3xo → gw).</span>';return}
+  smsSend(c.gw,word,"",el,function(){el.innerHTML='✓ <b>'+word+'</b> sent to MB7IXO at '+new Date().toTimeString().slice(0,8)+'.'})})}
+$("gwOn").onclick=function(){gwSend("On")};$("gwOff").onclick=function(){gwSend("Off")};
+var _meShow316=meShow;meShow=function(){_meShow316();if(typeof curTab!="undefined"&&curTab=="gb3xo")xoAdmShow()};
 </script>
 </body></html>

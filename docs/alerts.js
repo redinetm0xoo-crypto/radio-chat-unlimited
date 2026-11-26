@@ -1,4 +1,4 @@
-/* v3.12 Alerts (v3.13: 80-40, 30-20, 17-15 and 12-10 m band groups) - shared by the Android background check (alerts.html, every 15 min) and the open app / web page.
+/* v3.12 Alerts (v3.13: 80-40, 30-20, 17-15 and 12-10 m band groups; v3.16: messages from admins) - shared by the Android background check (alerts.html, every 15 min) and the open app / web page.
    Checks: propagation (10 m, 6 m / 4 m / 2 m Sporadic E, aurora) from hamqsl.com, app users near you on APRS (aprs.fi),
    and people showing on air (Firebase). Each user picks what they want in the Alerts tab. Only CHANGES are notified:
    a band opening, someone newly near you (once every 6 h each), someone newly on air. The first run just remembers. */
@@ -6,7 +6,7 @@ var ALR = {
  FS: "https://firestore.googleapis.com/v1/projects/radio-chat-unlimited-m0xoo/databases/(default)/documents/",
  KEY: "AIzaSyA6ClIo52wbC2afxEAJRerCdZLaHhOXdoc",
  APRS_KEY: "209605.7aHWBxNlpG57c1",
- DEF: {upd: true, p80: false, p30: false, p17: false, p10: true, p6: true, p4: false, p2: false, aur: true, kp: 5, aprs: true, aprsMi: 10, air: true, airMi: 0},
+ DEF: {bc: true, upd: true, p80: false, p30: false, p17: false, p10: true, p6: true, p4: false, p2: false, aur: true, kp: 5, aprs: true, aprsMi: 10, air: true, airMi: 0},
  get: function (url, cb) {
   var x = new XMLHttpRequest(); try { x.open("GET", url); } catch (e) { return cb(null); } x.timeout = 20000;
   x.onload = function () { cb(x.status >= 200 && x.status < 300 ? x.responseText : null); };
@@ -45,7 +45,7 @@ var ALR = {
  /* run all enabled checks. env: {prefs, state, post(title, text), save(state), done()} */
  run: function (env) {
   var P = {}, k; for (k in ALR.DEF) P[k] = ALR.DEF[k]; for (k in env.prefs || {}) P[k] = env.prefs[k];
-  var S = env.state || {}, first = !S.init, out = [], left = 4, now = Date.now();
+  var S = env.state || {}, first = !S.init, out = [], left = 5, now = Date.now();
   S.prop = S.prop || {}; S.aprs = S.aprs || {}; S.air = S.air || {};
   function note(t, x) { if (!first) out.push([t, x]); }
   function fin() {
@@ -59,6 +59,14 @@ var ALR = {
   if (P.upd && mv && P.app) ALR.get(ALR.FS + "settings/version?key=" + ALR.KEY + "&t=" + now, function (t) {
    var v = ""; try { v = String(ALR.dec(JSON.parse(t).fields.v) || ""); } catch (e) {}
    if (v && ALR.newer(v, mv) && S.upd != v) { S.upd = v; out.push(["⬆️ Update available – v" + v, "You have v" + mv + ". Open the app and tap the green update banner (or Version history → Check for updates)."]); }
+   fin();
+  }); else fin();
+  /* 0b. v3.16 messages from admins (broadcasts) - newest first; only ones sent since the last check (first run just remembers) */
+  if (P.bc) ALR.get(ALR.FS + "broadcasts?orderBy=at%20desc&pageSize=5&key=" + ALR.KEY + "&t=" + now, function (t) {
+   var L = []; try { L = (JSON.parse(t).documents || []).map(function (d) { var o = {}; for (var k in d.fields || {}) o[k] = ALR.dec(d.fields[k]); return o; }); } catch (e) {}
+   L = L.filter(function (b) { return b.at && b.text && now - new Date(b.at) < 48 * 3600e3; });
+   if (L.length) { if (S.bcAt) L.filter(function (b) { return b.at > S.bcAt; }).reverse().forEach(function (b) { out.push(["📢 " + (b.call || "Admin"), b.text]); });
+    if (!S.bcAt || L[0].at > S.bcAt) S.bcAt = L[0].at; } else if (!S.bcAt) S.bcAt = new Date(now).toISOString();
    fin();
   }); else fin();
   /* 1. propagation */

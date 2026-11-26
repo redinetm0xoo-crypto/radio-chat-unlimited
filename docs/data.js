@@ -199,11 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.15";
+var APP_VERSION = "3.16";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.16", date:"26 Nov 2026", items:[
+   "Notifications: messages about the app and the repeaters now show as a banner at the top and as a phone notification (turn off under Settings → Notifications)",
+   "Callsign changes: each phone can change its callsign twice (e.g. Foundation → Intermediate → Full) (suggestion 2E0UMK)"]},
  {v:"3.15", date:"26 Nov 2026", items:[
-   "Admins see an ADMIN badge next to their callsign at the top (suggestion M0PTN)",
    "Net: a named net shows its name on the Net tab button as well as its own button, and the name saves as soon as you leave the box (suggestion 2E0UMK)",
    "Scanner: PMR446 is now two lists – PMR446 (Analogue) and new PMR446 (Digital) with the 16 DMR446 and 32 dPMR446 channels – both with the 0.5 W / fixed-antenna rules (suggestion 2E0UMK)",
    "Scanner: '⬇ Download as CSV' on every list, ready to rearrange for your radio's programming software (suggestion 2E0UMK)",
@@ -235,7 +237,7 @@ var VERSIONS = [
    "Activity: 'Nearby on APRS' only lists people heard in the last 12 hours",
    "Net: 5 nets instead of 3, and each net can have a name (free text) – shown on the net buttons and 'Show net' buttons"]},
  {v:"3.10", date:"24 Nov 2026", items:[
-   "APRS: the app now knows everyone who uses it – admins and anyone in the activity log, suggestions, posts and nets, not only people on v3.8+ – so e.g. Paul (M7VPE-9) shows on the map and in Nearby",
+   "APRS: the app now knows everyone who uses it – anyone in the activity log, suggestions, posts and nets, not only people on v3.8+ – so e.g. Paul (M7VPE-9) shows on the map and in Nearby",
    "APRS map is live: positions refresh every minute while the APRS tab is open, with how old each position is on its label",
    "Web version: APRS positions are now looked up through the app's relay (browsers block aprs.fi directly)"]},
  {v:"3.9", date:"24 Nov 2026", items:[
@@ -253,7 +255,7 @@ var VERSIONS = [
    "Exam: wrong answers show the right one, why, and which syllabus section to revise (with a link to the matching tab, e.g. Antenna or Band Plan); your scores are kept, weakest sections first",
    "Android: home-screen widget showing GB3XO's status (idle / on air / not reporting, last keyed) – long-press your home screen, Widgets, Radio Chat Unlimited. Tap it to refresh, tap GB3XO to open the app"]},
  {v:"3.6", date:"24 Nov 2026", items:[
-   "Tab order: Morse and Antenna moved up – the last tabs are now For Sale, Announcements, Settings, Admin"]},
+   "Tab order: Morse and Antenna moved up – the last tabs are now For Sale, Announcements, Settings"]},
  {v:"3.5", date:"24 Nov 2026", items:[
    "Activity: frequencies now show their name – e.g. 433.025 shows GB3XO, 27.66125 shows CB Ch 7 – on the On air list, your own box, the log and the 'show everyone' bar",
    "Activity: show up to 3 frequencies at once – take each one off with ✕, or Off air for all"]},
@@ -271,7 +273,7 @@ var VERSIONS = [
    "Scanner: every UK aerodrome airband frequency (651 frequencies, 261 airfields)",
    "Band Plan: FT8 and FT4 frequencies added to each band",
    "Announcements: Mark as read and I'll attend (for events) – everyone can see who; edit your own announcements and For Sale listings",
-   "Suggestions: Implemented and Needs more work statuses; admins can edit a suggestion; senders can see theirs and resubmit",
+   "Suggestions: Implemented and Needs more work statuses; senders can see theirs and resubmit",
    "Tap M0XOO at the top to open its QRZ page",
    "Redditch Emergency: GB3XO 48-hour battery backup noted"]},
  {v:"3.1", date:"23 Nov 2026", items:[
@@ -281,20 +283,16 @@ var VERSIONS = [
    "PMR channel 7 note: family use, for example",
    "Listening time box: everyone will try to be available from 7 pm in the event of an emergency (power outage, etc.)"]},
  {v:"2.9", date:"23 Nov 2026", items:[
-   "Redditch Emergency: priority frequencies to check first locally - 1st 2m Simplex 145.250 FM, 2nd PMR channel 7 - starred and boxed at the top",
-   "Admin tab: the current admins' callsigns are listed at the top"]},
+   "Redditch Emergency: priority frequencies to check first locally - 1st 2m Simplex 145.250 FM, 2nd PMR channel 7 - starred and boxed at the top"]},
  {v:"2.8", date:"23 Nov 2026", items:[
-   "Admin sign in: admins (callsigns on the admin list) are asked for the admin password when they enter their callsign - works on any phone or PC (also under QRZ › Settings)",
-   "Admins can sign out of admin from QRZ › Settings"]},
+   "Behind-the-scenes improvements"]},
  {v:"2.7", date:"23 Nov 2026", items:[
    "New: web version for Windows / Mac / iPhone – redinetm0xoo-crypto.github.io/radio-chat-unlimited – install it from Edge or Chrome (Install app icon in the address bar)",
    "Web version: same tabs and features; voice listening works in Edge and Chrome; GB3XO Listen plays while the page is open",
    "Web version updates itself – just reopen it"]},
  {v:"2.6", date:"23 Nov 2026", items:[
-  "Admins: the Suggest a feature page now lists every suggestion sent in, with Accept and Reject buttons",
   "Suggestions are never deleted - they stay on the list with their status (New / Accepted / Rejected), who decided and when"]},
  {v:"2.5", date:"23 Nov 2026", items:[
-  "New Admin tab (admins only): list of app users with callsign, name, when they last opened the app, app version and first seen",
   "When you save your callsign, a short box asks you to accept that the app stores your callsign and when you last opened it",
   "Your 'last opened' time also updates when you come back to the app or change your callsign"]},
  {v:"2.4", date:"23 Nov 2026", items:[
