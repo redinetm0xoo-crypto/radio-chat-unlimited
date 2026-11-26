@@ -135,6 +135,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 #exTest:disabled{opacity:.4}
 .alr{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}.alr input[type=checkbox]{width:20px;height:20px;flex:none}.alr select{width:auto;padding:4px 6px}
 .exbar{height:8px;background:#0b1424;border-radius:4px;overflow:hidden}.exbar i{display:block;height:100%;background:var(--acc)}
+.fmt td,.fmt th{padding:5px 4px}.fmt tr.fmcall td{background:rgba(34,197,94,.16)}.fmt tr.fmgrp td{background:rgba(245,158,11,.18)}.fmt .fmn{white-space:nowrap}.fmtag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;margin-right:4px}.fmtag.c{background:#16a34a;color:#fff}.fmtag.g{background:#d97706;color:#fff}
 </style></head>
 <body>
 <header>
@@ -151,7 +152,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="fmch">Simplex</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -298,6 +299,16 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
  </div>
  <div class="mut small" style="text-align:center" id="repSrc"></div>
  </div>
+</section>
+<section id="fmch" hidden>
+ <div class="card">
+  <h3 style="margin:0 0 4px">📻 UHF / VHF simplex – 2m &amp; 70cm FM channels</h3>
+  <div class="mut small">Tap a frequency to show everyone you're on it (or listening) – same as anywhere else in the app. ● shows someone is on it now.</div>
+  <div id="fmKey" style="margin-top:8px"></div>
+ </div>
+ <div class="card"><h3 style="margin:0 0 6px">2m (VHF) – 145.200 to 145.5875 MHz</h3><table class="fmt"><thead><tr><th>Channel</th><th>MHz</th><th>Mode</th><th>Use</th></tr></thead><tbody id="fmVhf"></tbody></table></div>
+ <div class="card"><h3 style="margin:0 0 6px">70cm (UHF) – 433.400 to 433.575 MHz</h3><table class="fmt"><thead><tr><th>Channel</th><th>MHz</th><th>Mode</th><th>Use</th></tr></thead><tbody id="fmUhf"></tbody></table></div>
+ <div class="mut small" style="text-align:center;margin:6px 0">Channel names: new (V / U, 12.5 kHz steps) and old (S / SU, 25 kHz steps). Source: RSGB Band Plan 2026. Use narrow FM (±2.5 kHz) and move off the calling channels once you've made contact. Always operate within your Ofcom licence conditions.</div>
 </section>
 
 <section id="gb3xo" hidden>
@@ -2447,5 +2458,27 @@ $("nlList").onclick=function(ev){var t=ev.target,k=t.dataset&&t.dataset.nldel;if
  if(!t.dataset.sure){t.dataset.sure="1";t.textContent="Delete?";setTimeout(function(){if(t.isConnected){delete t.dataset.sure;t.textContent="✕"}},3500);return}
  var e=NL.list[+k];if(!e)return;FB.del("netlog",e.id,function(ok){if(ok){NL.list.splice(+k,1);nlRender()}else $("nlMsg").textContent="Couldn't delete."})};
 var _showTab320=showTab;showTab=function(t){_showTab320(t);if(t=="net")nlLoad(false)};
+
+/* ===== v3.21: UHF/VHF tab - 2m and 70cm FM simplex channels (RSGB Band Plan 2026), new + old channel names ===== */
+(function(){
+ var GRP=145.25,CALL=[145.5,433.5];
+ var V2={145.2:"ISS uplink (Earth-to-Space) · emergency comms / community events – avoid interfering with the ISS",145.2125:"FM internet voice gateway",145.225:"FM internet voice gateway · emergency comms / community events",
+  145.2375:"FM internet voice gateway (IARU common channel)",145.25:"Slow Morse transmissions",145.2625:"FM internet voice gateway",145.2875:"FM internet voice gateway (IARU common channel)",
+  145.3125:"FM internet voice gateway",145.3375:"FM internet voice gateway (IARU common channel)",145.5:"FM calling channel – digital voice users are asked not to use it",
+  145.525:"GB2RS news broadcast",145.55:"Rally / exhibition talk-in",145.575:"Low-power / ad-hoc repeater output (5 W erp max)",145.5875:"Low-power / ad-hoc repeater output (5 W erp max)"};
+ var U7={433.4:"IARU Region 1 SSTV (FM/AFSK)",433.5:"FM calling channel",433.55:"Rally / exhibition talk-in"};
+ function r4(x){return Math.round(x*10000)/10000}
+ function fq(x){var t=x.toFixed(4).replace(/0+$/,"");if(t.split(".")[1].length<3)t=x.toFixed(3);return t}
+ function rows(lo,hi,base,first,pre,oldPre,oldOff,notes){var R=[];for(var k=0;;k++){var f=r4(lo+k*0.0125);if(f>hi+1e-6)break;var n=first+k,isV=pre=="V",old="";
+   if(n%2==0){var on=n/2-oldOff;if(!(isV&&n>46))old=oldPre+on}
+   var nm=(isV&&n>45)?"":pre+n;R.push({f:f,nm:nm,old:old,use:notes[f]||""})}return R}
+ var VHF=rows(145.2,145.5875,145.2,16,"V","S",0,V2),UHF=rows(433.4,433.575,433.4,272,"U","SU",120,U7);
+ function tag(f){var t="";if(Math.abs(f-GRP)<1e-6)t+='<span class="fmtag g">★ Group default</span>';if(CALL.some(function(c){return Math.abs(f-c)<1e-6}))t+='<span class="fmtag c">Calling</span>';return t}
+ function cls(f){return Math.abs(f-GRP)<1e-6?"fmgrp":CALL.some(function(c){return Math.abs(f-c)<1e-6})?"fmcall":""}
+ function tr(r){var name=(r.nm||"–")+(r.old?' <span class="mut">('+r.old+')</span>':'');return'<tr class="'+cls(r.f)+'"><td class="fmn">'+name+'</td><td class="f">'+fq(r.f)+'</td><td>FM</td><td class="small">'+tag(r.f)+esc(r.use)+'</td></tr>'}
+ $("fmVhf").innerHTML=VHF.map(tr).join("");$("fmUhf").innerHTML=UHF.map(tr).join("");
+ var K=[VHF.filter(function(r){return Math.abs(r.f-GRP)<1e-6})[0],VHF.filter(function(r){return r.f==145.5})[0],UHF.filter(function(r){return r.f==433.5})[0]];
+ $("fmKey").innerHTML='<table class="fmt"><tbody>'+K.map(function(r){return'<tr class="'+cls(r.f)+'"><td class="fmn"><b>'+r.nm+'</b> <span class="mut">('+r.old+')</span></td><td class="f" style="font-size:18px;font-weight:700">'+fq(r.f)+'</td><td>FM</td><td class="small">'+tag(r.f)+(Math.abs(r.f-GRP)<1e-6?'The group\'s usual channel':r.f<200?'2m FM calling':'70cm FM calling')+'</td></tr>'}).join("")+'</tbody></table>';
+})();
 </script>
 </body></html>

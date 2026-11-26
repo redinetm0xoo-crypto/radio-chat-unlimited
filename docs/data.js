@@ -199,9 +199,12 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.20";
+var APP_VERSION = "3.21";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.21", date:"26 Nov 2026", items:[
+   "New Simplex tab (after UK Repeaters): every 2m and 70cm FM simplex channel with its new and old name (e.g. V40 / S20) and what it's used for",
+   "145.250 highlighted as the group's default channel, 145.500 and 433.500 as the FM calling channels – tap any of them to show you're on it"]},
  {v:"3.20", date:"26 Nov 2026", items:[
    "Net tab: new \"Clear & save to log\" button – when a net is over it saves the list of stations to a Net log and empties the list",
    "Net log at the bottom of the Net tab: newest first, tap Stations to see who checked in, Show more for older nets"]},
