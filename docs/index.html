@@ -101,6 +101,9 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 #lsCalls .lc{display:flex;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
 #lsCalls .lc b{font-size:17px}
 #lsCalls .lc .nm{color:var(--acc)}
+#lsCalls .lc{gap:6px;align-items:center}#lsCalls .lc>span:last-child{font-size:13px;white-space:nowrap}
+#lsCalls .lc .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:0 1 auto}
+#lsCalls .lc .ld{margin-left:auto;color:#9fb0c8;font-size:12px;white-space:nowrap}
 #lsCalls .lc .lcq{align-self:center;font-size:12px;font-weight:700;padding:2px 8px;border:1px solid var(--acc);border-radius:8px;color:var(--acc);text-decoration:none;white-space:nowrap}
 #lsCalls{max-height:calc(5 * 40px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-top:1px solid var(--line)}
 #lsCalls .lc{min-height:40px;align-items:center;box-sizing:border-box}
@@ -151,6 +154,17 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
 .satp{padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer}.satp.now{background:rgba(34,197,94,.14)}.satp .t{font-weight:700}
 .satf td{padding:3px 4px}
 .reps{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.repc{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.45);border-radius:10px;padding:1px 7px;font-size:13px}.repc b{color:#22c55e}.reppan{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:10px}.repg{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.repb{min-width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:none;color:inherit;font-weight:700;font-size:15px}.repb.on{background:#f5a524;color:#111;border-color:#f5a524}
+#hdMapBox img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
+#hdMapBox .hdl{position:absolute;left:0;top:0;pointer-events:none}#hdMapBox .hdl line{stroke:#f5a524;stroke-width:2;stroke-opacity:.55;stroke-dasharray:6 4}
+#hdMapBox .hdm{position:absolute;transform:translate(-50%,-100%);margin-top:-6px;background:#f5a524;color:#111;font-weight:800;font-size:12px;padding:2px 7px;border-radius:7px;border:0;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer}
+#hdMapBox .hdm:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:#f5a524}
+#hdMapBox .hdm.ap{background:#fde2a7}#hdMapBox .hdm.ap:after{border-top-color:#fde2a7}#hdMapBox .hdm.sel{outline:3px solid #2563eb}
+#hdMapBox .hdn{font-weight:600;opacity:.75}
+#hdMapBox .hdme{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;background:#ef4444;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(239,68,68,.4)}
+#hdMapBox .apz{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+#hdMapBox .apz button{width:38px;height:38px;border-radius:8px;border:1px solid #999;background:#fff;color:#111;font-size:20px;font-weight:700}
+#hdMapBox .attr{position:absolute;right:0;bottom:0;background:rgba(255,255,255,.85);color:#333;font-size:10px;padding:1px 5px}
+#hdMapBox .hdempty{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(255,255,255,.9);color:#111;font-size:13px;padding:4px 10px;border-radius:8px}
 </style></head>
 <body>
 <header>
@@ -502,7 +516,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  <div class="card" id="hdCard">
    <h2>Stations heard</h2>
    <canvas id="hdMap" width="720" height="480" style="width:100%;max-width:720px;height:auto;display:block;margin:0 auto"></canvas>
-   <div class="mut small" style="margin-top:4px">Red = you (your own callsign is never counted as heard). Stations are placed by their locator from QRZ, or – if QRZ doesn't give one – by their town (marked ~, approximate; town lookup by OpenStreetMap).</div>
+   <div class="mut small" style="margin-top:4px">Red dot = you (your GPS, or your APRS position). Stations are placed by their APRS position if they use the app and are on APRS, otherwise by their QRZ locator, otherwise by their town (pale markers, approximate). The map zooms itself to fit everyone – tap a station for details, ⤢ to fit again.</div>
    <div id="hdList"></div>
    <div class="btns"><button class="btn sm alt" id="hdClear">Clear heard list</button></div>
   </div>
@@ -2950,5 +2964,71 @@ var _lsStop331=lsStop;lsStop=function(){lsFlush(true);_lsStop331()};
 (function(){if(store("hd_clean331"))return;var lev=function(a,b){var m=a.length,n=b.length,d=[];for(var i=0;i<=m;i++){d[i]=[i];for(var j=1;j<=n;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1)):j}return d[m][n]};
  var before=HEARD.length;HEARD=HEARD.filter(function(x){return x.name||!HEARD.some(function(y){return y!==x&&y.name&&y.t==x.t&&(y.call.indexOf(x.call)==0||lev(x.call,y.call)<=2)})});
  store("hd_clean331","1");if(HEARD.length!=before){hdSave();hdRender()}})();
+
+/* ===== v3.32: Stations heard map – real OpenStreetMap map (like the APRS and repeater maps), zooms itself to fit
+   you and the stations you've heard, groups stations that sit on top of each other, tap a marker for details ===== */
+var HDM={c:null,z:0,auto:true,sel:null};
+(function(){var c=$("hdMap");if(!c||$("hdMapBox"))return;c.hidden=true;c.style.display="none";
+ c.insertAdjacentHTML("afterend",'<div id="hdMapBox" style="position:relative;height:56vh;min-height:300px;max-height:520px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#dde;touch-action:none"></div><div id="hdMapInfo"></div>')})();
+function hdPts(){var o=homePos(),seen={},P=[];HEARD.slice(0,60).forEach(function(e){var k=baseCall(e.call);if(seen[k])return;var p=loc2ll(e.grid);if(!p)return;seen[k]=1;
+ var d=miles(o.lat,o.lon,p.lat,p.lon);P.push({lat:p.lat,lon:p.lon,call:e.call,name:e.name||"",approx:!!e.gq,d:d,b:bearing(o.lat,o.lon,p.lat,p.lon),t:e.t,rst:e.rst||""})});return P}
+function hdFit(W,H,o,P){var L=[o].concat(P).map(function(p){return[p.lat,p.lon]});
+ for(var z=13;z>=3;z--){var xs=L.map(function(a){return mPx(a[0],a[1],z).x}),ys=L.map(function(a){return mPx(a[0],a[1],z).y});
+  if(Math.max.apply(0,xs)-Math.min.apply(0,xs)<=W-90&&Math.max.apply(0,ys)-Math.min.apply(0,ys)<=H-70){var cx=(Math.max.apply(0,xs)+Math.min.apply(0,xs))/2,cy=(Math.max.apply(0,ys)+Math.min.apply(0,ys))/2,n=256*Math.pow(2,z);
+   return{z:Math.min(z,P.length?13:10),c:{lat:Math.atan(Math.sinh(Math.PI*(1-2*cy/n)))*180/Math.PI,lon:cx/n*360-180}}}}
+ return{z:3,c:{lat:o.lat,lon:o.lon}}}
+hdDraw=function(){var box=$("hdMapBox");if(!box)return;var W=box.offsetWidth||360,H=box.offsetHeight||320,o=hdMe(),P=hdPts();
+ if(HDM.auto||!HDM.c){var f=hdFit(W,H,o,P);HDM.z=f.z;HDM.c=f.c}
+ var z=HDM.z,N=Math.pow(2,z),ctr=mPx(HDM.c.lat,HDM.c.lon,z),x0=ctr.x-W/2,y0=ctr.y-H/2,h="",xy=function(la,lo){var q=mPx(la,lo,z);return[q.x-x0,q.y-y0]};
+ for(var tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(var ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){if(ty<0||ty>=N)continue;
+  h+='<img alt="" src="https://tile.openstreetmap.org/'+z+'/'+((tx%N+N)%N)+'/'+ty+'.png" style="left:'+Math.round(tx*256-x0)+'px;top:'+Math.round(ty*256-y0)+'px">'}
+ /* group stations closer than 26 px */
+ var G=[];P.forEach(function(p){var q=xy(p.lat,p.lon),g=G.filter(function(g){return Math.abs(g.x-q[0])<26&&Math.abs(g.y-q[1])<26})[0];if(g)g.L.push(p);else G.push({x:q[0],y:q[1],L:[p]})});
+ var m=xy(o.lat,o.lon),sv='<svg class="hdl" width="'+W+'" height="'+H+'">';G.forEach(function(g){sv+='<line x1="'+m[0].toFixed(1)+'" y1="'+m[1].toFixed(1)+'" x2="'+g.x.toFixed(1)+'" y2="'+g.y.toFixed(1)+'"/>'});h+=sv+'</svg>';
+ G.forEach(function(g,i){var a=g.L[0],lab=esc(a.call)+(g.L.length>1?' <span class="hdn">+'+(g.L.length-1)+'</span>':(a.name?' <span class="hdn">'+esc(a.name)+'</span>':''));
+  h+='<button class="hdm'+(g.L.every(function(p){return p.approx})?' ap':'')+(HDM.sel===i?' sel':'')+'" data-hg="'+i+'" style="left:'+Math.round(g.x)+'px;top:'+Math.round(g.y)+'px">'+lab+'</button>'});
+ h+='<span class="hdme" style="left:'+Math.round(m[0])+'px;top:'+Math.round(m[1])+'px" title="You"></span>';
+ h+='<div class="apz"><button data-hz="1">+</button><button data-hz="-1">−</button><button data-hz="fit" title="Fit everything">⤢</button></div>'+
+  '<div class="attr">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</div>'+
+  (P.length?'':'<div class="hdempty">No stations with a position yet</div>');
+ box.innerHTML=h;HDM.G=G;hdInfo()};
+function hdInfo(){var el=$("hdMapInfo");if(!el)return;var g=HDM.G&&HDM.sel!=null?HDM.G[HDM.sel]:null;if(!g){el.innerHTML="";return}
+ el.innerHTML='<div class="post" style="margin-top:8px">'+g.L.map(function(p){return'<div style="padding:3px 0"><b>'+esc(p.call)+'</b> '+(p.name?esc(p.name)+' ':'')+'<span class="mut small">'+(p.approx?'~':'')+(p.d<10?p.d.toFixed(1):Math.round(p.d))+' mi '+compass(p.b)+(p.approx?' (from their town)':p.src=='aprs'?' (APRS)':'')+(p.rst?' · RST '+esc(p.rst):'')+' · '+esc(p.t)+'Z</span> <a class="lcq" style="font-size:12px;font-weight:700;padding:1px 7px;border:1px solid var(--acc);border-radius:8px;color:var(--acc);text-decoration:none" href="https://www.qrz.com/db/'+encodeURIComponent(baseCall(p.call))+'" target="_blank" rel="noopener">QRZ ↗</a></div>'}).join("")+'</div>'}
+(function(){var box=$("hdMapBox");if(!box)return;var st=null;
+ box.addEventListener("click",function(e){var t=e.target.closest("[data-hz],[data-hg]");if(!t)return;var z=t.dataset.hz;
+  if(z=="fit"){HDM.auto=true;HDM.sel=null;hdDraw();return}if(z){HDM.auto=false;HDM.z=Math.max(3,Math.min(16,HDM.z+(+z)));hdDraw();return}
+  var i=+t.dataset.hg;HDM.sel=HDM.sel===i?null:i;hdDraw()});
+ box.addEventListener("pointerdown",function(e){if(e.target.closest(".apz,.hdm,.attr"))return;st={x:e.clientX,y:e.clientY,c:HDM.c,m:false};box.setPointerCapture(e.pointerId)});
+ box.addEventListener("pointermove",function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.m&&Math.abs(dx)+Math.abs(dy)<4)return;st.m=true;HDM.auto=false;
+  var p=mPx(st.c.lat,st.c.lon,HDM.z),n=256*Math.pow(2,HDM.z),x=p.x-dx,y=p.y-dy;HDM.c={lat:Math.atan(Math.sinh(Math.PI*(1-2*y/n)))*180/Math.PI,lon:x/n*360-180};hdDraw()});
+ ["pointerup","pointercancel"].forEach(function(t){box.addEventListener(t,function(){st=null})})})();
+/* new stations re-fit the map unless you've moved it yourself; redraw when the QRZ tab is shown (the box has no size while hidden) */
+var _showTab332=showTab;showTab=function(t){_showTab332(t);if(t=="qrz")setTimeout(hdDraw,50)};
+window.addEventListener("resize",function(){if(curTab=="qrz")hdDraw()});
+if(curTab=="qrz")setTimeout(hdDraw,50);
+/* ===== v3.32: Listen list – distance and direction from you, on the right next to the time (~ = from their town) ===== */
+function lsDistTxt(k){var e=HEARD.filter(function(x){return baseCall(x.call)==k&&x.grid})[0],p=e&&loc2ll(e.grid);if(!p)return"";var o=homePos(),d=miles(o.lat,o.lon,p.lat,p.lon);
+ return(e.gq?"~":"")+(d<10?d.toFixed(1):Math.round(d).toLocaleString())+" mi "+compass(bearing(o.lat,o.lon,p.lat,p.lon))}
+function lsDistAll(){var R=document.querySelectorAll("#lsCalls .lc");for(var i=0;i<R.length;i++){var r=R[i],t=lsDistTxt(r.dataset.k),s=r.querySelector(".ld");
+ if(!t){if(s)s.remove();continue}if(!s){var tm=r.lastElementChild;r.insertAdjacentHTML("beforeend",'');tm.insertAdjacentHTML("beforebegin",'<span class="ld"></span>');s=r.querySelector(".ld");tm.style.marginLeft="10px"}s.textContent=t}}
+var _hdRender332=hdRender;hdRender=function(){_hdRender332();try{lsDistAll()}catch(e){}};
+var _lsSetName332=lsSetName;lsSetName=function(k,nm){_lsSetName332(k,nm);try{lsDistAll()}catch(e){}};
+
+/* ===== v3.32: where a heard station is – their APRS position (app users, heard on APRS in the last 7 days), else the QRZ locator,
+   else their town from QRZ (~). Where you are – your GPS, else your APRS position, else Redditch. ===== */
+function hdMe(){var m=(typeof apMyPos=="function"&&apMyPos())||null;return m?{lat:m.lat,lon:m.lon}:homePos()}
+function hdPos(e){var k=baseCall(e.call),a=typeof AP!="undefined"&&AP.pos&&AP.pos[k];
+ if(a&&a.lat!=null&&Date.now()/1000-a.t<7*86400)return{lat:a.lat,lon:a.lng,src:"aprs"};
+ var p=loc2ll(e.grid);return p?{lat:p.lat,lon:p.lon,src:e.gq?"town":"grid"}:null}
+function hdDistTxt(e){var p=hdPos(e);if(!p)return"";var o=hdMe(),d=miles(o.lat,o.lon,p.lat,p.lon);return(p.src=="town"?"~":"")+(d<10?d.toFixed(1):Math.round(d).toLocaleString())+" mi "+compass(bearing(o.lat,o.lon,p.lat,p.lon))}
+lsDistTxt=function(k){var e=HEARD.filter(function(x){return baseCall(x.call)==k})[0];return e?hdDistTxt(e):""};
+hdPts=function(){var seen={},P=[],o=hdMe();HEARD.slice(0,60).forEach(function(e){var k=baseCall(e.call);if(seen[k])return;var p=hdPos(e);if(!p)return;seen[k]=1;
+ P.push({lat:p.lat,lon:p.lon,call:e.call,name:e.name||"",approx:p.src=="town",src:p.src,d:miles(o.lat,o.lon,p.lat,p.lon),b:bearing(o.lat,o.lon,p.lat,p.lon),t:e.t,rst:e.rst||""})});return P};
+var _homePos332=null;
+/* the Stations heard list and map use the same positions */
+var _hdRender332b=hdRender;hdRender=function(){_hdRender332b();var R=document.querySelectorAll("#hdList .rp");HEARD.slice(0,30).forEach(function(e,i){var r=R[i];if(!r)return;var d=r.querySelector(".dist");if(!d)return;
+ var t=hdDistTxt(e);d.textContent=(e.rst?"RST "+e.rst+(t?" · ":""):"")+t+(t&&hdPos(e).src=="aprs"?" (APRS)":"")})};
+
+hdRender();   /* re-draw the list once so the ~ on town-based distances shows straight away */
 </script>
 </body></html>

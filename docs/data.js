@@ -199,9 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.31";
+var APP_VERSION = "3.32";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.32", date:"27 Nov 2026", items:[
+  "QRZ › Stations heard: a proper OpenStreetMap map that zooms itself to fit you and the stations you've heard. Stations on top of each other are grouped (e.g. G1MZT +2) – tap a marker for details and a QRZ button; ⤢ fits everything again",
+  "Listen for callsigns: each callsign now shows its distance and direction from you, next to the time",
+  "Distances use the station's APRS position if they use the app and are on APRS, otherwise their QRZ locator, otherwise their town (~); yours uses your GPS, or your APRS position"]},
  {v:"3.31", date:"27 Nov 2026", items:[
   "QRZ › Stations heard: stations are now plotted on the map even when QRZ doesn't give their locator – placed by their town instead (marked ~)",
   "Listen for callsigns: half-heard callsigns (e.g. G1MZ or D1MZT while G1MZT is still being spoken) no longer end up in the Stations heard list"]},
