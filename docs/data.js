@@ -199,9 +199,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.29";
+var APP_VERSION = "3.30";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.30", date:"27 Nov 2026", items:[
+  "QRZ › Listen for callsigns: each callsign found on QRZ now has a \"QRZ ↗\" button to open their QRZ page"]},
  {v:"3.29", date:"27 Nov 2026", items:[
   "Scanner: CSV upload now reads files saved by Excel with semicolons and decimal commas, CHIRP radio-programming exports (with repeater shift and tones), and HF frequencies given in kHz",
   "Scanner: Rename and Delete only show for your own lists",

@@ -101,6 +101,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 #lsCalls .lc{display:flex;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
 #lsCalls .lc b{font-size:17px}
 #lsCalls .lc .nm{color:var(--acc)}
+#lsCalls .lc .lcq{align-self:center;font-size:12px;font-weight:700;padding:2px 8px;border:1px solid var(--acc);border-radius:8px;color:var(--acc);text-decoration:none;white-space:nowrap}
 #lsCalls{max-height:calc(5 * 40px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-top:1px solid var(--line)}
 #lsCalls .lc{min-height:40px;align-items:center;box-sizing:border-box}
 #xoListen{width:100%;font-size:21px;padding:16px;margin-bottom:10px;transition:background .2s,box-shadow .2s}
@@ -2881,5 +2882,9 @@ $("acNow").addEventListener("click",function(e){var t=e.target.closest("[data-re
 
 /* ===== v3.29: callsign box – "Your callsign" + Cancel when you already have one (was always "Welcome!" / "Not licensed") ===== */
 var _askCall329=askCall;askCall=function(force){_askCall329(force);var has=!!myCall();$("callModal").querySelector("h2").textContent=has?"Your callsign":"Welcome! What's your callsign?";$("cmSkip").textContent=has?"Cancel":"Not licensed / skip for now"};
+
+/* ===== v3.30: callsigns heard by Listen – a "QRZ ↗" button once QRZ has found them ===== */
+var _lsSetName330=lsSetName;lsSetName=function(k,nm){_lsSetName330(k,nm);var R=document.querySelectorAll('#lsCalls .lc[data-k="'+k+'"]');
+ for(var i=0;i<R.length;i++){var a=R[i].querySelector(".lcq");if(nm&&!a){var n=R[i].querySelector(".nm");n.insertAdjacentHTML("afterend",'<a class="lcq" href="https://www.qrz.com/db/'+encodeURIComponent(k)+'" target="_blank" rel="noopener">QRZ ↗</a>')}else if(!nm&&a)a.remove()}};
 </script>
 </body></html>
