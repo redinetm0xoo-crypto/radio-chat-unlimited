@@ -148,6 +148,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
 #rnMapBox .key{position:absolute;left:6px;bottom:6px;background:rgba(255,255,255,.9);color:#111;font-size:11px;padding:3px 6px;border-radius:6px}
 .satp{padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer}.satp.now{background:rgba(34,197,94,.14)}.satp .t{font-weight:700}
 .satf td{padding:3px 4px}
+.reps{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.repc{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.45);border-radius:10px;padding:1px 7px;font-size:13px}.repc b{color:#22c55e}.reppan{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:10px}.repg{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.repb{min-width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:none;color:inherit;font-weight:700;font-size:15px}.repb.on{background:#f5a524;color:#111;border-color:#f5a524}
 </style></head>
 <body>
 <header>
@@ -2020,11 +2021,11 @@ acSet=function(freq,mode,note,cb,lab0){var msg=$("acMsg");if(!QZ.call){msg.inner
  var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
  mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v),lab=acName(v).slice(0,40);msg.textContent="Saving…";
  FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,mine=acMineOf(AC.list),slot=null;
-  mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v))slot=d.id});
+  var keep=false;mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v)){slot=d.id;keep=!!d.reps}});
   if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
   if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off '+(curTab=="act"?'(✕) first.':'first (✕ in the Activity tab).')+'</span>';return cb&&cb(false)}
   if(lab0)lab=String(lab0).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
-  fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+  fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateMask:keep?{fieldPaths:["call","name","freq","mode","note","label"]}:undefined,updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
    msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";$("acNote").value="";acLoad()}cb&&cb(ok)})})};
 function acOffOne(id,cb){FB.del("activity",id,function(ok){cb&&cb(ok)})}
 acOff=function(){var msg=$("acMsg"),M=acMineOf(AC.list);if(!M.length){msg.textContent="You're not showing on air.";return}var n=M.length;
@@ -2817,5 +2818,46 @@ function qoRender(){var p=homePos(),q=qoPoint(p.lat,p.lon),el=$("qoPoint");if(!e
  el.innerHTML=q.el<3?'<div class="mut small">QO-100 is below the horizon from here.</div>':
   '<div class="post" style="margin:0"><b>Dish pointing from '+(p.fallback?'Redditch (location off)':'your location')+'</b><div style="font-size:16px;margin-top:2px">Azimuth <b>'+q.az.toFixed(1)+'° '+compass(q.az)+'</b> (true) · Elevation <b>'+q.el.toFixed(1)+'°</b></div><div class="mut small">LNB skew about '+Math.abs(q.skew).toFixed(0)+'° – fine-tune for the strongest beacon. Azimuth is true north; a compass reads magnetic.</div></div>'}
 var _satRender327=satRender;satRender=function(){_satRender327();if(!SATST.qoAt||Date.now()-SATST.qoAt>60e3){SATST.qoAt=Date.now();qoRender()}};
+
+/* ===== v3.28 Signal reports (idea 6): send a quick RS report (11–59) to anyone showing on air; it shows on their listing for everyone.
+   Stored inside their activity listing (field reps, keyed by your phone's ID) – no extra reads. Cleared when the listing is taken off or changes frequency. ===== */
+var _dec328=FB.dec;FB.dec=function(d){var o=_dec328(d),f=d.fields||{};Object.keys(f).forEach(function(k){if(f[k].mapValue)o[k]=repDecMap(f[k].mapValue)});return o};
+function repDecMap(m){var o={},f=m.fields||{};Object.keys(f).forEach(function(k){var v=f[k];o[k]=v.mapValue?repDecMap(v.mapValue):v.stringValue!==undefined?v.stringValue:v.integerValue!==undefined?+v.integerValue:(v.timestampValue||"")});return o}
+function repList(d){var r=d&&d.reps;if(!r||typeof r!="object")return[];return Object.keys(r).map(function(k){var x=r[k]||{};return{uid:k,c:x.c||"",rs:x.rs||"",l:x.l||"",at:x.at||""}}).filter(function(x){return/^[1-5][1-9]$/.test(x.rs)}).sort(function(a,b){return a.at<b.at?1:-1})}
+function repChips(d,mine){var L=repList(d);if(!L.length)return"";
+ return'<div class="reps">'+(mine?'<span class="mut small">Reports on you: </span>':'')+L.map(function(x){return'<span class="repc" title="'+esc(x.c)+' – readability '+x.rs[0]+', signal '+x.rs[1]+(x.l?' – from '+esc(x.l):'')+'"><b>'+esc(x.rs)+'</b> '+esc(x.c)+(x.l?' <span class="mut">'+esc(x.l)+'</span>':'')+'</span>'}).join("")+'</div>'}
+var REP={open:null,r:5,s:9};
+var REP_R=["","Unreadable","Barely readable","Readable with difficulty","Readable","Perfectly readable"];
+var REP_S=["","Faint","Very weak","Weak","Fair","Fairly good","Good","Moderately strong","Strong","Very strong"];
+function repPanel(d){var me=FB.auth&&FB.auth.uid,cur=(d.reps&&me&&d.reps[me])||null,r=cur?+cur.rs[0]:REP.r,s=cur?+cur.rs[1]:REP.s;REP.r=r;REP.s=s;
+ var b=function(n,v,cls){var h="";for(var i=1;i<=n;i++)h+='<button class="repb'+(i==v?' on':'')+'" data-rk="'+cls+'" data-rv="'+i+'">'+i+'</button>';return h};
+ return'<div class="reppan" data-rid="'+esc(d.id)+'"><div class="small"><b>Your report for '+esc(d.call)+'</b> on '+esc(acFmt(d.freq))+' MHz</div>'+
+  '<div class="small" style="margin-top:6px">Voice / readability (R) – <span id="repRt">'+REP_R[r]+'</span></div><div class="repg">'+b(5,r,"r")+'</div>'+
+  '<div class="small" style="margin-top:6px">Signal strength (S) – <span id="repSt">'+REP_S[s]+'</span></div><div class="repg">'+b(9,s,"s")+'</div>'+
+  '<div style="display:flex;gap:6px;align-items:center;margin-top:8px"><span style="font-size:26px;font-weight:800" id="repBig">'+r+s+'</span><input id="repLoc" maxlength="30" placeholder="Where you are (optional)" value="'+esc(cur?cur.l:(store("rep_loc")||""))+'" style="flex:1"></div>'+
+  '<div class="btns" style="margin-top:8px"><button class="btn sm" data-repsend="1">Send '+(cur?'(update)':'report')+'</button>'+(cur?'<button class="btn sm alt" data-repdel="1">Remove my report</button>':'')+'<button class="btn sm alt" data-repclose="1">Cancel</button></div><div class="small" id="repMsg"></div></div>'}
+function repSend(id,rs,loc,cb){if(!QZ.call)return cb(false,"Set your callsign first (tap \"You\" at the top).");var me=FB.auth&&FB.auth.uid;if(!me)return cb(false,"No connection.");
+ var fp="reps.`"+me+"`",w={update:{name:fbDoc("activity/"+id),fields:{}},updateMask:{fieldPaths:[fp]},currentDocument:{exists:true}};
+ if(rs){var f={c:{stringValue:QZ.call.slice(0,12)},rs:{stringValue:rs}};if(loc)f.l={stringValue:loc.slice(0,30)};w.update.fields.reps={mapValue:{fields:{}}};w.update.fields.reps.mapValue.fields[me]={mapValue:{fields:f}};w.updateTransforms=[{fieldPath:fp+".at",setToServerValue:"REQUEST_TIME"}]}
+ fbCommit([w],function(ok,st){cb(ok,ok?"":(st==404||st==400?"That listing has gone (they've gone off air or changed frequency).":st==403?"Couldn't send – they may have just gone off air or changed frequency.":"Couldn't send (error "+st+")."))})}
+function repDoc(id){return(AC.list||[]).filter(function(d){return d.id==id})[0]}
+function repDecorate(){if(!AC.list)return;var me=FB.auth&&FB.auth.uid;
+ Array.prototype.forEach.call(document.querySelectorAll("#acNow .post"),function(el){var old=el.querySelector(".repwrap");if(old)old.remove();var fq=el.querySelector(".fq");if(!fq)return;
+  var f=parseFloat(fq.textContent),calls=Array.prototype.map.call(el.querySelectorAll("b.accall"),function(b){return b.textContent.trim()});if(!calls.length){var b0=el.querySelector("div > b");if(b0)calls=[b0.textContent.trim()]}
+  var D=(AC.list||[]).filter(function(d){return calls.indexOf(d.call)>=0&&acSame(acFreqOf(d.freq),f)&&!acMineOf([d]).length});if(!D.length)return;
+  var h='<div class="repwrap">'+D.map(function(d){return(D.length>1&&repList(d).length?'<div class="small" style="margin-top:4px"><b>'+esc(d.call)+'</b></div>':'')+repChips(d)}).join("")+
+   '<div class="btns" style="margin-top:6px">'+D.map(function(d){var mineR=me&&d.reps&&d.reps[me];return'<button class="btn sm alt" data-rep="'+esc(d.id)+'">📶 '+(mineR?'Your report '+esc(mineR.rs):'Report')+(D.length>1?' '+esc(d.call):'')+'</button>'}).join("")+'</div>'+
+   (REP.open&&D.some(function(d){return d.id==REP.open})?repPanel(repDoc(REP.open)):'')+'</div>';
+  el.insertAdjacentHTML("beforeend",h)});
+ var M=acMineOf(AC.list||[]),box=$("acMeNow");if(box){var o=box.querySelector(".repwrap");if(o)o.remove();var hh=M.map(function(d){return repList(d).length?'<div class="small"><b>'+esc(acFmt(d.freq))+'</b>: '+repChips(d,false).replace('<div class="reps">','<span class="reps">').replace(/<\/div>$/,'</span>')+'</div>':''}).join("");
+  if(hh)box.insertAdjacentHTML("beforeend",'<div class="repwrap" style="margin-top:6px"><div class="mut small">📶 Signal reports on you:</div>'+hh+'</div>')}}
+var _acRender328=acRender;acRender=function(){var r=_acRender328.apply(this,arguments);try{repDecorate()}catch(e){}return r};
+$("acNow").addEventListener("click",function(e){var t=e.target.closest("[data-rep],[data-rk],[data-repsend],[data-repdel],[data-repclose]");if(!t)return;e.stopPropagation();
+ if(t.dataset.rep){REP.open=REP.open==t.dataset.rep?null:t.dataset.rep;repDecorate();var l=$("repLoc");if(l)l.scrollIntoView({block:"nearest"});return}
+ if(t.dataset.repclose){REP.open=null;repDecorate();return}
+ if(t.dataset.rk){var v=+t.dataset.rv;if(t.dataset.rk=="r")REP.r=v;else REP.s=v;var p=t.closest(".reppan");Array.prototype.forEach.call(p.querySelectorAll('[data-rk="'+t.dataset.rk+'"]'),function(b){b.className="repb"+(+b.dataset.rv==v?" on":"")});
+  $("repBig").textContent=""+REP.r+REP.s;$("repRt").textContent=REP_R[REP.r];$("repSt").textContent=REP_S[REP.s];return}
+ var id=t.closest(".reppan").dataset.rid,loc=$("repLoc").value.trim(),del=!!t.dataset.repdel;store("rep_loc",loc);$("repMsg").textContent=del?"Removing…":"Sending…";
+ repSend(id,del?null:""+REP.r+REP.s,loc,function(ok,err){if(!ok){$("repMsg").innerHTML='<span style="color:#ef4444">'+esc(err)+'</span>';return}REP.open=null;acLoad("tick")})},true);
 </script>
 </body></html>

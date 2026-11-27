@@ -199,9 +199,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.27";
+var APP_VERSION = "3.28";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.28", date:"27 Nov 2026", items:[
+  "Activity: send a quick signal report to anyone showing on air – tap 📶 Report, pick readability (1–5) and signal (1–9), e.g. 59, and add where you are if you like. Reports show on their listing for everyone, and you see the reports on yours."]},
  {v:"3.27", date:"27 Nov 2026", items:[
   "Satellites tab: new QO-100 card – listen live to the QO-100 narrowband transponder on the BATC / AMSAT-UK WebSDR at Goonhilly, plus the wideband (DATV) viewer, the band plan and dish pointing for your location."]},
  {v:"3.26", date:"27 Nov 2026", items:[
