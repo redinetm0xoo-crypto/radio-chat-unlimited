@@ -2076,8 +2076,8 @@ var AP={near:25,ssids:["","-1","-2","-3","-4","-5","-6","-7","-8","-9"],users:{}
 var AP_KEY_DEFAULT="209605.7aHWBxNlpG57c1";
 function apKey(){return(store("aprs_key")||"").trim()||AP_KEY_DEFAULT}
 $("apKey").value=(store("aprs_key")||"").trim();
-$("apKeySave").onclick=function(){var k=$("apKey").value.trim();store("aprs_key",k);$("apMsg").textContent=k?"✓ Your key saved on this device.":"Using the app's built-in key.";if(k){AP.lastRun=0;apRefresh(true)}};
-$("apNow").onclick=function(){AP.lastRun=0;apRefresh(true)};
+$("apKeySave").onclick=function(){var k=$("apKey").value.trim();store("aprs_key",k);$("apMsg").textContent=k?"✓ Your key saved on this device.":"Using the app's built-in key.";if(k){AP.lastRun=0;AP.fbAt=0;apRefresh(true)}};
+$("apNow").onclick=function(){AP.lastRun=0;AP.fbAt=0;apRefresh(true)};
 function apMyPos(){if(lastPos)return{lat:lastPos.lat,lon:lastPos.lon,src:"you"};var me=QZ.call&&AP.pos[baseCall(QZ.call)];if(me)return{lat:me.lat,lon:me.lng,src:"your APRS ("+me.n+")"};return null}
 function apZoom(lat,w){var z=Math.log(156543.03*Math.cos(lat*Math.PI/180)*w/40234)/Math.LN2;return Math.max(3,Math.min(18,Math.round(z)))}
 function apAprsUrl(){var P=apMyPos()||homePos();return"https://aprs.fi/?lat="+(+P.lat).toFixed(4)+"&lng="+(+(P.lon!=null?P.lon:P.lng)).toFixed(4)+"&z="+apZoom(P.lat,Math.min(window.innerWidth||400,1000))+"&timerange=3600"}
@@ -2110,14 +2110,15 @@ function apRegister(){var c=QZ.call&&baseCall(QZ.call);if(!c||!/^[A-Z0-9]{3,12}$
 /* known app users = anyone who opened v3.8+ (users) + admins + everyone seen in suggestions, posts and nets (v3.17: activity log removed) */
 AP.known={};AP.knownAt=0;
 function apAddKnown(c,name){c=baseCall(c);if(!/^([A-Z]{1,2}|\d[A-Z])\d{1,2}[A-Z]{1,4}$/.test(c))return;if(!AP.known[c])AP.known[c]={call:c,name:""};if(name&&!AP.known[c].name)AP.known[c].name=String(name).slice(0,60)}
-function apLoadKnown(cb){if(Date.now()-AP.knownAt<10*60e3)return cb&&cb();var L=["settings/admins","suggestions?pageSize=300","announcements?pageSize=100","forsale?pageSize=100","nets?pageSize=20","operators?pageSize=300"],n=L.length;
+function apLoadKnown(cb){if(Date.now()-AP.knownAt<6*3600e3)return cb&&cb();AP.knownAt=Date.now();var L=["settings/admins","announcements?pageSize=100","forsale?pageSize=100","nets?pageSize=20","operators?pageSize=300"],n=L.length;   /* v3.25: every 6 h (was 10 min), suggestions dropped (49+ reads) */
  L.forEach(function(q){FB.json(FB.base+"/"+q+(q.indexOf("?")<0?"?":"&")+"key="+FB.key,{cache:"no-store"},function(ok,j){if(ok&&j){var D=j.documents?j.documents.map(FB.dec):(j.fields?[FB.dec(j)]:[]);
    D.forEach(function(d){if(d.calls)String(d.calls).split(",").forEach(function(c){apAddKnown(c.trim())});if(d.call&&q.indexOf("operators")!=0)apAddKnown(d.call,d.name);if(d.by&&q.indexOf("nets")==0)apAddKnown(d.by);
     if(d.rows){try{JSON.parse(d.rows).forEach(function(r){apAddKnown(r.call||r.c,r.name||r.n)})}catch(e){}}})}
   if(--n==0){AP.knownAt=Date.now();cb&&cb()}})})}
 function apIsUser(c){return!!(AP.users[c]||AP.known[c])}
 function apUserName(c){return(AP.users[c]&&AP.users[c].name)||(AP.known[c]&&AP.known[c].name)||""}
-function apLoadFb(cb){var n=3;function done(){if(--n==0)cb&&cb()}
+function apLoadFb(cb,force){if(!force&&Date.now()-(AP.fbAt||0)<(curTab=="aprs"?5*60e3:15*60e3)){apLoadKnown(function(){cb&&cb()});return}   /* v3.25 */
+ AP.fbAt=Date.now();var n=3;function done(){if(--n==0)cb&&cb()}
  apLoadKnown(done);
  FB.json(FB.base+"/users?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.users={};((j&&j.documents)||[]).map(FB.dec).forEach(function(u){if(u.call)AP.users[u.call]=u})}done()});
  FB.json(FB.base+"/aprs?pageSize=300&key="+FB.key,{cache:"no-store"},function(ok,j){if(ok){AP.pos={};AP.posAt={};((j&&j.documents)||[]).map(FB.dec).forEach(function(d){AP.posAt[d.call]=d.at;try{var p=d.pos?JSON.parse(d.pos):null;if(p&&p.lat!=null)AP.pos[d.call]=p}catch(e){}})}done()})}
@@ -2128,14 +2129,17 @@ function apRefresh(force){var key=apKey(),maxAge=curTab=="aprs"?60e3:5*60e3;apLo
  var L=Object.keys(calls).filter(function(c){return force||!AP.posAt||!AP.posAt[c]||Date.now()-new Date(AP.posAt[c])>maxAge});if(!L.length)return;
  AP.busy=true;AP.lastRun=Date.now();store("ap_last",String(AP.lastRun));$("apMsg").textContent="Looking up "+L.length+" callsign"+(L.length>1?"s":"")+" on aprs.fi…";
  var batches=[];for(var i=0;i<L.length;i+=2)batches.push(L.slice(i,i+2));var found=0,fail=0,bi=0;
- (function next(){if(bi>=batches.length){AP.busy=false;$("apMsg").textContent=fail?"aprs.fi lookup failed ("+fail+" of "+batches.length+") – check the key or try later.":"✓ Checked "+L.length+" callsign"+(L.length>1?"s":"")+" (each with -1 … -9): "+found+" on APRS.";apLoadFb(function(){acRender()});return}
+ (function next(){if(bi>=batches.length){AP.busy=false;$("apMsg").textContent=fail?"aprs.fi lookup failed ("+fail+" of "+batches.length+") – check the key or try later.":"✓ Checked "+L.length+" callsign"+(L.length>1?"s":"")+" (each with -1 … -9): "+found+" on APRS.";acRender();return}
   var B=batches[bi++],names=[];B.forEach(function(c){AP.ssids.forEach(function(s){names.push(c+s)})});
   var x=new XMLHttpRequest();x.open("GET","https://api.aprs.fi/api/get?name="+encodeURIComponent(names.join(","))+"&what=loc&apikey="+encodeURIComponent(key)+"&format=json");x.timeout=8000;
   x.onload=function(){var j=null;try{j=JSON.parse(x.responseText)}catch(e){}if(!j||j.result!="ok"){fail++;return setTimeout(next,1500)}
    var best={};(j.entries||[]).forEach(function(e){var b=String(e.name||"").toUpperCase().replace(/-\d+$/,"");if(B.indexOf(b)<0||e.lat==null)return;var t=+(e.lasttime||e.time)||0;
     if(!best[b]||t>best[b].t)best[b]={n:String(e.name).slice(0,12),lat:+(+e.lat).toFixed(5),lng:+(+e.lng).toFixed(5),t:t,sym:String(e.symbol||"").slice(0,2),c:String(e.comment||"").slice(0,60)}});
-   var W=B.map(function(c){if(best[c])found++;return{update:{name:fbDoc("aprs/"+c),fields:FB.enc({call:c,pos:best[c]?JSON.stringify(best[c]):""})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}});
-   fbCommit(W,function(){setTimeout(next,1200)})};
+   var W=[];B.forEach(function(c){if(best[c])found++;var old=AP.pos[c],same=best[c]?(old&&old.t==best[c].t&&old.lat==best[c].lat&&old.lng==best[c].lng):!old,
+     recent=AP.posAt&&AP.posAt[c]&&Date.now()-new Date(AP.posAt[c])<30*60e3;
+    if(best[c])AP.pos[c]=best[c];else delete AP.pos[c];if(same&&recent)return;AP.posAt[c]=new Date().toISOString();   /* v3.25: write only what changed */
+    W.push({update:{name:fbDoc("aprs/"+c),fields:FB.enc({call:c,pos:best[c]?JSON.stringify(best[c]):""})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]})});
+   if(!W.length)return setTimeout(next,1200);fbCommit(W,function(){setTimeout(next,1200)})};
   x.onerror=x.ontimeout=function(){fail++;setTimeout(next,1500)};x.send()})()})}
 function apProx(call){var p=AP.pos[baseCall(call)],me=apMyPos();if(!p)return null;var age=Date.now()/1000-p.t,r={p:p,age:age};
  if(me){r.mi=miles(me.lat,me.lon,p.lat,p.lng);r.dir=compass(bearing(me.lat,me.lon,p.lat,p.lng))}return r}
@@ -2156,7 +2160,7 @@ var _acRender38=acRender;acRender=function(){_acRender38();if(typeof acGroupRend
    return'<div class="post"><div class="fq" style="font-size:20px">'+(r.mi<10?r.mi.toFixed(1):Math.round(r.mi))+' <span style="font-size:15px">miles '+r.dir+'</span></div><div><b>'+esc(r.c)+'</b>'+(u.name?' – '+esc(u.name):'')+' <span class="mut small">· APRS '+esc(r.p.n)+'</span></div>'+(r.p.c?'<div class="small mut">'+esc(r.p.c)+'</div>':'')+'<div class="by">'+apAge(r.age)+'</div>'+
    '<div class="btns" style="margin-top:6px"><a class="btn sm alt" href="'+esc(apCallUrl(r.p.n))+'" target="_blank" data-apcall="'+esc(r.p.n)+'">📍 Show on aprs.fi ↗</a><a class="btn sm alt" href="https://www.qrz.com/db/'+encodeURIComponent(r.c)+'">'+esc(r.c)+' on QRZ</a></div></div>'}).join(""):"")+
   (me?"":'<div class="mut small" style="text-align:center;margin:6px 0">Turn location on (top right) to see how far away people are.</div>')};
-var _acLoad38=acLoad;acLoad=function(){_acLoad38();if(curTab=="act")apRefresh(false)};
+var _acLoad38=acLoad;acLoad=function(why){_acLoad38.apply(this,arguments);if(curTab=="act")apRefresh(false)};   /* v3.25: pass "tick" through (was re-reading nets every minute) */
 var _showTab38=showTab;showTab=function(t){_showTab38(t);if(t=="aprs"){setTimeout(apMap,30);apRefresh(false)}
  clearInterval(AP.live);if(t=="aprs")AP.live=setInterval(function(){if(!document.hidden&&curTab=="aprs")apRefresh(false)},60e3);if(t=="act")apRefresh(false)};
 setTimeout(apRegister,4000);var _setMyCall38=setMyCall;setMyCall=function(c){_setMyCall38(c);setTimeout(apRegister,500)};
