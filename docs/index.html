@@ -138,6 +138,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 .fmt td,.fmt th{padding:5px 4px}.fmt tr.fmcall td{background:rgba(34,197,94,.16)}.fmt tr.fmgrp td{background:rgba(245,158,11,.18)}.fmt .fmn{white-space:nowrap}.fmtag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;margin-right:4px}.fmtag.c{background:#16a34a;color:#fff}.fmtag.g{background:#d97706;color:#fff}
 .aslh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.aslh .sp{flex:1}.asldot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#64748b}
 main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245,165,36,.18)}#act tr:has(td.f),#atOut tr:has(td.f){cursor:auto}
+.aslmore{background:none;border:none;color:var(--mut,#94a3b8);font-size:18px;line-height:1;padding:0 6px;margin-left:-4px;cursor:pointer;border-radius:8px}.aslmore:hover{background:rgba(148,163,184,.15)}
 </style></head>
 <body>
 <header>
@@ -597,7 +598,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  <div class="card">
   <h2 style="margin:0 0 4px">📡 My AllStar nodes</h2>
   <div class="mut small">Add up to 3 AllStar node numbers to watch. They're saved on this phone only – nobody else can see them.
-   Status refreshes every minute, only while this tab is open.</div>
+   Status refreshes every 30 seconds, only while this tab is open.</div>
   <div id="aslAdd" style="margin-top:10px">
    <div class="row" style="display:flex;gap:6px;flex-wrap:wrap">
     <input id="aslNum" inputmode="numeric" placeholder="Node number, e.g. 63824" maxlength="7" style="flex:1 1 140px">
@@ -2531,8 +2532,8 @@ var _acRender322=acRender;acRender=function(){var r=_acRender322.apply(this,argu
 acRecentRender();
 
 /* ===== v3.22 (4) AllStar tab: up to 3 of your own AllStar nodes, saved on this phone only (never sent to our database).
-   Status comes straight from stats.allstarlink.org, every 60 s, ONLY while the AllStar tab is open and on screen. ===== */
-var ASL={nodes:loadJSON("asl_nodes",[]),last:loadJSON("asl_last",{}),timer:null,edit:-1,del:-1};
+   Status comes straight from stats.allstarlink.org, every 30 s (v3.23), ONLY while the AllStar tab is open and on screen. ===== */
+var ASL={nodes:loadJSON("asl_nodes",[]),last:loadJSON("asl_last",{}),timer:null,edit:-1,del:-1,menu:-1};
 function aslSave(){store("asl_nodes",JSON.stringify(ASL.nodes))}
 function aslNumOk(n){return/^\d{4,7}$/.test(n)}
 function aslLinkLabel(n){if(/^3\d{6}$/.test(n))return"EchoLink node "+n.slice(1).replace(/^0+/,"");if(+n<2000)return"Private node "+n;
@@ -2543,8 +2544,8 @@ function aslLookup(list){var now=Date.now(),todo=list.filter(function(n){return!
 function aslBox(x,i){var L=ASL.last[x.n]||{},j=L.j,d=(j&&j.stats&&j.stats.data)||null,nd=(j&&(j.node||j.user_node))||{},sv=nd.server||{};
  var head;
  if(ASL.edit==i)head='<div style="display:flex;gap:6px;flex-wrap:wrap"><input id="aslEN" inputmode="numeric" maxlength="7" value="'+esc(x.n)+'" style="flex:1 1 110px"><input id="aslEM" maxlength="30" placeholder="Name" value="'+esc(x.name||"")+'" style="flex:2 1 160px"><button class="btn sm" data-asl="save" data-i="'+i+'">Save</button><button class="btn sm alt" data-asl="cancel">Cancel</button></div>';
- else head='<div class="aslh"><span class="asldot" id="aslDot'+i+'" style="background:@@DOT@@"></span><b style="font-size:17px">'+esc(x.name||("Node "+x.n))+'</b><span class="mut small">(AllStar node '+esc(x.n)+')</span></div>';
- var foot=ASL.edit==i?'':'<div class="btns" style="margin-top:8px"><button class="btn sm alt" data-asl="edit" data-i="'+i+'">✎ Edit</button><button class="btn sm alt" data-asl="del" data-i="'+i+'" style="color:#ef4444">'+(ASL.del==i?"Tap again to delete":"✕ Delete")+'</button></div>';
+ else head='<div class="aslh"><span class="asldot" id="aslDot'+i+'" style="background:@@DOT@@"></span><b style="font-size:17px">'+esc(x.name||("Node "+x.n))+'</b><span class="mut small">(AllStar node '+esc(x.n)+')</span><button class="aslmore" data-asl="menu" data-i="'+i+'" title="Edit or delete" aria-label="Edit or delete">'+(ASL.menu==i?'✕':'⋯')+'</button></div>';
+ var menu=(ASL.edit!=i&&ASL.menu==i)?'<div class="btns" style="margin-top:6px"><button class="btn sm alt" data-asl="edit" data-i="'+i+'">✎ Edit</button><button class="btn sm alt" data-asl="del" data-i="'+i+'" style="color:#ef4444">'+(ASL.del==i?"Tap again to delete":"✕ Delete")+'</button></div>':'';
  var body="",dot="#64748b",glow="none";
  if(L.err&&!j)body='<div class="mut">'+esc(L.err)+'</div>';
  else if(!j)body='<div class="mut">Checking…</div>';
@@ -2559,8 +2560,8 @@ function aslBox(x,i){var L=ASL.last[x.n]||{},j=L.j,d=(j&&j.stats&&j.stats.data)|
   body='<div class="big" style="font-size:18px;margin-top:6px">'+esc(st)+'</div><div class="kv" style="margin-top:8px">'+rows.map(function(r){return"<b>"+r[0]+"</b><span>"+esc(r[1])+"</span>"}).join("")+'</div>'+
    '<div style="margin-top:8px">'+(nl.length?'<div class="mut small">Linked to '+nl.length+' node'+(nl.length>1?"s":"")+':</div>'+nl.map(function(n){return'<div style="padding:3px 0;border-bottom:1px solid var(--line)">'+esc(aslLinkLabel(n))+'<span class="mut small">'+esc(MD[modes[n]]||"")+'</span></div>'}).join(""):'<div class="mut small">Not linked to any other nodes</div>')+'</div>';
   if(nl.length)aslLookup(nl)}
- var upd=L.t?((L.err?"No connection – showing data from "+xoAgo((Date.now()-L.t)/1000)+" ago · ":"Updated "+new Date(L.t).toTimeString().slice(0,5)+" · refreshes every minute while this tab is open · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+esc(x.n)+'" target="_blank">stats.allstarlink.org</a>'):"";
- return'<div class="card" data-box="'+i+'">'+head.replace("@@DOT@@",dot+";box-shadow:"+glow)+body+'<div class="mut small" style="margin-top:8px">'+upd+'</div>'+foot+'</div>'}
+ var upd=L.t?((L.err?"No connection – showing data from "+xoAgo((Date.now()-L.t)/1000)+" ago · ":"Updated "+new Date(L.t).toTimeString().slice(0,5)+" · refreshes every 30 s while this tab is open · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+esc(x.n)+'" target="_blank">stats.allstarlink.org</a>'):"";
+ return'<div class="card" data-box="'+i+'">'+head.replace("@@DOT@@",dot+";box-shadow:"+glow)+menu+body+'<div class="mut small" style="margin-top:8px">'+upd+'</div></div>'}
 function aslRenderAll(){var h=ASL.nodes.map(aslBox).join("");$("aslBoxes").innerHTML=h||'<div class="card mut">No nodes yet – add an AllStar node number above.</div>';
  $("aslAdd").hidden=ASL.nodes.length>=3;if(ASL.nodes.length>=3&&!/Remove one/.test($("aslMsg").textContent))$("aslMsg").textContent="You have 3 nodes – delete one to add another."}
 function aslFetch(i){var x=ASL.nodes[i];if(!x)return;var n=x.n;
@@ -2568,7 +2569,7 @@ function aslFetch(i){var x=ASL.nodes[i];if(!x)return;var n=x.n;
    ASL.last[n]={j:j,t:Date.now()};try{store("asl_last",JSON.stringify(ASL.last))}catch(e){}if(curTab=="asl"&&ASL.edit<0)aslRenderAll()})
  .catch(function(){var o=ASL.last[n]||{};ASL.last[n]={j:o.j||null,t:o.t||0,err:"Can't reach AllStar stats – check your connection"};if(curTab=="asl"&&ASL.edit<0)aslRenderAll()})}
 function aslFetchAll(){ASL.nodes.forEach(function(x,i){aslFetch(i)})}
-function aslStart(){aslStop();aslRenderAll();aslFetchAll();ASL.timer=setInterval(function(){if(!document.hidden&&curTab=="asl")aslFetchAll()},60000)}
+function aslStart(){aslStop();aslRenderAll();aslFetchAll();ASL.timer=setInterval(function(){if(!document.hidden&&curTab=="asl")aslFetchAll()},30000)}
 function aslStop(){if(ASL.timer){clearInterval(ASL.timer);ASL.timer=null}}
 var _showTab322=showTab;showTab=function(t){_showTab322(t);if(t=="asl")aslStart();else aslStop()};
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&curTab=="asl")aslFetchAll()});
@@ -2576,14 +2577,15 @@ function aslCheck(n,name,skip){n=String(n||"").trim();if(!aslNumOk(n))return"Ent
  if(ASL.nodes.some(function(x,k){return x.n==n&&k!==skip}))return"You've already added node "+n+".";return""}
 $("aslAddBtn").onclick=function(){var n=$("aslNum").value.trim(),nm=$("aslName").value.trim().slice(0,30),m=$("aslMsg");
  if(ASL.nodes.length>=3){m.textContent="You have 3 nodes – delete one to add another.";return}var er=aslCheck(n,nm,-1);if(er){m.innerHTML='<span style="color:#ef4444">'+esc(er)+'</span>';return}
- ASL.nodes.push({n:n,name:nm});aslSave();$("aslNum").value="";$("aslName").value="";m.textContent="✓ Added node "+n+".";ASL.edit=-1;ASL.del=-1;aslRenderAll();aslFetch(ASL.nodes.length-1)};
+ ASL.nodes.push({n:n,name:nm});ASL.menu=-1;aslSave();$("aslNum").value="";$("aslName").value="";m.textContent="✓ Added node "+n+".";ASL.edit=-1;ASL.del=-1;aslRenderAll();aslFetch(ASL.nodes.length-1)};
 $("aslBoxes").onclick=function(e){var b=e.target.closest("button");if(!b)return;var a=b.dataset.asl,i=+b.dataset.i,m=$("aslMsg");
- if(a=="edit"){ASL.edit=i;ASL.del=-1;aslRenderAll();var el=$("aslEM");el&&el.focus();return}
+ if(a=="menu"){ASL.menu=ASL.menu==i?-1:i;ASL.del=-1;aslRenderAll();return}
+ if(a=="edit"){ASL.edit=i;ASL.del=-1;ASL.menu=-1;aslRenderAll();var el=$("aslEM");el&&el.focus();return}
  if(a=="cancel"){ASL.edit=-1;aslRenderAll();return}
  if(a=="save"){var n=$("aslEN").value.trim(),nm=$("aslEM").value.trim().slice(0,30),er=aslCheck(n,nm,i);if(er){m.innerHTML='<span style="color:#ef4444">'+esc(er)+'</span>';return}
   var ch=ASL.nodes[i].n!=n;ASL.nodes[i]={n:n,name:nm};aslSave();ASL.edit=-1;m.textContent="✓ Saved.";aslRenderAll();if(ch)aslFetch(i);return}
  if(a=="del"){if(ASL.del!=i){ASL.del=i;aslRenderAll();setTimeout(function(){if(ASL.del==i){ASL.del=-1;if(curTab=="asl")aslRenderAll()}},4000);return}
-  var gone=ASL.nodes.splice(i,1)[0];ASL.del=-1;ASL.edit=-1;aslSave();if(gone&&!ASL.nodes.some(function(x){return x.n==gone.n})){delete ASL.last[gone.n];store("asl_last",JSON.stringify(ASL.last))}
+  var gone=ASL.nodes.splice(i,1)[0];ASL.del=-1;ASL.edit=-1;ASL.menu=-1;aslSave();if(gone&&!ASL.nodes.some(function(x){return x.n==gone.n})){delete ASL.last[gone.n];store("asl_last",JSON.stringify(ASL.last))}
   m.textContent="✓ Deleted node "+gone.n+".";aslRenderAll()}};
 $("aslNum").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});$("aslName").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});
 if(curTab=="asl")aslStart();
