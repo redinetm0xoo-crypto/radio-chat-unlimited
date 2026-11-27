@@ -51,6 +51,7 @@ th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase}
 ul{margin:4px 0;padding-left:18px}li{margin:3px 0}
 .res{margin-top:8px;padding:10px;border-radius:10px;background:#0b1424;border:1px solid var(--line)}
 .ok{border-color:#22c55e}.bad{border-color:#ef4444}
+.btn[hidden],.btn.sm[hidden]{display:none!important}
 .btn{display:inline-block;background:var(--acc);color:#111;border:0;border-radius:10px;padding:11px 14px;font-weight:700;font-size:15px;text-decoration:none;text-align:center}
 .btn.alt{background:#24314a;color:var(--tx)}
 .btn.sm{padding:8px 10px;font-size:13px}
@@ -499,7 +500,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
   </div>
  <div class="card" id="hdCard">
    <h2>Stations heard</h2>
-   <canvas id="hdMap" width="720" height="480"></canvas>
+   <canvas id="hdMap" width="720" height="480" style="width:100%;max-width:720px;height:auto;display:block;margin:0 auto"></canvas>
    <div class="mut small" style="margin-top:4px">Red = you (your own callsign is never counted as heard). Stations appear on the map when their locator is known (from your QRZ lookup).</div>
    <div id="hdList"></div>
    <div class="btns"><button class="btn sm alt" id="hdClear">Clear heard list</button></div>
@@ -1828,7 +1829,7 @@ var _showTab32=showTab;showTab=function(t){if(t!="morse"&&MD.on)moStop();_showTa
 /* ---- Antenna calculator ---- */
 (function(){var o='<option value="">–</option>';BANDS.forEach(function(b){var f=b.id=="2m"?145.5:b.id=="70cm"?433.5:+((b.lo+b.hi)/2).toFixed(3);o+='<option value="'+f+'">'+b.name+'</option>'});$("atB").innerHTML=o})();
 function atLen(m){return m>=1?m.toFixed(2)+" m ("+(m*3.28084).toFixed(1)+" ft)":(m*100).toFixed(1)+" cm ("+(m*39.37).toFixed(1)+" in)"}
-function atCalc(){var f=+$("atF").value;if(!(f>0.1&&f<3000)){$("atOut").innerHTML='<div class="mut">Enter a frequency in MHz.</div>';return}store("ant_f",String(f));
+function atCalc(){var f=+$("atF").value;if(!(f>0.1&&f<=12000)){$("atOut").innerHTML='<div class="mut">'+(f>12000?'That\'s above 12 GHz – the calculator covers 0.1 to 12,000 MHz.':'Enter a frequency in MHz (0.1 to 12,000).')+'</div>';return}store("ant_f",String(f));
  var wl=299.792/f,k=0.95,row=function(n,v,d){return'<tr><td><b>'+n+'</b>'+(d?'<div class="mut small">'+d+'</div>':'')+'</td><td class="f" style="text-align:right;white-space:nowrap">'+v+'</td></tr>'};
  $("atOut").innerHTML='<table>'+row("Full wavelength",atLen(wl),"Free space")+
   row("Half-wave dipole – total",atLen(wl/2*k),"Centre fed, 50–75 Ω")+row("Dipole – each leg",atLen(wl/4*k))+
@@ -1949,7 +1950,7 @@ function ntLookup(call,cb){var bc=baseCall(call);FB.get("operators",bc,function(
  qzLogin(function(k){if(!k)return cb("","");post("https://xmldata.qrz.com/xml/current/",{s:k,callsign:bc},function(tx){if(!tx)return cb("","");var x=new DOMParser().parseFromString(tx,"text/xml");if(!xget(x,"call"))return cb("","");
   var n=((xget(x,"fname")||"")+" "+(xget(x,"name")||"")).trim().toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase()}),l=[xget(x,"addr2"),xget(x,"state")].filter(Boolean).join(", ");cb(n,l)})})})}
 $("ntSel").onclick=function(e){var n=e.target.closest("button");if(!n||!n.dataset.n)return;NT.sel=n.dataset.n;store("net_sel",NT.sel);NT.edit=null;ntRender();ntLoad()};
-$("ntAdd").onclick=function(){var c=$("ntCall").value.trim().toUpperCase().replace(/\s+/g,"");if(!/^[A-Z0-9\/]{3,12}$/.test(c)){$("ntMsg").textContent="Enter a callsign.";$("ntCall").focus();return}
+$("ntAdd").onclick=function(){var c=$("ntCall").value.trim().toUpperCase().replace(/\s+/g,"");if(!/^[A-Z0-9\/]{3,12}$/.test(c)||!/[0-9]/.test(c)||!/[A-Z]/.test(c)){$("ntMsg").textContent=c?"\""+c+"\" isn't a valid callsign.":"Enter a callsign.";$("ntCall").focus();return}
  $("ntMsg").textContent="Looking up "+c+"…";ntLookup(c,function(n,l){ntMutate(function(o){if(o.rows.some(function(r){return r.c==c})){$("ntMsg").textContent=c+" is already in this net.";return false}
   var r={c:c,n:n.slice(0,40),l:l.slice(0,50),o:0};o.rows.splice(ntFirstOut(o.rows),0,r)});$("ntMsg").textContent=n?"✓ Added "+c+" – "+n:"✓ Added "+c+" (not found on QRZ – tap ✎ to add a name)";$("ntCall").value=""})};
 $("ntCall").onkeydown=function(e){if(e.key=="Enter")$("ntAdd").onclick()};
@@ -1995,6 +1996,7 @@ ntAll(function(){if(curTab=="act")acRender()});
 /* ===================== v3.5: frequency names on Activity ===================== */
 function acName(v){v=+v;if(!(v>0))return"";var n="";
  if(acSame(v,parseFloat(GB3XO.downlink)))return"GB3XO";if(acSame(v,parseFloat(GB3XO.uplink)))return"GB3XO input";
+ if(typeof fmChan=="function"){var fc=fmChan(v);if(fc)return fc}   /* v3.29: typed simplex frequencies get their channel name (S20, V40, SU8...) */
  (window.EM||[]).some(function(r){if(acSame(v,acFreqOf(r.f))){n=String(r.label||"").replace(/\s+-\s+/," ");return true}});if(n)return n;
  var lists=(typeof scAll=="function"?scAll():[]);lists.sort(function(a,b){return(/^Airband/.test(a.name)?1:0)-(/^Airband/.test(b.name)?1:0)});
  var here=lastPos||REDDITCH,air=null,ad=1e9;
@@ -2143,12 +2145,12 @@ function apMap(){var box=$("apMapBox"),W=box.offsetWidth||380,H=box.offsetHeight
  for(var tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(var ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){if(ty<0||ty>=N)continue;
   h+='<img alt="" src="https://tile.openstreetmap.org/'+z+'/'+((tx%N+N)%N)+'/'+ty+'.png" style="left:'+Math.round(tx*256-x0)+'px;top:'+Math.round(ty*256-y0)+'px">'}
  var me=apMyPos(),n=0,myB=QZ.call?baseCall(QZ.call):"";
- Object.keys(AP.pos).forEach(function(c){if(!apIsUser(c)||c==myB)return;var p=AP.pos[c],q=mPx(p.lat,p.lng,z),x=q.x-x0,y=q.y-y0;if(x<-60||y<-20||x>W+60||y>H+30)return;n++;
+ var old7=0;Object.keys(AP.pos).forEach(function(c){if(!apIsUser(c)||c==myB)return;if(Date.now()/1000-AP.pos[c].t>7*86400){old7++;return}var p=AP.pos[c],q=mPx(p.lat,p.lng,z),x=q.x-x0,y=q.y-y0;if(x<-60||y<-20||x>W+60||y>H+30)return;n++;
   h+='<a class="apm" href="'+esc(apCallUrl(p.n))+'" target="_blank" style="left:'+Math.round(x)+'px;top:'+Math.round(y)+'px" title="'+esc(p.n+" · "+apAge(Date.now()/1000-p.t))+'">'+esc(p.n)+' <span style="font-weight:600;opacity:.75">'+apAge(Date.now()/1000-p.t).replace(" ago","")+'</span></a>'});
  if(me){var d=mPx(me.lat,me.lon,z);h+='<span class="ldot" style="left:'+Math.round(d.x-x0)+'px;top:'+Math.round(d.y-y0)+'px"></span>'}
  h+='<div class="apz"><button data-apz="1">+</button><button data-apz="-1">−</button></div><div class="attr">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</div>';box.innerHTML=h;
  var tot=Object.keys(AP.pos).filter(function(c){return apIsUser(c)&&c!=myB}).length;
- $("apWho").textContent=(me?"":"Location is off – centred on Redditch. ")+tot+" other app user"+(tot==1?"":"s")+" found on APRS"+(tot?" ("+n+" in this view).":".")}
+ $("apWho").textContent=(me?"":"Location is off – centred on Redditch. ")+tot+" other app user"+(tot==1?"":"s")+" found on APRS"+(tot?" ("+n+" in this view"+(old7?", "+old7+" not heard for over a week hidden":"")+").":".")}
 $("apMapBox").addEventListener("click",function(e){var z=e.target.dataset&&e.target.dataset.apz;if(!z)return;APM.z=Math.max(3,Math.min(18,APM.z+(+z)));apMap()});
 (function(){var box=$("apMapBox"),st=null;box.addEventListener("pointerdown",function(e){if(e.target.closest(".apz,.apm,.attr"))return;st={x:e.clientX,y:e.clientY,c:APM.c};box.setPointerCapture(e.pointerId)});
  box.addEventListener("pointermove",function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;if(Math.abs(dx)+Math.abs(dy)<4)return;var p=mPx(st.c.lat,st.c.lon,APM.z),n=256*Math.pow(2,APM.z),x=p.x-dx,y=p.y-dy;
@@ -2696,24 +2698,41 @@ var _ccChange326=ccChange;ccChange=function(nc,msgEl,ok){var oc=myCall(),M=(type
 var _aslBox326=aslBox;aslBox=function(x,i){var h=_aslBox326(x,i),L=ASL.last[x.n]||{},j=L.j;
  if(j&&!(j.stats&&j.stats.data)){var nd=j.node||j.user_node||{},sv=nd.server||{},who=[nd.callsign,sv.Location&&String(sv.Location).replace(/\s+/g," ").trim()].filter(Boolean).join(", ");
   h=h.replace('No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).',
-   who?'No status from this node. Node '+esc(x.n)+' is registered to <b>'+esc(who)+'</b> – if that isn\'t right, check the number (tap ⋯ › Edit).':'No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).')}
+   who?(nd.callsign&&myCall()&&ccBase(nd.callsign)==ccBase(myCall())?'No status from this node – it\'s registered to you (<b>'+esc(who)+'</b>), so the number is right. It\'s probably switched off, offline, or not sending stats to stats.allstarlink.org.':'No status from this node. Node '+esc(x.n)+' is registered to <b>'+esc(who)+'</b> – if that isn\'t right, check the number (tap ⋯ › Edit).'):'No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).')}
  return h};
 
 /* ===== v3.26 (2) scanner lists: upload a CSV (2E0UMK) ===== */
-function csvRows(t){var R=[],row=[],f="",q=false;t=String(t).replace(/^﻿/,"");
+function csvDelim(t){var line=(String(t).replace(/^﻿/,"").split(/\r?\n/).filter(function(l){return l.trim()})[0])||"",c={",":0,";":0,"\t":0},q=false;
+ for(var i=0;i<line.length;i++){var ch=line[i];if(ch=='"')q=!q;else if(!q&&c[ch]!=null)c[ch]++}
+ return c["\t"]>0&&c["\t"]>=c[";"]&&c["\t"]>=c[","]?"\t":c[";"]>0&&c[";"]>=c[","]?";":","}
+function csvRows(t,dl){var R=[],row=[],f="",q=false;t=String(t).replace(/^﻿/,"");dl=dl||csvDelim(t);
  for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
-  else if(c=='"')q=true;else if(c==","||c==";"||c=="\t"){row.push(f);f=""}else if(c=="\n"||c=="\r"){if(c=="\r"&&t[i+1]=="\n")i++;row.push(f);f="";if(row.some(function(x){return x.trim()}))R.push(row);row=[]}else f+=c}
+  else if(c=='"')q=true;else if(c==dl){row.push(f);f=""}else if(c=="\n"||c=="\r"){if(c=="\r"&&t[i+1]=="\n")i++;row.push(f);f="";if(row.some(function(x){return x.trim()}))R.push(row);row=[]}else f+=c}
  row.push(f);if(row.some(function(x){return x.trim()}))R.push(row);return R}
+function csvNum(x){x=String(x==null?"":x).trim();if(!x)return NaN;if(/^\d+,\d+$/.test(x))x=x.replace(",",".");x=x.replace(/[^0-9.\-]/g,"");return x?parseFloat(x):NaN}
+function csvMHz(raw,v,khzCol){if(!(v>0))return NaN;if(khzCol)return v/1000;
+ /* v3.29: whole numbers that look like HF kilohertz (e.g. 14074) are converted; microwave bands are left alone */
+ var whole=/^\s*\d+\s*$/.test(String(raw));if(whole&&v>=1800&&v<=29700&&!(v>=2300&&v<=2450)&&!(v>=3400&&v<=3475)&&!(v>=5650&&v<=5850)&&!(v>=10000&&v<=10500)&&!(v>=24000&&v<=24250))return v/1000;return v}
 function csvImport(text){var R=csvRows(text);if(!R.length)return{rows:[],bad:0,err:"The file is empty."};
- var H=R[0].map(function(x){return x.trim().toLowerCase()}),col=function(re){for(var k=0;k<H.length;k++)if(re.test(H[k]))return k;return -1};
- var hasHead=H.some(function(x){return/mhz|freq|name|mode|note|uplink|downlink|tone/.test(x)}),data=hasHead?R.slice(1):R;
- var cUp=col(/up/),cDn=col(/down/),cF=col(/^(mhz|freq|frequency)|freq.*mhz|mhz/),cN=col(/name|label|channel/),cM=col(/mode/),cT=col(/tone|ctcss/),cX=col(/note|comment/);
- if(cDn>=0)cF=cDn;if(!hasHead){cF=0;cN=1;cM=2;cX=3;cUp=-1;cT=-1}
+ var H=R[0].map(function(x){return x.trim().toLowerCase()}),has=function(re){for(var k=0;k<H.length;k++)if(re.test(H[k]))return k;return -1};
+ var hasHead=H.some(function(x){return/mhz|khz|freq|name|mode|note|uplink|downlink|tone|duplex|comment|channel/.test(x)}),data=hasHead?R.slice(1):R,rows=[],bad=0,kinds=0;
+ var chirp=has(/^duplex$/)>=0&&has(/^frequency$/)>=0;
+ var cF,cN,cM,cX,cUp=-1,cT=-1,khz=false,cDup,cOff,cTm,cRt,cCt,cDc;
+ if(chirp){cF=has(/^frequency$/);cN=has(/^name$/);cM=has(/^mode$/);cX=has(/^comment$/);cDup=has(/^duplex$/);cOff=has(/^offset$/);cTm=has(/^tone$/);cRt=has(/^rtonefreq$/);cCt=has(/^ctonefreq$/);cDc=has(/^dtcscode$/)}
+ else if(hasHead){var cDn=has(/^(downlink|rx|receive)\b|downlink|rx freq|receive freq/);cUp=has(/^(uplink|tx|transmit)\b|uplink|tx freq|transmit freq/);
+  cF=cDn>=0?cDn:has(/^(freq|frequency|mhz|khz)$|freq|mhz|khz/);cN=has(/^(name|label|channel name|channel|alpha tag)$|name/);cM=has(/^mode$|mode/);cT=has(/tone|ctcss|dcs/);cX=has(/note|comment|description/);
+  khz=cF>=0&&/khz/.test(H[cF])}
+ else{cF=0;cN=1;cM=2;cX=3}
  if(cF<0)return{rows:[],bad:0,err:"Couldn't find a frequency column – the first row should name the columns, e.g. MHz,Name,Mode,Notes."};
- var rows=[],bad=0;data.slice(0,1000).forEach(function(r){var v=parseFloat(String(r[cF]||"").replace(",",".").replace(/[^0-9.]/g,""));
-  if(!(v>0&&v<300000)){bad++;return}var x=[];if(cUp>=0&&r[cUp]&&String(r[cUp]).trim())x.push("Up "+String(r[cUp]).trim());if(cT>=0&&r[cT]&&String(r[cT]).trim())x.push("Tone "+String(r[cT]).trim());
-  if(cX>=0&&r[cX]&&String(r[cX]).trim())x.push(String(r[cX]).trim());
-  rows.push({f:String(v),n:String(cN>=0?r[cN]||"":"").trim().slice(0,60),m:String(cM>=0?r[cM]||"":"").trim().toUpperCase().slice(0,12)||"FM",x:x.join(" · ").slice(0,120)})});
+ data.slice(0,1000).forEach(function(r){var raw=r[cF],v=csvMHz(raw,csvNum(raw),khz);
+  if(!(v>0&&v<300000)){bad++;return}var x=[],g=function(k){return k>=0&&r[k]!=null?String(r[k]).trim():""};
+  if(chirp){var d=g(cDup).toLowerCase(),off=csvNum(g(cOff)),tm=g(cTm);
+   if((d=="+"||d=="-")&&off>0)x.push("Up "+acFmt(v+(d=="+"?off:-off)));else if(d=="split"&&off>0)x.push("Up "+acFmt(off));
+   if(/^(tone|tsql)$/i.test(tm)){var tv=g(/tsql/i.test(tm)&&cCt>=0?cCt:cRt);if(tv)x.push("Tone "+tv)}else if(/dtcs/i.test(tm)&&g(cDc))x.push("DCS "+g(cDc))}
+  else{if(cUp>=0&&g(cUp)){var u=csvMHz(g(cUp),csvNum(g(cUp)),khz);x.push("Up "+(u>0?acFmt(u):g(cUp)))}if(cT>=0&&g(cT))x.push("Tone "+g(cT))}
+  if(cX>=0&&g(cX))x.push(g(cX));
+  var m=g(cM).toUpperCase().slice(0,12)||(v<30?"USB":"FM");
+  rows.push({f:String(+v.toFixed(6)),n:g(cN).slice(0,60),m:m,x:x.join(" · ").slice(0,120)})});
  return{rows:rows,bad:bad+Math.max(0,data.length-1000),err:""}}
 $("scUp").onchange=function(){var f=this.files&&this.files[0],inp=this,m=$("scMsg");if(!f)return;
  if(f.size>2e6){m.textContent="That file is too big for a scanner list (2 MB max).";inp.value="";return}
@@ -2740,7 +2759,7 @@ function rnMap(){var box=$("rnMapBox");if($("rnMapCard").hidden)return;var W=box
   h+='<button class="rpm '+(r.band=="2M"?"b2":r.band=="70CM"?"b70":"bo")+(RNM.sel==r.id?" sel":"")+'" data-rpm="'+r.id+'" style="left:'+Math.round(x)+'px;top:'+Math.round(y)+'px">'+esc(r.call)+'</button>'});
  if(!me.fallback){var d=mPx(me.lat,me.lon,z);h+='<span class="ldot" style="left:'+Math.round(d.x-x0)+'px;top:'+Math.round(d.y-y0)+'px"></span>'}
  h+='<div class="apz"><button data-rnz="1">+</button><button data-rnz="-1">−</button></div><div class="key"><b style="color:#2563eb">■</b> 2m <b style="color:#16a34a">■</b> 70cm <b style="color:#6b7280">■</b> other</div><div class="attr">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</div>';
- box.innerHTML=h;$("rnMapNote").textContent=(me.fallback?"Location off – centred on Redditch. ":"")+inView+" repeater"+(inView==1?"":"s")+" in view"+(inView>shown?" (zoom in to see all)":"")+(inView?". Tap one for details.":" – zoom out (−) to find more.")}
+ box.innerHTML=h;$("rnMapNote").textContent=(me.fallback?"Location off – centred on Redditch. ":"")+inView+" repeater"+(inView==1?"":"s")+" in view"+(inView>shown?" (zoom in to see all)":"")+(inView?". Tap one for details.":(L.length?" – zoom out (−) to find more.":" – no repeaters match your bands, modes or search."))}
 function rnMapInfo(id){var r=RP.filter(function(x){return x.id==id})[0],el=$("rnMapInfo");if(!r){el.innerHTML="";return}var me=homePos(),d=miles(me.lat,me.lon,r.lat,r.lon),b=bearing(me.lat,me.lon,r.lat,r.lon);
  var sh=r.gw?"simplex":((r.rx>r.tx?"+":"−")+Math.abs(r.rx-r.tx).toFixed(3)+" MHz");
  el.innerHTML='<div class="post" style="margin-top:8px"><div><b style="font-size:17px">'+esc(r.call)+'</b> <span class="mut">'+esc(r.town)+' · '+esc(r.loc||"")+'</span><span class="dist" style="float:right">'+(r.approx?'~':'')+(d<10?d.toFixed(1):Math.round(d))+' mi '+compass(b)+'</span></div>'+
@@ -2792,7 +2811,7 @@ function satRender(){var o=satObs(),now=Date.now(),p0=homePos();
  var live=[];SATS.forEach(function(d){var s=satObjs()[d.id];if(!s)return;var l=SAT.look(s,o,now);if(l&&l.el>0)live.push({d:d,s:s,l:l})});
  $("satNow").innerHTML=live.map(function(x){var p={sat:x.s,d:x.d};return'<div class="card" style="border:2px solid #16a34a"><div><b style="font-size:18px">'+esc(x.d.name)+'</b> <span class="chip" style="background:#16a34a;color:#fff">Overhead now</span></div>'+
   '<div style="font-size:16px;margin-top:4px">Point <b>'+Math.round(x.l.az)+'° '+compass(x.l.az)+'</b>, <b>'+Math.round(x.l.el)+'°</b> up · '+Math.round(x.l.range)+' km away</div>'+satFreqTable(p,now)+'</div>'}).join("");
- var P=SATST.passes.filter(function(p){return p.los>now}).slice(0,25);
+ var P=SATST.passes.filter(function(p){return p.los>now&&p.aos<now+24*3600e3});
  $("satList").innerHTML=P.length?P.map(function(p,k){var on=p.aos<=now,mins=Math.round((p.los-p.aos)/60e3);
   return'<div class="satp'+(on?' now':'')+'" data-k="'+k+'"><div><span class="t">'+satT(p.aos)+'</span> <b>'+esc(p.d.name)+'</b>'+(p.d.ty=="wx"?' <span class="chip">Weather</span>':'')+(on?' <span class="chip" style="background:#16a34a;color:#fff">Now</span>':'')+
    '<span style="float:right"><b>'+Math.round(p.maxEl)+'°</b> max</span></div><div class="mut small">Rises '+compass(p.aosAz)+' ('+Math.round(p.aosAz)+'°) → highest '+compass(p.tcaAz)+' → sets '+compass(p.losAz)+' ('+Math.round(p.losAz)+'°) · '+mins+' min · ends '+satT(p.los)+'</div>'+
@@ -2859,5 +2878,8 @@ $("acNow").addEventListener("click",function(e){var t=e.target.closest("[data-re
   $("repBig").textContent=""+REP.r+REP.s;$("repRt").textContent=REP_R[REP.r];$("repSt").textContent=REP_S[REP.s];return}
  var id=t.closest(".reppan").dataset.rid,loc=$("repLoc").value.trim(),del=!!t.dataset.repdel;store("rep_loc",loc);$("repMsg").textContent=del?"Removing…":"Sending…";
  repSend(id,del?null:""+REP.r+REP.s,loc,function(ok,err){if(!ok){$("repMsg").innerHTML='<span style="color:#ef4444">'+esc(err)+'</span>';return}REP.open=null;acLoad("tick")})},true);
+
+/* ===== v3.29: callsign box – "Your callsign" + Cancel when you already have one (was always "Welcome!" / "Not licensed") ===== */
+var _askCall329=askCall;askCall=function(force){_askCall329(force);var has=!!myCall();$("callModal").querySelector("h2").textContent=has?"Your callsign":"Welcome! What's your callsign?";$("cmSkip").textContent=has?"Cancel":"Not licensed / skip for now"};
 </script>
 </body></html>

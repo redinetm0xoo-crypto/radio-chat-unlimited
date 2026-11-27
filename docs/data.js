@@ -199,9 +199,16 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.28";
+var APP_VERSION = "3.29";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.29", date:"27 Nov 2026", items:[
+  "Scanner: CSV upload now reads files saved by Excel with semicolons and decimal commas, CHIRP radio-programming exports (with repeater shift and tones), and HF frequencies given in kHz",
+  "Scanner: Rename and Delete only show for your own lists",
+  "APRS map: stations not heard for over a week are hidden",
+  "Satellites: every pass in the next 24 hours is listed",
+  "Typing a simplex frequency on Activity now shows its channel name (e.g. 145.500 → S20)",
+  "Small fixes: repeater map message when nothing matches, antenna calculator up to 12 GHz, Stations heard map size on computers, callsign box wording, AllStar message for your own node, Net list callsign check"]},
  {v:"3.28", date:"27 Nov 2026", items:[
   "Activity: send a quick signal report to anyone showing on air – tap 📶 Report, pick readability (1–5) and signal (1–9), e.g. 59, and add where you are if you like. Reports show on their listing for everyone, and you see the reports on yours."]},
  {v:"3.27", date:"27 Nov 2026", items:[
