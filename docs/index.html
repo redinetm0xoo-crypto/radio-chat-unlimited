@@ -136,6 +136,8 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 .alr{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}.alr input[type=checkbox]{width:20px;height:20px;flex:none}.alr select{width:auto;padding:4px 6px}
 .exbar{height:8px;background:#0b1424;border-radius:4px;overflow:hidden}.exbar i{display:block;height:100%;background:var(--acc)}
 .fmt td,.fmt th{padding:5px 4px}.fmt tr.fmcall td{background:rgba(34,197,94,.16)}.fmt tr.fmgrp td{background:rgba(245,158,11,.18)}.fmt .fmn{white-space:nowrap}.fmtag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;margin-right:4px}.fmtag.c{background:#16a34a;color:#fff}.fmtag.g{background:#d97706;color:#fff}
+.aslh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.aslh .sp{flex:1}.asldot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#64748b}
+main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245,165,36,.18)}#act tr:has(td.f),#atOut tr:has(td.f){cursor:auto}
 </style></head>
 <body>
 <header>
@@ -152,7 +154,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="fmch">Simplex</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="fmch">Simplex</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="asl">AllStar</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -188,7 +190,7 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <div class="row" style="margin-top:8px"><input id="acMode" maxlength="12" placeholder="Mode (tap one above or type)"><input id="acNote" maxlength="80" placeholder="Note (optional), e.g. mobile, calling CQ"></div>
   <div class="btns"><button class="btn" id="acGo">📡 Show I'm on this frequency</button><button class="btn alt" id="acOff">Off air</button></div>
   <div id="acMsg" class="small" style="margin-top:6px"></div>
-  <div class="mut small" style="margin-top:6px">Tip: tap any frequency in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO…) to show you're on it. Listings clear themselves after 6 hours.</div>
+  <div class="mut small" style="margin-top:6px">Tip: tap any frequency (or its line) in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO…) to show you're on it. Listings clear themselves after 6 hours.</div>
  </div>
  <h2 style="margin:12px 4px 6px">On air now</h2>
  <div id="acNow"></div>
@@ -590,6 +592,22 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
   <div class="btns"><button class="btn sm" id="apKeySave">Save key</button><button class="btn sm alt" id="apNow">Look up positions now</button></div>
   <div id="apMsg" class="small" style="margin-top:6px"></div>
  </div>
+</section>
+<section id="asl" hidden>
+ <div class="card">
+  <h2 style="margin:0 0 4px">📡 My AllStar nodes</h2>
+  <div class="mut small">Add up to 3 AllStar node numbers to watch. They're saved on this phone only – nobody else can see them.
+   Status refreshes every minute, only while this tab is open.</div>
+  <div id="aslAdd" style="margin-top:10px">
+   <div class="row" style="display:flex;gap:6px;flex-wrap:wrap">
+    <input id="aslNum" inputmode="numeric" placeholder="Node number, e.g. 63824" maxlength="7" style="flex:1 1 140px">
+    <input id="aslName" placeholder="Name (optional), e.g. My hotspot" maxlength="30" style="flex:2 1 180px">
+    <button class="btn" id="aslAddBtn">Add</button>
+   </div>
+  </div>
+  <div id="aslMsg" class="small" style="margin-top:6px"></div>
+ </div>
+ <div id="aslBoxes"></div>
 </section>
 
 
@@ -1945,14 +1963,14 @@ acLoad=function(why){var logDue=curTab=="act"&&(why!="tick"||Date.now()-(AC.logA
  ntAll(function(){if(curTab=="act")acRender()})};
 /* v3.17: opening Repeaters or GB3XO refreshes who is on air (one small read) */
 var _showTab317=showTab;showTab=function(t){_showTab317(t);if(t=="rep"||t=="gb3xo")acLoad("tick")};
-acSet=function(freq,mode,note,cb){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
+acSet=function(freq,mode,note,cb,lab0){var msg=$("acMsg");if(!QZ.call){msg.innerHTML='<span style="color:#ef4444">Set your callsign first (tap "You" at the top).</span>';return cb&&cb(false)}
  var v=acFreqOf(freq);if(v==null){msg.textContent="Enter a frequency in MHz, e.g. 145.500";$("acFreq").focus();return cb&&cb(false)}
  mode=(mode||(v>30?"FM":"USB")).toUpperCase().slice(0,12);var f=acFmt(v),lab=acName(v).slice(0,40);msg.textContent="Saving…";
  FB.token(function(tok){if(!tok){msg.textContent="No connection.";return cb&&cb(false)}var uid=FB.auth.uid,mine=acMineOf(AC.list),slot=null;
   mine.forEach(function(d){if(acSame(acFreqOf(d.freq),v))slot=d.id});
   if(!slot){var used=mine.map(function(d){return d.id});acSlots().some(function(id){if(used.indexOf(id)<0){slot=id;return true}})}
   if(!slot){msg.innerHTML='<span style="color:#ef4444">You\'re already showing '+AC_MAX+' frequencies – take one off '+(curTab=="act"?'(✕) first.':'first (✕ in the Activity tab).')+'</span>';return cb&&cb(false)}
-  if(arguments[4])lab=String(arguments[4]).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
+  if(lab0)lab=String(lab0).slice(0,40);var c=QZ.call.slice(0,12),nm=(store("my_name")||"").slice(0,60);
   fbCommit([{update:{name:fbDoc("activity/"+slot),fields:FB.enc({call:c,name:nm,freq:f,mode:mode,note:(note||"").slice(0,80),label:lab})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
    msg.textContent=ok?"✓ Everyone can see you're on "+f+" MHz "+mode+(lab?" ("+lab+")":"")+".":"Couldn't save ("+(st==403?"not allowed":"error "+st)+").";if(ok){$("acFreq").value="";$("acFreqName").textContent="";$("acNote").value="";acLoad()}cb&&cb(ok)})})};
 function acOffOne(id,cb){FB.del("activity",id,function(ok){cb&&cb(ok)})}
@@ -2247,7 +2265,7 @@ $("scCsv").onclick=function(){var l=scCur();if(!l)return;var q=function(v){v=Str
 var ACR=loadJSON("ac_recent",[]);
 function acRecentRender(){var b=$("acRecent");if(!b)return;b.innerHTML=ACR.length?'<span class="mut small" style="align-self:center">Recent:</span>'+ACR.map(function(r,i){return'<button data-acr="'+i+'">'+esc((r.l?r.l+" ":"")+acFmt(r.f)+(r.m?" "+r.m:""))+'</button>'}).join(""):""}
 var _acSet315=acSet;acSet=function(freq,mode,note,cb,lab){return _acSet315(freq,mode,note,function(ok){if(ok){var v=acFreqOf(freq);if(v!=null){var L=lab||"";if(!L){try{L=acName(v)||""}catch(e){}}
-  ACR=[{f:String(v),m:mode||"",l:String(L).slice(0,30)}].concat(ACR.filter(function(r){return!(acSame(acFreqOf(r.f),v)&&(r.m||"")==(mode||""))})).slice(0,3);store("ac_recent",JSON.stringify(ACR));acRecentRender()}}cb&&cb(ok)},lab)};
+  ACR=[{f:String(v),m:mode||"",l:String(L).slice(0,30)}].concat(ACR.filter(function(r){return!(acSame(acFreqOf(r.f),v)&&(r.m||"")==(mode||""))})).slice(0,8);store("ac_recent",JSON.stringify(ACR));acRecentRender()}}cb&&cb(ok)},lab)};
 $("acRecent").onclick=function(e){var i=e.target.dataset.acr;if(i==null)return;var r=ACR[+i];if(!r)return;var v=acFreqOf(r.f),cur=acMineOf(AC.list||[]).filter(function(d){return acSame(acFreqOf(d.freq),v)})[0],nt=cur&&cur.note||"";$("acFreq").value=acFmt(r.f);acSetMode(r.m||"");$("acNote").value=nt;acSet(r.f,r.m,nt,null,r.l||undefined)};
 acRecentRender();
 /* (M0PTN) GB3XO: On air / Off air button */
@@ -2480,5 +2498,94 @@ var _showTab320=showTab;showTab=function(t){_showTab320(t);if(t=="net")nlLoad(fa
  var K=[VHF.filter(function(r){return Math.abs(r.f-GRP)<1e-6})[0],VHF.filter(function(r){return r.f==145.5})[0],UHF.filter(function(r){return r.f==433.5})[0]];
  $("fmKey").innerHTML='<table class="fmt"><tbody>'+K.map(function(r){return'<tr class="'+cls(r.f)+'"><td class="fmn"><b>'+r.nm+'</b> <span class="mut">('+r.old+')</span></td><td class="f" style="font-size:18px;font-weight:700">'+fq(r.f)+'</td><td>FM</td><td class="small">'+tag(r.f)+(Math.abs(r.f-GRP)<1e-6?'The group\'s usual channel':r.f<200?'2m FM calling':'70cm FM calling')+'</td></tr>'}).join("")+'</tbody></table>';
 })();
+
+/* ===== v3.22 (1) tap anywhere on a line with a frequency = same as tapping the frequency ===== */
+document.querySelector("main").addEventListener("click",function(e){var t=e.target;
+ if(t.closest(".f,a,button,input,select,textarea,label,summary,.acdot,#act,#atOut"))return;
+ var tr=t.closest("tr");if(!tr||tr.closest("thead"))return;
+ var fs=tr.querySelectorAll(".f"),el=null;for(var i=0;i<fs.length;i++){if(acCell(fs[i])!=null){el=fs[i];break}}
+ if(!el)return;e.stopPropagation();e.preventDefault();el.click()},true);
+
+/* ===== v3.22 (3) Simplex tab: label the on-air listing with the channel name (old name S20 / SU20, else new V17 / U273) ===== */
+function fmChan(v){v=+v;var k;
+ if(v>=145.2-1e-6&&v<=145.5875+1e-6){k=Math.round((v-145.2)/0.0125);if(Math.abs(145.2+k*0.0125-v)>1e-4)return"";var n=16+k;return n%2==0?"S"+(n/2):(n<=45?"V"+n:"")}
+ if(v>=433.4-1e-6&&v<=433.575+1e-6){k=Math.round((v-433.4)/0.0125);if(Math.abs(433.4+k*0.0125-v)>1e-4)return"";var u=272+k;return u%2==0?"SU"+(u/2-120):"U"+u}
+ return""}
+var FMTAP=null;
+document.addEventListener("click",function(e){var t=e.target;if(!t.closest||!t.closest("main"))return;var tr=t.closest("tr");if(!tr||!tr.querySelector(".f"))return;
+ if(tr.closest("#fmch")){var f=tr.querySelector(".f"),v=acCell(f);FMTAP=v!=null&&fmChan(v)?{v:v,l:fmChan(v)}:null}else FMTAP=null},true);
+var _acName322=acName;acName=function(v){if(FMTAP&&acSame(+v,FMTAP.v))return FMTAP.l;return _acName322(v)};
+var _acSet322=acSet;acSet=function(freq,mode,note,cb,lab){var r=_acSet322(freq,mode,note,function(ok){if(ok)FMTAP=null;cb&&cb(ok)},lab);return r};
+
+/* ===== v3.22 (2) quick buttons on Activity: GB3XO, 145.250 (group default), 145.500 (FM calling) ===== */
+var ACQ=[{k:"xo",t:"GB3XO",f:function(){return GB3XO.downlink},m:"FM",l:"GB3XO Redditch"},{k:"g",t:"145.250 S10",f:function(){return"145.250"},m:"FM",l:"S10"},{k:"c",t:"145.500 S20",f:function(){return"145.500"},m:"FM",l:"S20"}];
+function acQuickHit(v){return ACQ.some(function(q){return acSame(v,acFreqOf(q.f()))})}
+acRecentRender=function(){var b=$("acRecent");if(!b)return;var mine=acMineOf(AC.list||[]).map(function(d){return acFreqOf(d.freq)});
+ var on=function(v){return mine.some(function(m){return acSame(m,v)})};
+ var h='<span class="mut small" style="align-self:center">Quick:</span>'+ACQ.map(function(q){var v=acFreqOf(q.f());return'<button data-acq="'+q.k+'"'+(on(v)?' class="on"':'')+'>'+(q.k=="g"?"★ ":"")+esc(q.t)+'</button>'}).join("");
+ var R=[];ACR.forEach(function(r,i){if(R.length<3&&!acQuickHit(acFreqOf(r.f)))R.push('<button data-acr="'+i+'"'+(on(acFreqOf(r.f))?' class="on"':'')+'>'+esc((r.l?r.l+" ":"")+acFmt(r.f)+(r.m?" "+r.m:""))+'</button>')});
+ if(R.length)h+='<span style="flex-basis:100%;height:0"></span><span class="mut small" style="align-self:center">Recent:</span>'+R.join("");b.innerHTML=h};
+$("acRecent").addEventListener("click",function(e){var k=e.target.closest("button");k=k&&k.dataset.acq;if(!k)return;var q=ACQ.filter(function(x){return x.k==k})[0];if(!q)return;
+ var f=q.f();$("acFreq").value=acFmt(acFreqOf(f));acSetMode(q.m);$("acNote").value="";acSet(f,q.m,"",null,q.l)});
+var _acRender322=acRender;acRender=function(){var r=_acRender322.apply(this,arguments);try{acRecentRender()}catch(e){}return r};
+acRecentRender();
+
+/* ===== v3.22 (4) AllStar tab: up to 3 of your own AllStar nodes, saved on this phone only (never sent to our database).
+   Status comes straight from stats.allstarlink.org, every 60 s, ONLY while the AllStar tab is open and on screen. ===== */
+var ASL={nodes:loadJSON("asl_nodes",[]),last:loadJSON("asl_last",{}),timer:null,edit:-1,del:-1};
+function aslSave(){store("asl_nodes",JSON.stringify(ASL.nodes))}
+function aslNumOk(n){return/^\d{4,7}$/.test(n)}
+function aslLinkLabel(n){if(/^3\d{6}$/.test(n))return"EchoLink node "+n.slice(1).replace(/^0+/,"");if(+n<2000)return"Private node "+n;
+ var mine=ASL.nodes.filter(function(x){return x.n==n})[0];if(n==XO_NODE)return"AllStar "+n+" – GB3XO";var c=xoNames[n];return"AllStar "+n+(mine&&mine.name?" – "+mine.name:(c&&c.n?" – "+c.n:""))}
+function aslLookup(list){var now=Date.now(),todo=list.filter(function(n){return!/^3\d{6}$/.test(n)&&+n>=2000&&(!xoNames[n]||now-xoNames[n].t>864e5)}).slice(0,3);
+ todo.forEach(function(n){xoNames[n]={t:now,n:(xoNames[n]&&xoNames[n].n)||""};fetch("https://stats.allstarlink.org/api/stats/"+n).then(function(r){return r.json()}).then(function(j){var nd=j.node||j.user_node||{},sv=nd.server||{};
+  xoNames[n]={t:Date.now(),n:[nd.callsign,sv.Location].filter(Boolean).join(", ")};store("xo_names",JSON.stringify(xoNames));if(curTab=="asl")aslRenderAll()}).catch(function(){})})}
+function aslBox(x,i){var L=ASL.last[x.n]||{},j=L.j,d=(j&&j.stats&&j.stats.data)||null,nd=(j&&(j.node||j.user_node))||{},sv=nd.server||{};
+ var head;
+ if(ASL.edit==i)head='<div style="display:flex;gap:6px;flex-wrap:wrap"><input id="aslEN" inputmode="numeric" maxlength="7" value="'+esc(x.n)+'" style="flex:1 1 110px"><input id="aslEM" maxlength="30" placeholder="Name" value="'+esc(x.name||"")+'" style="flex:2 1 160px"><button class="btn sm" data-asl="save" data-i="'+i+'">Save</button><button class="btn sm alt" data-asl="cancel">Cancel</button></div>';
+ else head='<div class="aslh"><span class="asldot" id="aslDot'+i+'" style="background:@@DOT@@"></span><b style="font-size:17px">'+esc(x.name||("Node "+x.n))+'</b><span class="mut small">(AllStar node '+esc(x.n)+')</span></div>';
+ var foot=ASL.edit==i?'':'<div class="btns" style="margin-top:8px"><button class="btn sm alt" data-asl="edit" data-i="'+i+'">✎ Edit</button><button class="btn sm alt" data-asl="del" data-i="'+i+'" style="color:#ef4444">'+(ASL.del==i?"Tap again to delete":"✕ Delete")+'</button></div>';
+ var body="",dot="#64748b",glow="none";
+ if(L.err&&!j)body='<div class="mut">'+esc(L.err)+'</div>';
+ else if(!j)body='<div class="mut">Checking…</div>';
+ else if(!d)body='<div class="mut">No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).</div>';
+ else{var now=Date.now()/1000,rep=+d.time||0,age=rep?now-rep:1e9,keyed=d.keyed===true||d.keyed==="1"||d.keyed===1,on=age<900,st;
+  if(!on)st="Node not reporting"+(rep?" (last report "+xoAgo(age)+" ago)":"");else if(keyed){dot="#ef4444";glow="0 0 10px 3px rgba(239,68,68,.7)";st="ON AIR – someone is transmitting"}else{dot="#22c55e";st="Online – idle"}
+  var kt=+d.keytime||0,up=+d.apprptuptime||0,rows=[];var who=[nd.callsign,sv.Location].filter(Boolean).join(", ");if(who)rows.push(["Node",who]);
+  if(kt&&up&&kt<up)rows.push(["Last keyed",xoAgo(kt+(on?age:0))+" ago"]);if(up)rows.push(["Node up",xoAgo(up)]);
+  if(d.totalkeyups)rows.push(["Key-ups",d.totalkeyups+(d.totaltxtime?" · "+xoAgo(+d.totaltxtime)+" on air":"")]);
+  var modes={},nl=[];String(d.nodes||"").split(",").forEach(function(q){var m=/^([A-Z]?)(\d+)$/.exec(q.trim());if(m){modes[m[2]]=m[1];nl.push(m[2])}});
+  if(!nl.length&&Array.isArray(d.links))nl=d.links.map(String);var MD={R:" · listen only",C:" · connecting",M:" · listen only"};
+  body='<div class="big" style="font-size:18px;margin-top:6px">'+esc(st)+'</div><div class="kv" style="margin-top:8px">'+rows.map(function(r){return"<b>"+r[0]+"</b><span>"+esc(r[1])+"</span>"}).join("")+'</div>'+
+   '<div style="margin-top:8px">'+(nl.length?'<div class="mut small">Linked to '+nl.length+' node'+(nl.length>1?"s":"")+':</div>'+nl.map(function(n){return'<div style="padding:3px 0;border-bottom:1px solid var(--line)">'+esc(aslLinkLabel(n))+'<span class="mut small">'+esc(MD[modes[n]]||"")+'</span></div>'}).join(""):'<div class="mut small">Not linked to any other nodes</div>')+'</div>';
+  if(nl.length)aslLookup(nl)}
+ var upd=L.t?((L.err?"No connection – showing data from "+xoAgo((Date.now()-L.t)/1000)+" ago · ":"Updated "+new Date(L.t).toTimeString().slice(0,5)+" · refreshes every minute while this tab is open · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+esc(x.n)+'" target="_blank">stats.allstarlink.org</a>'):"";
+ return'<div class="card" data-box="'+i+'">'+head.replace("@@DOT@@",dot+";box-shadow:"+glow)+body+'<div class="mut small" style="margin-top:8px">'+upd+'</div>'+foot+'</div>'}
+function aslRenderAll(){var h=ASL.nodes.map(aslBox).join("");$("aslBoxes").innerHTML=h||'<div class="card mut">No nodes yet – add an AllStar node number above.</div>';
+ $("aslAdd").hidden=ASL.nodes.length>=3;if(ASL.nodes.length>=3&&!/Remove one/.test($("aslMsg").textContent))$("aslMsg").textContent="You have 3 nodes – delete one to add another."}
+function aslFetch(i){var x=ASL.nodes[i];if(!x)return;var n=x.n;
+ fetch("https://stats.allstarlink.org/api/stats/"+n,{cache:"no-store"}).then(function(r){if(r.status==404)return{};if(!r.ok)throw r.status;return r.json()}).then(function(j){
+   ASL.last[n]={j:j,t:Date.now()};try{store("asl_last",JSON.stringify(ASL.last))}catch(e){}if(curTab=="asl"&&ASL.edit<0)aslRenderAll()})
+ .catch(function(){var o=ASL.last[n]||{};ASL.last[n]={j:o.j||null,t:o.t||0,err:"Can't reach AllStar stats – check your connection"};if(curTab=="asl"&&ASL.edit<0)aslRenderAll()})}
+function aslFetchAll(){ASL.nodes.forEach(function(x,i){aslFetch(i)})}
+function aslStart(){aslStop();aslRenderAll();aslFetchAll();ASL.timer=setInterval(function(){if(!document.hidden&&curTab=="asl")aslFetchAll()},60000)}
+function aslStop(){if(ASL.timer){clearInterval(ASL.timer);ASL.timer=null}}
+var _showTab322=showTab;showTab=function(t){_showTab322(t);if(t=="asl")aslStart();else aslStop()};
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&curTab=="asl")aslFetchAll()});
+function aslCheck(n,name,skip){n=String(n||"").trim();if(!aslNumOk(n))return"Enter an AllStar node number (4–7 digits).";
+ if(ASL.nodes.some(function(x,k){return x.n==n&&k!==skip}))return"You've already added node "+n+".";return""}
+$("aslAddBtn").onclick=function(){var n=$("aslNum").value.trim(),nm=$("aslName").value.trim().slice(0,30),m=$("aslMsg");
+ if(ASL.nodes.length>=3){m.textContent="You have 3 nodes – delete one to add another.";return}var er=aslCheck(n,nm,-1);if(er){m.innerHTML='<span style="color:#ef4444">'+esc(er)+'</span>';return}
+ ASL.nodes.push({n:n,name:nm});aslSave();$("aslNum").value="";$("aslName").value="";m.textContent="✓ Added node "+n+".";ASL.edit=-1;ASL.del=-1;aslRenderAll();aslFetch(ASL.nodes.length-1)};
+$("aslBoxes").onclick=function(e){var b=e.target.closest("button");if(!b)return;var a=b.dataset.asl,i=+b.dataset.i,m=$("aslMsg");
+ if(a=="edit"){ASL.edit=i;ASL.del=-1;aslRenderAll();var el=$("aslEM");el&&el.focus();return}
+ if(a=="cancel"){ASL.edit=-1;aslRenderAll();return}
+ if(a=="save"){var n=$("aslEN").value.trim(),nm=$("aslEM").value.trim().slice(0,30),er=aslCheck(n,nm,i);if(er){m.innerHTML='<span style="color:#ef4444">'+esc(er)+'</span>';return}
+  var ch=ASL.nodes[i].n!=n;ASL.nodes[i]={n:n,name:nm};aslSave();ASL.edit=-1;m.textContent="✓ Saved.";aslRenderAll();if(ch)aslFetch(i);return}
+ if(a=="del"){if(ASL.del!=i){ASL.del=i;aslRenderAll();setTimeout(function(){if(ASL.del==i){ASL.del=-1;if(curTab=="asl")aslRenderAll()}},4000);return}
+  var gone=ASL.nodes.splice(i,1)[0];ASL.del=-1;ASL.edit=-1;aslSave();if(gone&&!ASL.nodes.some(function(x){return x.n==gone.n})){delete ASL.last[gone.n];store("asl_last",JSON.stringify(ASL.last))}
+  m.textContent="✓ Deleted node "+gone.n+".";aslRenderAll()}};
+$("aslNum").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});$("aslName").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});
+if(curTab=="asl")aslStart();
 </script>
 </body></html>

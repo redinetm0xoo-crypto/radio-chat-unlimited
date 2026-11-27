@@ -199,9 +199,14 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.21";
+var APP_VERSION = "3.22";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.22", date:"27 Nov 2026", items:[
+   "New AllStar tab (after APRS): add up to 3 AllStar nodes with your own names and see their live status – saved on your phone only, nobody else can see them",
+   "Activity: quick buttons for GB3XO, 145.250 and 145.500 next to your recent frequencies",
+   "Tap anywhere on a line in the frequency lists to show you're on it – not just the frequency itself",
+   "Picking a channel on the Simplex tab now shows its name on Activity, e.g. S20 145.500 FM"]},
  {v:"3.21", date:"26 Nov 2026", items:[
    "New Simplex tab (after UK Repeaters): every 2m and 70cm FM simplex channel with its new and old name (e.g. V40 / S20) and what it's used for",
    "145.250 highlighted as the group's default channel, 145.500 and 433.500 as the FM calling channels – tap any of them to show you're on it"]},
