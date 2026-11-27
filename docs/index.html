@@ -139,6 +139,15 @@ footer button{background:none;border:0;color:var(--acc);font-size:13px;text-deco
 .aslh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.aslh .sp{flex:1}.asldot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#64748b}
 main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245,165,36,.18)}#act tr:has(td.f),#atOut tr:has(td.f){cursor:auto}
 .aslmore{background:none;border:none;color:var(--mut,#94a3b8);font-size:18px;line-height:1;padding:0 6px;margin-left:-4px;cursor:pointer;border-radius:8px}.aslmore:hover{background:rgba(148,163,184,.15)}
+#rnMapBox img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
+#rnMapBox .rpm{position:absolute;transform:translate(-50%,-100%);color:#fff;font-weight:800;font-size:11px;padding:1px 5px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.45);border:0;cursor:pointer}
+#rnMapBox .rpm.b2{background:#2563eb}#rnMapBox .rpm.b70{background:#16a34a}#rnMapBox .rpm.bo{background:#6b7280}#rnMapBox .rpm.sel{outline:3px solid #f5a524}
+#rnMapBox .apz{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+#rnMapBox .apz button{width:38px;height:38px;border-radius:8px;border:1px solid #999;background:#fff;color:#111;font-size:22px;font-weight:700}
+#rnMapBox .attr{position:absolute;right:0;bottom:0;background:rgba(255,255,255,.85);color:#333;font-size:10px;padding:1px 5px}
+#rnMapBox .key{position:absolute;left:6px;bottom:6px;background:rgba(255,255,255,.9);color:#111;font-size:11px;padding:3px 6px;border-radius:6px}
+.satp{padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer}.satp.now{background:rgba(34,197,94,.14)}.satp .t{font-weight:700}
+.satf td{padding:3px 4px}
 </style></head>
 <body>
 <header>
@@ -155,7 +164,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
 </header>
 <div id="updBanner" hidden><b id="updTitle"></b><div class="btns"><button class="btn sm alt" id="updNotes">What's new</button><a class="btn sm" id="updGo">Update</a><button class="btn sm alt" id="updLater">Later</button></div><div id="updBody" class="small mut" hidden style="white-space:pre-wrap;margin-top:8px"></div></div>
 <nav id="tabs">
-<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="fmch">Simplex</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="asl">AllStar</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
+<button data-t="act">Activity</button><button data-t="net">Net</button><button data-t="gb3xo">GB3XO</button><button data-t="rep">UK Repeaters</button><button data-t="fmch">Simplex</button><button data-t="cond">Conditions</button><button data-t="band">Band Plan</button><button data-t="qth">Locator</button><button data-t="qrz">QRZ</button><button data-t="scan">Scanner</button><button data-t="emerg">Redditch Emergency</button><button data-t="morse">Morse</button><button data-t="ant">Antenna</button><button data-t="exam">Exam</button><button data-t="aprs">APRS</button><button data-t="asl">AllStar</button><button data-t="sat">Satellites</button><button data-t="sale">For Sale</button><button data-t="ann">Announcements</button><button data-t="set">Settings</button><button data-t="adm" hidden>Admin</button>
 </nav>
 <div id="acBar" hidden><span id="acBarTx"></span><button class="btn sm" id="acBarYes">Yes, show me</button><button class="btn sm alt" id="acBarNo">Not now</button></div>
 <div id="admModal" hidden><div class="card">
@@ -191,7 +200,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
   <div class="row" style="margin-top:8px"><input id="acMode" maxlength="12" placeholder="Mode (tap one above or type)"><input id="acNote" maxlength="80" placeholder="Note (optional), e.g. mobile, calling CQ"></div>
   <div class="btns"><button class="btn" id="acGo">📡 Show I'm on this frequency</button><button class="btn alt" id="acOff">Off air</button></div>
   <div id="acMsg" class="small" style="margin-top:6px"></div>
-  <div class="mut small" style="margin-top:6px">Tip: tap any frequency (or its line) in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO…) to show you're on it. Listings clear themselves after 6 hours.</div>
+  <div class="mut small" style="margin-top:6px">Tip: tap any frequency (or its line) in the app (Scanner, Repeaters, Redditch Emergency, Band Plan, GB3XO…) to show you're on it. Listings clear themselves after 3 hours.</div>
  </div>
  <h2 style="margin:12px 4px 6px">On air now</h2>
  <div id="acNow"></div>
@@ -289,8 +298,14 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
    <label class="chk"><input type="checkbox" id="rnGw"> Include gateways &amp; simplex nodes</label>
    <label class="chk"><input type="checkbox" id="rnFav"> ★ Favourites only</label>
    <div id="rnFrom" class="mut small" style="margin-top:8px"></div>
+   <div class="seg" id="rnView" style="margin-top:8px"><button data-v="list" class="on">☰ List</button><button data-v="map">🗺️ Map</button></div>
   </div>
-  <div class="card" style="padding:4px 10px"><div id="rnList"></div><button class="btn alt" id="rnMore" style="width:100%;margin:8px 0" hidden>Show more</button></div>
+  <div class="card" id="rnMapCard" hidden style="padding:8px">
+   <div id="rnMapBox" style="position:relative;height:60vh;min-height:320px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#dde;touch-action:none"></div>
+   <div class="btns" style="margin-top:6px"><button class="btn sm alt" id="rnMapMe">📍 Centre on me</button><span class="mut small" id="rnMapNote" style="align-self:center"></span></div>
+   <div id="rnMapInfo"></div>
+  </div>
+  <div class="card" id="rnListCard" style="padding:4px 10px"><div id="rnList"></div><button class="btn alt" id="rnMore" style="width:100%;margin:8px 0" hidden>Show more</button></div>
   <div class="mut small" style="text-align:center" id="rnSrc"></div>
  </div>
  <div id="repPlan" hidden>
@@ -448,7 +463,9 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  </div>
  <div class="card">
   <select id="scSel"></select>
-  <div class="btns"><button class="btn sm" id="scNew">+ New list</button><button class="btn sm alt" id="scRen" hidden>Rename</button><button class="btn sm alt" id="scDel" hidden>Delete list</button><button class="btn sm alt" id="scCsv">⬇ Download as CSV</button></div>
+  <div class="btns"><button class="btn sm" id="scNew">+ New list</button><label class="btn sm alt" style="display:inline-block;cursor:pointer">⬆ Upload CSV<input type="file" id="scUp" accept=".csv,text/csv,text/plain,text/comma-separated-values,application/vnd.ms-excel" hidden></label><button class="btn sm alt" id="scRen" hidden>Rename</button><button class="btn sm alt" id="scDel" hidden>Delete list</button><button class="btn sm alt" id="scCsv">⬇ Download as CSV</button></div>
+  <details class="small" style="margin-top:6px"><summary>CSV format for uploading a list</summary>
+   <div style="margin-top:4px">First row = column names, then one frequency per row. Either:<br><code>MHz,Name,Mode,Notes</code><br>e.g. <code>145.500,2m calling,FM,</code><br>or for satellites / repeaters:<br><code>Uplink Freq (MHz),Downlink Freq (MHz),Name,Mode,Tone,Notes</code><br>(the downlink is what you listen on; uplink and tone go into the notes). "Download as CSV" gives the first layout. Up to 1,000 rows.</div></details>
   <div id="scNote"></div>
   <input id="scFilter" placeholder="Filter this list" style="margin-top:8px">
   <table style="margin-top:6px"><thead><tr><th>MHz</th><th>Name</th><th>Mode</th><th>Notes</th><th></th></tr></thead><tbody id="scBody"></tbody></table>
@@ -611,6 +628,20 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  </div>
  <div id="aslBoxes"></div>
 </section>
+<section id="sat" hidden>
+ <div class="card">
+  <h2 style="margin:0 0 4px">🛰️ Satellites</h2>
+  <div class="mut small" id="satWhere"></div>
+  <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center">
+   <label class="small">Show passes higher than <select id="satMinEl"><option value="0">0°</option><option value="10">10°</option><option value="20">20°</option><option value="30">30°</option></select></label>
+   <label class="chk" style="margin:0"><input type="checkbox" id="satAm" checked> Amateur</label>
+   <label class="chk" style="margin:0"><input type="checkbox" id="satWx" checked> Weather</label>
+  </div>
+ </div>
+ <div id="satNow"></div>
+ <div class="card"><h3 style="margin:0 0 6px">Next passes (24 hours)</h3><div class="mut small" style="margin-bottom:6px">Tap a pass for the frequencies with Doppler correction. Times are your phone's local time.</div><div id="satList"></div></div>
+ <div class="mut small" id="satSrc" style="text-align:center;margin:6px 0"></div>
+</section>
 
 
 <section id="set" hidden>
@@ -732,6 +763,7 @@ if(WEB){
 <script src="repeaters_db.js"></script>
 <script src="world.js"></script>
 <script src="exam.js"></script>
+<script src="sat.js"></script>
 <script src="alerts.js"></script>
 <script>
 function $(id){return document.getElementById(id)}
@@ -1810,7 +1842,7 @@ $("bkPaste").oninput=function(){delete $("bkRestore").dataset.sure;$("bkRestore"
 $("tabs").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t)showTab(b.dataset.t)};
 
 /* ===================== v3.3: Activity tab ===================== */
-var AC={list:[],log:[],me:null,mode:"FM",timer:null},AC_TTL=6*3600e3;
+var AC={list:[],log:[],me:null,mode:"FM",timer:null},AC_TTL=3*3600e3;
 function acFreqOf(t){var m=String(t||"").replace(",",".").match(/(\d{1,5}\.\d{1,6})/);if(!m)return null;var v=parseFloat(m[1]);return v>0.01&&v<12000?v:null}
 function acFmt(v){var s=(+v).toFixed(5).replace(/0+$/,"");if((s.split(".")[1]||"").length<3)s=(+v).toFixed(3);return s}
 function acCell(el){var t=(el.textContent||"").replace(/●/g,"");if(/\d\s*[–-]\s*\d/.test(t)&&!/MHz/i.test(t))return null;if(/khz/i.test(t)&&!/mhz/i.test(t)){var k=parseFloat(t.replace(/[^\d.]/g,""));return k>=100&&k<12e6?k/1000:null}if(/hz/i.test(t)&&!/mhz/i.test(t))return null;return acFreqOf(t)}
@@ -2633,5 +2665,128 @@ function rcuBaseCall(c){c=String(c||"").trim().toUpperCase();if(c.indexOf("/")<0
   if(this.value.indexOf("/")>=0)m.textContent="No / please – just your callsign, e.g. M0PTN (not M0PTN/P).";else if(/^No \/ please/.test(m.textContent))m.textContent=""})});
 var _stSave324=$("stSave").onclick;$("stSave").onclick=function(){var v=$("stCall").value;if(/\//.test(v)){$("stMsg").textContent="No / please – just your callsign, e.g. "+(rcuBaseCall(v)||"M0PTN")+" (not "+v.trim().toUpperCase()+"). Not saved.";return}return _stSave324.apply(this,arguments)};
 if(QZ.call&&/\//.test(QZ.call)){var _bc=rcuBaseCall(QZ.call);if(_bc){QZ.call=_bc;store("qrz_cfg",JSON.stringify(QZ));try{$("stCall").value=_bc;meShow();hdRender()}catch(e){}}}
+
+/* ===== v3.26 (11) no callsign change while you're shown on air ===== */
+var _ccChange326=ccChange;ccChange=function(nc,msgEl,ok){var oc=myCall(),M=(typeof acMineOf=="function"?acMineOf(AC.list||[]):[]);
+ if(oc&&nc&&ccBase(oc)!=ccBase(String(nc).trim().toUpperCase())&&M.length){
+  msgEl.innerHTML='<span style="color:#ef4444">You\'re showing on air ('+M.map(function(d){return esc(acFmt(d.freq))}).join(", ")+' MHz). Go off air first (Activity tab › Off air) and then change your callsign.</span>';return}
+ return _ccChange326(nc,msgEl,ok)};
+
+/* ===== v3.26 (9) AllStar: a node number with no status shows who it's registered to, so typos are obvious ===== */
+var _aslBox326=aslBox;aslBox=function(x,i){var h=_aslBox326(x,i),L=ASL.last[x.n]||{},j=L.j;
+ if(j&&!(j.stats&&j.stats.data)){var nd=j.node||j.user_node||{},sv=nd.server||{},who=[nd.callsign,sv.Location&&String(sv.Location).replace(/\s+/g," ").trim()].filter(Boolean).join(", ");
+  h=h.replace('No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).',
+   who?'No status from this node. Node '+esc(x.n)+' is registered to <b>'+esc(who)+'</b> – if that isn\'t right, check the number (tap ⋯ › Edit).':'No status for this node – check the number (only public AllStar nodes report to stats.allstarlink.org).')}
+ return h};
+
+/* ===== v3.26 (2) scanner lists: upload a CSV (2E0UMK) ===== */
+function csvRows(t){var R=[],row=[],f="",q=false;t=String(t).replace(/^﻿/,"");
+ for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+  else if(c=='"')q=true;else if(c==","||c==";"||c=="\t"){row.push(f);f=""}else if(c=="\n"||c=="\r"){if(c=="\r"&&t[i+1]=="\n")i++;row.push(f);f="";if(row.some(function(x){return x.trim()}))R.push(row);row=[]}else f+=c}
+ row.push(f);if(row.some(function(x){return x.trim()}))R.push(row);return R}
+function csvImport(text){var R=csvRows(text);if(!R.length)return{rows:[],bad:0,err:"The file is empty."};
+ var H=R[0].map(function(x){return x.trim().toLowerCase()}),col=function(re){for(var k=0;k<H.length;k++)if(re.test(H[k]))return k;return -1};
+ var hasHead=H.some(function(x){return/mhz|freq|name|mode|note|uplink|downlink|tone/.test(x)}),data=hasHead?R.slice(1):R;
+ var cUp=col(/up/),cDn=col(/down/),cF=col(/^(mhz|freq|frequency)|freq.*mhz|mhz/),cN=col(/name|label|channel/),cM=col(/mode/),cT=col(/tone|ctcss/),cX=col(/note|comment/);
+ if(cDn>=0)cF=cDn;if(!hasHead){cF=0;cN=1;cM=2;cX=3;cUp=-1;cT=-1}
+ if(cF<0)return{rows:[],bad:0,err:"Couldn't find a frequency column – the first row should name the columns, e.g. MHz,Name,Mode,Notes."};
+ var rows=[],bad=0;data.slice(0,1000).forEach(function(r){var v=parseFloat(String(r[cF]||"").replace(",",".").replace(/[^0-9.]/g,""));
+  if(!(v>0&&v<300000)){bad++;return}var x=[];if(cUp>=0&&r[cUp]&&String(r[cUp]).trim())x.push("Up "+String(r[cUp]).trim());if(cT>=0&&r[cT]&&String(r[cT]).trim())x.push("Tone "+String(r[cT]).trim());
+  if(cX>=0&&r[cX]&&String(r[cX]).trim())x.push(String(r[cX]).trim());
+  rows.push({f:String(v),n:String(cN>=0?r[cN]||"":"").trim().slice(0,60),m:String(cM>=0?r[cM]||"":"").trim().toUpperCase().slice(0,12)||"FM",x:x.join(" · ").slice(0,120)})});
+ return{rows:rows,bad:bad+Math.max(0,data.length-1000),err:""}}
+$("scUp").onchange=function(){var f=this.files&&this.files[0],inp=this,m=$("scMsg");if(!f)return;
+ if(f.size>2e6){m.textContent="That file is too big for a scanner list (2 MB max).";inp.value="";return}
+ var rd=new FileReader();rd.onload=function(){var r=csvImport(rd.result);inp.value="";
+  if(r.err||!r.rows.length){m.innerHTML='<span style="color:#ef4444">'+esc(r.err||"No frequencies found in that file.")+'</span>';return}
+  var n=prompt("Name for the new list ("+r.rows.length+" frequencies):",String(f.name||"My list").replace(/\.[^.]+$/,"").slice(0,40));if(!n){m.textContent="Upload cancelled.";return}
+  var id="u"+Date.now();SC.push({id:id,name:n.trim().slice(0,40)||"My list",rows:r.rows});scSave();scFill(id);
+  $("scMsg").textContent="✓ Imported "+r.rows.length+" frequenc"+(r.rows.length==1?"y":"ies")+(r.bad?" ("+r.bad+" row"+(r.bad==1?"":"s")+" skipped – no usable frequency)":"")+"."};
+ rd.onerror=function(){m.textContent="Couldn't read that file.";inp.value=""};rd.readAsText(f)};
+
+/* ===== v3.26 (3) UK Repeaters: List | Map (2E0UMK). Same filters as the list. Map tiles: OpenStreetMap. No database use. ===== */
+var RNM={view:store("rn_view")||"list",c:null,z:0,follow:true,sel:null};
+function rnFilter(){var q=$("rnSearch").value.trim().toUpperCase(),gw=$("rnGw").checked,fav=$("rnFav").checked;
+ return RP.filter(function(r){return r.lat&&r.lon&&(!RB.length||RB.indexOf(r.band)>=0)&&(!RM.length||RM.some(function(m){return r.modes.indexOf(m)>=0}))&&(gw||!r.gw)&&(!fav||rnFavs.indexOf(r.id)>=0)&&(!q||r.call.indexOf(q)>=0||r.town.toUpperCase().indexOf(q)>=0)})}
+function rnSetView(v){RNM.view=v;store("rn_view",v);$("rnMapCard").hidden=v!="map";$("rnListCard").hidden=v=="map";
+ var b=document.querySelectorAll("#rnView button");for(var i=0;i<b.length;i++)b[i].className=b[i].dataset.v==v?"on":"";if(v=="map")rnMap()}
+$("rnView").onclick=function(e){if(e.target.dataset.v)rnSetView(e.target.dataset.v)};
+function rnMap(){var box=$("rnMapBox");if($("rnMapCard").hidden)return;var W=box.offsetWidth||380,H=box.offsetHeight||360,me=homePos();
+ if(!RNM.c||RNM.follow){RNM.c={lat:me.lat,lon:me.lon};if(!RNM.z)RNM.z=Math.max(7,Math.min(11,apZoom(me.lat,W)-1))}
+ var z=RNM.z,N=Math.pow(2,z),ctr=mPx(RNM.c.lat,RNM.c.lon,z),x0=ctr.x-W/2,y0=ctr.y-H/2,h="";
+ for(var tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)for(var ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){if(ty<0||ty>=N)continue;
+  h+='<img alt="" src="https://tile.openstreetmap.org/'+z+'/'+((tx%N+N)%N)+'/'+ty+'.png" style="left:'+Math.round(tx*256-x0)+'px;top:'+Math.round(ty*256-y0)+'px">'}
+ var L=rnFilter(),shown=0,inView=0;L.forEach(function(r){var q=mPx(r.lat,r.lon,z),x=q.x-x0,y=q.y-y0;if(x<-40||y<-10||x>W+40||y>H+20)return;inView++;if(shown>=250)return;shown++;
+  h+='<button class="rpm '+(r.band=="2M"?"b2":r.band=="70CM"?"b70":"bo")+(RNM.sel==r.id?" sel":"")+'" data-rpm="'+r.id+'" style="left:'+Math.round(x)+'px;top:'+Math.round(y)+'px">'+esc(r.call)+'</button>'});
+ if(!me.fallback){var d=mPx(me.lat,me.lon,z);h+='<span class="ldot" style="left:'+Math.round(d.x-x0)+'px;top:'+Math.round(d.y-y0)+'px"></span>'}
+ h+='<div class="apz"><button data-rnz="1">+</button><button data-rnz="-1">−</button></div><div class="key"><b style="color:#2563eb">■</b> 2m <b style="color:#16a34a">■</b> 70cm <b style="color:#6b7280">■</b> other</div><div class="attr">© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</div>';
+ box.innerHTML=h;$("rnMapNote").textContent=(me.fallback?"Location off – centred on Redditch. ":"")+inView+" repeater"+(inView==1?"":"s")+" in view"+(inView>shown?" (zoom in to see all)":"")+(inView?". Tap one for details.":" – zoom out (−) to find more.")}
+function rnMapInfo(id){var r=RP.filter(function(x){return x.id==id})[0],el=$("rnMapInfo");if(!r){el.innerHTML="";return}var me=homePos(),d=miles(me.lat,me.lon,r.lat,r.lon),b=bearing(me.lat,me.lon,r.lat,r.lon);
+ var sh=r.gw?"simplex":((r.rx>r.tx?"+":"−")+Math.abs(r.rx-r.tx).toFixed(3)+" MHz");
+ el.innerHTML='<div class="post" style="margin-top:8px"><div><b style="font-size:17px">'+esc(r.call)+'</b> <span class="mut">'+esc(r.town)+' · '+esc(r.loc||"")+'</span><span class="dist" style="float:right">'+(r.approx?'~':'')+(d<10?d.toFixed(1):Math.round(d))+' mi '+compass(b)+'</span></div>'+
+  '<table class="satf" style="margin-top:4px"><tr><td>Listen (output)</td><td class="f"><b>'+r.tx.toFixed(4)+'</b></td></tr><tr><td>Transmit (input)</td><td>'+r.rx.toFixed(4)+' <span class="mut small">('+sh+')</span></td></tr>'+
+  (r.ctcss?'<tr><td>Input tone</td><td><b>CTCSS '+esc(r.ctcss)+' Hz</b></td></tr>':'')+(r.cc?'<tr><td>Colour code</td><td>'+esc(r.cc)+'</td></tr>':'')+
+  '<tr><td>Modes</td><td>'+r.modes.split("").map(function(c){return MODES[c]||""}).filter(Boolean).join(", ")+'</td></tr><tr><td>Status</td><td>'+esc(r.status||"")+'</td></tr></table>'+
+  '<div class="mut small">Tap the output frequency to show everyone you\'re on it.</div></div>'}
+$("rnMapBox").addEventListener("click",function(e){var z=e.target.dataset&&e.target.dataset.rnz;if(z){RNM.z=Math.max(5,Math.min(17,RNM.z+(+z)));rnMap();return}
+ var id=e.target.dataset&&e.target.dataset.rpm;if(id){RNM.sel=+id;rnMap();rnMapInfo(+id)}});
+(function(){var box=$("rnMapBox"),st=null;box.addEventListener("pointerdown",function(e){if(e.target.closest(".apz,.rpm,.attr,.key"))return;st={x:e.clientX,y:e.clientY,c:RNM.c,moved:false};box.setPointerCapture(e.pointerId)});
+ box.addEventListener("pointermove",function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.moved&&Math.abs(dx)+Math.abs(dy)<4)return;st.moved=true;RNM.follow=false;
+  var p=mPx(st.c.lat,st.c.lon,RNM.z),n=256*Math.pow(2,RNM.z),x=p.x-dx,y=p.y-dy;RNM.c={lat:Math.atan(Math.sinh(Math.PI*(1-2*y/n)))*180/Math.PI,lon:x/n*360-180};rnMap()});
+ ["pointerup","pointercancel"].forEach(function(t){box.addEventListener(t,function(){st=null})})})();
+$("rnMapMe").onclick=function(){RNM.follow=true;RNM.c=null;rnMap()};
+var _rnRender326=rnRender;rnRender=function(keep){_rnRender326(keep);if(RNM.view=="map")rnMap()};
+var _setRepView326=setRepView;setRepView=function(v){_setRepView326(v);if(v=="near")rnSetView(RNM.view)};
+rnSetView(RNM.view);
+
+/* ===== v3.26 (4) Satellites (M0PTN): passes, direction and Doppler-corrected frequencies, worked out on the phone (sat.js).
+   Orbit data from CelesTrak, fetched at most every 12 hours. No database use. Frequencies checked Nov 2026 (AMSAT, SatNOGS). ===== */
+var SATS=[
+ {id:25544,name:"ISS",ty:"am",ch:[{t:"Voice (crew contacts, SSTV events)",dn:145.800,m:"FM"},{t:"APRS digipeater",up:145.825,dn:145.825,m:"Packet 1200"},{t:"Cross-band repeater (when switched on)",up:145.990,dn:437.800,tone:"67.0",m:"FM"}],note:"What's switched on varies – check the ARISS / AMSAT status pages."},
+ {id:27607,name:"SO-50",ty:"am",ch:[{t:"FM repeater",up:145.850,dn:436.795,tone:"67.0",m:"FM"}],note:"If it's quiet, send 2 seconds with a 74.4 Hz tone to start its 10-minute timer."},
+ {id:44909,name:"RS-44",ty:"am",ch:[{t:"Linear transponder, centre (inverting)",up:145.965,dn:435.640,m:"SSB / CW"}],note:"Passband: uplink 145.935–145.995, downlink 435.610–435.670 (inverting)."},
+ {id:57166,name:"Meteor-M2 3",ty:"wx",ch:[{t:"LRPT weather pictures",dn:137.900,m:"LRPT (digital)"}],note:"Decode with SatDump (RTL-SDR + V-dipole or QFH aerial)."},
+ {id:59051,name:"Meteor-M2 4",ty:"wx",ch:[{t:"LRPT weather pictures",dn:137.900,m:"LRPT (digital)"},{t:"Alternate transmitter (rarely on)",dn:137.100,m:"LRPT"}],note:"Decode with SatDump (RTL-SDR + V-dipole or QFH aerial)."}];
+var SAT_FALLBACK="ISS (ZARYA)\n1 25544U 98067A   26331.13747498  .00006288  00000+0  11956-3 0  9996\n2 25544  51.6313 213.6849 0007381  69.8495 290.3287 15.49629659597013\nSAUDISAT 1C (SO-50)\n1 27607U 02058C   26330.44842742  .00000528  00000+0  80158-4 0  9996\n2 27607  64.5528 346.8404 0066987 232.4100 127.0913 14.83367165288523\nRS-44 & BREEZE-KM R/B\n1 44909U 19096E   26331.08878255  .00000042  00000+0  11743-3 0  9993\n2 44909  82.5224 231.4465 0218337 123.3166 238.9053 12.79750147323182\nMETEOR-M2 3\n1 57166U 23091A   26331.31714885 -.00000022  00000+0  92708-5 0  9997\n2 57166  98.5878  22.7748 0004889  64.4614 295.7070 14.24057327177736\nMETEOR-M2 4\n1 59051U 24039A   26331.30564656 -.00000016  00000+0  12518-4 0  9996\n2 59051  98.7262 288.7334 0008056  61.7948 298.4043 14.22444521142450";
+var SATST={tle:null,tleAt:+store("sat_tle_at")||0,passes:[],calcAt:0,timer:null,open:-1,busy:false};
+function satTleText(){return store("sat_tle")||SAT_FALLBACK}
+function satLoadTle(cb){if(Date.now()-SATST.tleAt<12*3600e3&&store("sat_tle"))return cb();if(SATST.busy)return;SATST.busy=true;var got=[],n=2;
+ ["amateur","weather"].forEach(function(g){var x=new XMLHttpRequest();x.open("GET","https://celestrak.org/NORAD/elements/gp.php?GROUP="+g+"&FORMAT=tle");x.timeout=15000;
+  x.onload=function(){if(x.status==200&&/^1 \d{5}/m.test(x.responseText))got.push(x.responseText);fin()};x.onerror=x.ontimeout=fin;x.send()});
+ function fin(){if(--n)return;SATST.busy=false;if(got.length==2){var keep=[],L=got.join("\n").split(/\r?\n/),ids=SATS.map(function(s){return s.id});
+   for(var i=0;i+2<L.length;i++)if(/^1 /.test(L[i+1])&&/^2 /.test(L[i+2])){if(ids.indexOf(+L[i+1].slice(2,7))>=0)keep.push(L[i].trim(),L[i+1],L[i+2]);i+=2}
+   if(keep.length>=9){store("sat_tle",keep.join("\n"));SATST.tleAt=Date.now();store("sat_tle_at",String(SATST.tleAt));SATST.tle=null}}cb()}}
+function satObjs(){if(!SATST.tle){var P=SAT.parseTle(satTleText()),m={};P.forEach(function(s){m[s.norad]=s});SATST.tle=m}return SATST.tle}
+function satObs(){var p=homePos();return SAT.observer(p.lat,p.lon,0.1)}
+function satCalc(){var o=satObs(),M=satObjs(),now=Date.now(),minEl=+$("satMinEl").value,am=$("satAm").checked,wx=$("satWx").checked,P=[];
+ SATS.forEach(function(d){var s=M[d.id];if(!s||(d.ty=="am"&&!am)||(d.ty=="wx"&&!wx))return;SAT.passes(s,o,now-20*60e3,24,minEl).forEach(function(p){if(p.los>now){p.d=d;P.push(p)}})});
+ P.sort(function(a,b){return a.aos-b.aos});SATST.passes=P;SATST.calcAt=now}
+function satT(ms){var d=new Date(ms),t=d.toTimeString().slice(0,5),td=new Date();if(d.toDateString()==td.toDateString())return t;td.setDate(td.getDate()+1);return(d.toDateString()==td.toDateString()?"Tomorrow ":d.toLocaleDateString(undefined,{weekday:"short"})+" ")+t}
+function satF(v){return v.toFixed(3)}
+function satFreqTable(p,ms){var s=p.sat,o=satObs(),pts=ms?[["Now",ms]]:[["Rise",p.aos+5e3],["Highest",p.tca],["Set",p.los-5e3]];
+ return p.d.ch.map(function(c){var rows=pts.map(function(q){var rr=SAT.rangeRate(s,o,q[1]);return'<tr><td class="mut">'+q[0]+'</td>'+(c.up?'<td>TX <b>'+satF(SAT.doppler(c.up,rr,true))+'</b></td>':'<td></td>')+'<td>RX <b>'+satF(SAT.doppler(c.dn,rr,false))+'</b></td></tr>'}).join("");
+  return'<div style="margin-top:6px"><b>'+esc(c.t)+'</b> <span class="mut small">'+esc(c.m)+(c.up?' · up '+satF(c.up):'')+' · down '+satF(c.dn)+(c.tone?' · tone '+c.tone+' Hz':'')+'</span><table class="satf small">'+rows+'</table></div>'}).join("")+
+  (p.d.note?'<div class="mut small" style="margin-top:4px">'+esc(p.d.note)+'</div>':'')}
+function satRender(){var o=satObs(),now=Date.now(),p0=homePos();
+ $("satWhere").innerHTML="Passes over "+(p0.fallback?"<b>Redditch</b> (turn location on for your own position)":"<b>your location</b>")+". Doppler-corrected frequencies show what to set your radio to.";
+ var live=[];SATS.forEach(function(d){var s=satObjs()[d.id];if(!s)return;var l=SAT.look(s,o,now);if(l&&l.el>0)live.push({d:d,s:s,l:l})});
+ $("satNow").innerHTML=live.map(function(x){var p={sat:x.s,d:x.d};return'<div class="card" style="border:2px solid #16a34a"><div><b style="font-size:18px">'+esc(x.d.name)+'</b> <span class="chip" style="background:#16a34a;color:#fff">Overhead now</span></div>'+
+  '<div style="font-size:16px;margin-top:4px">Point <b>'+Math.round(x.l.az)+'° '+compass(x.l.az)+'</b>, <b>'+Math.round(x.l.el)+'°</b> up · '+Math.round(x.l.range)+' km away</div>'+satFreqTable(p,now)+'</div>'}).join("");
+ var P=SATST.passes.filter(function(p){return p.los>now}).slice(0,25);
+ $("satList").innerHTML=P.length?P.map(function(p,k){var on=p.aos<=now,mins=Math.round((p.los-p.aos)/60e3);
+  return'<div class="satp'+(on?' now':'')+'" data-k="'+k+'"><div><span class="t">'+satT(p.aos)+'</span> <b>'+esc(p.d.name)+'</b>'+(p.d.ty=="wx"?' <span class="chip">Weather</span>':'')+(on?' <span class="chip" style="background:#16a34a;color:#fff">Now</span>':'')+
+   '<span style="float:right"><b>'+Math.round(p.maxEl)+'°</b> max</span></div><div class="mut small">Rises '+compass(p.aosAz)+' ('+Math.round(p.aosAz)+'°) → highest '+compass(p.tcaAz)+' → sets '+compass(p.losAz)+' ('+Math.round(p.losAz)+'°) · '+mins+' min · ends '+satT(p.los)+'</div>'+
+   (SATST.open==k?'<div>'+satFreqTable(p)+'</div>':'')+'</div>'}).join(""):'<div class="mut">No passes above '+$("satMinEl").value+'° in the next 24 hours for the satellites ticked.</div>';
+ var age=(now-Math.max.apply(null,Object.keys(satObjs()).map(function(k){return satObjs()[k].epochMs})))/864e5;
+ $("satSrc").innerHTML="Orbit data: CelesTrak"+(SATST.tleAt?", downloaded "+satT(SATST.tleAt):" (built-in copy)")+(age>7?' – <b style="color:#f59e0b">'+Math.round(age)+' days old, times may be out</b>':"")+" · predictions worked out on your phone.";
+ SATST.list=P}
+$("satList").onclick=function(e){var r=e.target.closest(".satp");if(!r)return;var k=+r.dataset.k;SATST.open=SATST.open==k?-1:k;satRender()};
+["satMinEl","satAm","satWx"].forEach(function(id){$(id).onchange=function(){store(id,this.type=="checkbox"?(this.checked?"1":"0"):this.value);SATST.open=-1;satCalc();satRender()}});
+(function(){var v=store("satMinEl");if(v!=null)$("satMinEl").value=v;else $("satMinEl").value="10";["satAm","satWx"].forEach(function(id){var x=store(id);if(x!=null)$(id).checked=x=="1"})})();
+function satStart(){satStop();satLoadTle(function(){if(curTab!="sat")return;satCalc();satRender()});if(!SATST.calcAt||Date.now()-SATST.calcAt>5*60e3)satCalc();satRender();
+ SATST.timer=setInterval(function(){if(document.hidden||curTab!="sat")return;if(Date.now()-SATST.calcAt>5*60e3)satCalc();satRender()},2000)}
+function satStop(){if(SATST.timer){clearInterval(SATST.timer);SATST.timer=null}}
+var _showTab326=showTab;showTab=function(t){_showTab326(t);if(t=="sat")satStart();else satStop()};
+if(curTab=="sat")satStart();
 </script>
 </body></html>

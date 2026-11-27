@@ -199,9 +199,16 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.25";
+var APP_VERSION = "3.26";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.26", date:"27 Nov 2026", items:[
+  "New Satellites tab: upcoming passes over your location for the ISS, SO-50, RS-44 and the Meteor-M2 weather satellites, with rise/set directions and Doppler-corrected frequencies to set your radio to. Live pointing when one's overhead.",
+  "UK Repeaters › Nearby: new List / Map switch – see nearby repeaters on a map using the same band, mode and search filters. Tap a repeater for its details.",
+  "Scanner: upload your own scanner list from a CSV file (⬆ Upload CSV).",
+  "AllStar: if a node isn't reporting, the box now shows who that node number is registered to, so a mistyped number is easy to spot.",
+  "On-air listings now clear themselves after 3 hours.",
+  "You can't change your callsign while you're showing on air – go off air first."]},
  {v:"3.25", date:"27 Nov 2026", items:[
    "Much lighter on the database: the Activity tab now uses about a tenth of the data it did, and the app starts faster"]},
  {v:"3.24", date:"27 Nov 2026", items:[
