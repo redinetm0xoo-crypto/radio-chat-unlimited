@@ -640,6 +640,25 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  </div>
  <div id="satNow"></div>
  <div class="card"><h3 style="margin:0 0 6px">Next passes (24 hours)</h3><div class="mut small" style="margin-bottom:6px">Tap a pass for the frequencies with Doppler correction. Times are your phone's local time.</div><div id="satList"></div></div>
+
+ <div class="card" id="qoCard"><h3 style="margin:0 0 4px">📡 QO-100 (Es'hail-2) – listen live</h3>
+  <div class="mut small">Geostationary at 25.9° E, so it never moves – no passes. Hear the narrowband transponder (SSB, CW, digital) on the BATC / AMSAT-UK WebSDR at Goonhilly, Cornwall.</div>
+  <a class="btn" id="qoNb" href="https://eshail.batc.org.uk/nb/" target="_blank" rel="noopener" style="display:block;text-align:center;margin:8px 0 6px">🎧 Listen – Narrowband WebSDR ↗</a>
+  <a class="btn alt" href="https://eshail.batc.org.uk/wb/" target="_blank" rel="noopener" style="display:block;text-align:center;margin:0 0 8px">📺 Wideband (DATV) spectrum viewer ↗</a>
+  <div id="qoPoint"></div>
+  <details style="margin-top:6px"><summary>Frequencies</summary><table class="satf small">
+   <tr><td>NB downlink</td><td>10489.500–10490.000 MHz (vertical)</td></tr>
+   <tr><td>NB uplink</td><td>2400.005–2400.490 MHz (RHCP), non-inverting</td></tr>
+   <tr><td>Lower beacon</td><td>10489.500 CW</td></tr>
+   <tr><td>Middle beacon</td><td>10489.750 400 bit/s BPSK</td></tr>
+   <tr><td>Upper beacon</td><td>10490.000 CW</td></tr>
+   <tr><td>SSB segments</td><td>10489.650–10489.745 and 10489.755–10489.850</td></tr>
+   <tr><td>CW only</td><td>10489.505–10489.540</td></tr>
+   <tr><td>Emergency</td><td>10489.860</td></tr>
+   <tr><td>WB beacon</td><td>10491.500 DVB-S2 1500 kS</td></tr>
+   <tr><td>WB nets</td><td>10499.250, 333 kS</td></tr></table>
+   <div class="mut small">From the AMSAT-DL and BATC band plans. Keep your signal below the beacon level.</div></details>
+  <div class="mut small" style="margin-top:6px">WebSDR run by BATC &amp; AMSAT-UK – opens in your browser.</div></div>
  <div class="mut small" id="satSrc" style="text-align:center;margin:6px 0"></div>
 </section>
 
@@ -2788,5 +2807,15 @@ function satStart(){satStop();satLoadTle(function(){if(curTab!="sat")return;satC
 function satStop(){if(SATST.timer){clearInterval(SATST.timer);SATST.timer=null}}
 var _showTab326=showTab;showTab=function(t){_showTab326(t);if(t=="sat")satStart();else satStop()};
 if(curTab=="sat")satStart();
+
+/* ===== v3.27 QO-100: WebSDR links + dish pointing for your location (geostationary 25.9° E). No database use. ===== */
+function qoPoint(lat,lon){var R=6378.137,G=42164.0,d=Math.PI/180,f=lat*d,l=lon*d,s=25.9*d,
+ o=[R*Math.cos(f)*Math.cos(l),R*Math.cos(f)*Math.sin(l),R*Math.sin(f)],t=[G*Math.cos(s),G*Math.sin(s),0],v=[t[0]-o[0],t[1]-o[1],t[2]-o[2]],
+ E=-Math.sin(l)*v[0]+Math.cos(l)*v[1],N=-Math.sin(f)*Math.cos(l)*v[0]-Math.sin(f)*Math.sin(l)*v[1]+Math.cos(f)*v[2],U=Math.cos(f)*Math.cos(l)*v[0]+Math.cos(f)*Math.sin(l)*v[1]+Math.sin(f)*v[2],
+ az=(Math.atan2(E,N)/d+360)%360,el=Math.atan2(U,Math.sqrt(E*E+N*N))/d,sk=Math.atan(Math.sin(s-l)/Math.tan(f))/d;return{az:az,el:el,skew:sk}}
+function qoRender(){var p=homePos(),q=qoPoint(p.lat,p.lon),el=$("qoPoint");if(!el)return;
+ el.innerHTML=q.el<3?'<div class="mut small">QO-100 is below the horizon from here.</div>':
+  '<div class="post" style="margin:0"><b>Dish pointing from '+(p.fallback?'Redditch (location off)':'your location')+'</b><div style="font-size:16px;margin-top:2px">Azimuth <b>'+q.az.toFixed(1)+'° '+compass(q.az)+'</b> (true) · Elevation <b>'+q.el.toFixed(1)+'°</b></div><div class="mut small">LNB skew about '+Math.abs(q.skew).toFixed(0)+'° – fine-tune for the strongest beacon. Azimuth is true north; a compass reads magnetic.</div></div>'}
+var _satRender327=satRender;satRender=function(){_satRender327();if(!SATST.qoAt||Date.now()-SATST.qoAt>60e3){SATST.qoAt=Date.now();qoRender()}};
 </script>
 </body></html>

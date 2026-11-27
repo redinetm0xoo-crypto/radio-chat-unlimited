@@ -199,9 +199,11 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.26";
+var APP_VERSION = "3.27";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.27", date:"27 Nov 2026", items:[
+  "Satellites tab: new QO-100 card – listen live to the QO-100 narrowband transponder on the BATC / AMSAT-UK WebSDR at Goonhilly, plus the wideband (DATV) viewer, the band plan and dish pointing for your location."]},
  {v:"3.26", date:"27 Nov 2026", items:[
   "New Satellites tab: upcoming passes over your location for the ISS, SO-50, RS-44 and the Meteor-M2 weather satellites, with rise/set directions and Doppler-corrected frequencies to set your radio to. Live pointing when one's overhead.",
   "UK Repeaters › Nearby: new List / Map switch – see nearby repeaters on a map using the same band, mode and search filters. Tap a repeater for its details.",
