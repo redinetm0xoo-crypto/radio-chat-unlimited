@@ -502,7 +502,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
  <div class="card" id="hdCard">
    <h2>Stations heard</h2>
    <canvas id="hdMap" width="720" height="480" style="width:100%;max-width:720px;height:auto;display:block;margin:0 auto"></canvas>
-   <div class="mut small" style="margin-top:4px">Red = you (your own callsign is never counted as heard). Stations appear on the map when their locator is known (from your QRZ lookup).</div>
+   <div class="mut small" style="margin-top:4px">Red = you (your own callsign is never counted as heard). Stations are placed by their locator from QRZ, or – if QRZ doesn't give one – by their town (marked ~, approximate; town lookup by OpenStreetMap).</div>
    <div id="hdList"></div>
    <div class="btns"><button class="btn sm alt" id="hdClear">Clear heard list</button></div>
   </div>
@@ -2886,5 +2886,69 @@ var _askCall329=askCall;askCall=function(force){_askCall329(force);var has=!!myC
 /* ===== v3.30: callsigns heard by Listen – a "QRZ ↗" button once QRZ has found them ===== */
 var _lsSetName330=lsSetName;lsSetName=function(k,nm){_lsSetName330(k,nm);var R=document.querySelectorAll('#lsCalls .lc[data-k="'+k+'"]');
  for(var i=0;i<R.length;i++){var a=R[i].querySelector(".lcq");if(nm&&!a){var n=R[i].querySelector(".nm");n.insertAdjacentHTML("afterend",'<a class="lcq" href="https://www.qrz.com/db/'+encodeURIComponent(k)+'" target="_blank" rel="noopener">QRZ ↗</a>')}else if(!nm&&a)a.remove()}};
+
+/* ===== v3.31 (1) Stations heard map: QRZ only gives the locator to paid subscribers, so when there's no locator the town from QRZ
+   is looked up once on OpenStreetMap (Nominatim) and the station is plotted there, marked "~" (approximate). Cached on this device. ===== */
+var QADDR=loadJSON("qrz_addr",{}),GEO=loadJSON("geo_cache",{}),GEOQ=[],GEOBUSY=false;
+function qaSave(){try{store("qrz_addr",JSON.stringify(QADDR))}catch(e){}}
+function geoSave(){try{store("geo_cache",JSON.stringify(GEO))}catch(e){}}
+function qzAddrOf(x){return[xget(x,"addr2"),xget(x,"state"),xget(x,"country")].join(", ").replace(/\.\s*/g,", ").split(",").map(function(v){return v.replace(/\s+/g," ").trim()}).filter(function(v,i,A){return v&&A.indexOf(v)==i}).join(", ")}
+function hdApply(k){var q=QADDR[k];if(!q)return;var ch=false;
+ HEARD.forEach(function(e){if(baseCall(e.call)!=k)return;if(q.n&&!e.name){e.name=q.n;ch=true}
+  if(q.g){if(e.grid!=q.g||e.gq){e.grid=q.g;e.gq=0;ch=true}}else if(!e.grid&&q.a)geoFind(q.a,k)});
+ if(ch){hdSave();hdRender()}}
+function geoSet(k,ll){HEARD.forEach(function(e){if(baseCall(e.call)==k&&(!e.grid||e.gq)){e.grid=maiden(ll[0],ll[1],6);e.gq=1}});hdSave();hdRender()}
+function geoFind(a,k){var c=GEO[a];if(c!==undefined){if(c)geoSet(k,c);else{var ctry=a.split(", ").pop();if(ctry!=a&&GEO[ctry])geoSet(k,GEO[ctry]);else if(ctry!=a&&GEO[ctry]===undefined)geoQ(ctry,k)}return}geoQ(a,k)}
+function geoQ(a,k){if(!GEOQ.some(function(j){return j.a==a&&j.k==k}))GEOQ.push({a:a,k:k});geoRun()}
+function geoRun(){if(GEOBUSY||!GEOQ.length)return;GEOBUSY=true;var j=GEOQ.shift();
+ if(GEO[j.a]!==undefined){GEOBUSY=false;geoFind(j.a,j.k);return setTimeout(geoRun,50)}
+ var x=new XMLHttpRequest();x.open("GET","https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(j.a));x.timeout=15000;
+ var done=function(ll){GEO[j.a]=ll;geoSave();setTimeout(function(){GEOBUSY=false;geoRun()},1500);geoFind(j.a,j.k)};   /* Nominatim: max 1 request a second */
+ x.onload=function(){var r=null;try{r=JSON.parse(x.responseText)[0]}catch(e){}done(r&&r.lat?[+(+r.lat).toFixed(4),+(+r.lon).toFixed(4)]:0)};
+ x.onerror=x.ontimeout=function(){GEOBUSY=false;setTimeout(geoRun,5000)};x.send()}
+/* QRZ lookup for a heard callsign: name + locator (subscribers) or town/country, cached per callsign */
+lsName=function(c){var k=baseCall(c);if(QNAMES[k]!==undefined&&QADDR[k]){lsSetName(k,QNAMES[k]);hdApply(k);return}
+ if(!QZ.user||!QZ.pass){if(QNAMES[k]!==undefined)lsSetName(k,QNAMES[k]);if(!lsHint){lsHint=true;lsMsg("Add your QRZ login in QRZ › Settings to show names.")}return}
+ qzLogin(function(key){if(!key)return;post("https://xmldata.qrz.com/xml/current/",{s:key,callsign:k},function(tx){if(!tx)return;var x=new DOMParser().parseFromString(tx,"text/xml");if(!xget(x,"Key"))qzKey=null;
+  var found=!!xget(x,"call"),nm=((xget(x,"fname")||"").split(" ")[0]||"");nm=nm?nm.charAt(0)+nm.slice(1).toLowerCase():"";QNAMES[k]=nm;try{store("qrz_names",JSON.stringify(QNAMES))}catch(e){}lsSetName(k,nm);
+  QADDR[k]={n:nm,g:found?(xget(x,"grid")||""):"",a:found?qzAddrOf(x):""};qaSave();hdApply(k)})})};
+var _hdAdd331=hdAdd;hdAdd=function(call,rst){_hdAdd331(call,rst);setTimeout(function(){lsName(call)},1500)};
+/* "~" in front of distances that come from the town rather than a locator */
+var _hdRender331=hdRender;hdRender=function(){_hdRender331();var R=document.querySelectorAll("#hdList .rp");HEARD.slice(0,30).forEach(function(e,i){if(!e.gq||!R[i])return;var d=R[i].querySelector(".dist");if(d&&!/~/.test(d.textContent)&&/ mi /.test(d.textContent))d.innerHTML=d.innerHTML.replace(/(\d[\d,]* mi )/,'~$1')})};
+/* fill in stations already in the list that have no position (once per visit to the QRZ tab, one QRZ lookup every 1.5 s) */
+var HDFILL=false;function hdFill(){if(HDFILL)return;HDFILL=true;var L=[],seen={};HEARD.slice(0,30).forEach(function(e){var k=baseCall(e.call);if(!e.grid&&!seen[k]){seen[k]=1;L.push(e.call)}});
+ (function nx(){var c=L.shift();if(!c)return;lsName(c);setTimeout(nx,1500)})()}
+var _showTab331=showTab;showTab=function(t){_showTab331(t);if(t=="qrz")hdFill()};
+/* GEO entries also count as positions for the "Stations heard" text under the map */
+
+/* ===== v3.31 (2) Listen: half-recognised callsigns (G1MZ, D1MZT… while the speech engine is still working) stay out of the
+   Stations heard list. Only the final result is added; leftover partial rows are removed from the live list. ===== */
+lsAdd=function(c,rst,partial){var k=baseCall(c),now=Date.now();
+ Object.keys(lsSeen).forEach(function(o){if(o!=k&&k.indexOf(o)==0&&now-lsSeen[o].t<LSWIN){var or=document.getElementById(lsSeen[o].id);if(or)or.remove();delete lsSeen[o]}});
+ var s=lsSeen[k];
+ if(s&&now-s.t<LSWIN){var r=document.getElementById(s.id);if(r&&rst&&!r.querySelector(".rs").textContent)r.querySelector(".rs").textContent=rst;
+  if(!partial){if(s.p){s.p=false;hdUpsert(c,rst);lsName(c)}else if(rst)hdUpsert(c,rst)}s.t=now;return}
+ var id="lc"+(++lsN);lsSeen[k]={t:now,id:id,p:!!partial,c:c};
+ $("lsCalls").insertAdjacentHTML("afterbegin",'<div class="lc" id="'+id+'" data-k="'+esc(k)+'"><b>'+esc(c)+'</b><span class="nm">'+esc(QNAMES[k]||"")+'</span><span class="rs">'+(rst?esc(rst):'')+'</span><span class="mut" style="margin-left:auto">'+lsTime()+'</span></div>');
+ $("lsCalls").scrollTop=0;if(!partial){hdUpsert(c,rst);lsName(c)}else if(QNAMES[k])lsSetName(k,QNAMES[k])};
+/* replace only the inner handler: the existing wrappers (diagnostics, watchdog, 1.2 s "speech paused" commit) stay in place */
+_lsHandle=function(txt,partial){if(!LISTEN)return;txt=decodeURIComponent(txt||"");if(!txt)return;
+ var src=partial?txt.split("|").map(trimTail).join("|"):txt;var p=speechParse(src),rst=partial?null:p.rst,now=Date.now();
+ if(!partial){var ks=p.calls.map(baseCall);Object.keys(lsSeen).forEach(function(o){var s=lsSeen[o];if(s.p&&ks.indexOf(o)<0&&now-s.t<LSWIN){var r=document.getElementById(s.id);if(r)r.remove();delete lsSeen[o]}})}
+ p.calls.forEach(function(c){lsAdd(c,rst,partial)})};
+/* when QRZ finds a callsign, recent look-alikes that QRZ didn't find (D1MZT next to G1MZT) are dropped */
+function lsLev(a,b){var m=a.length,n=b.length,d=[];for(var i=0;i<=m;i++){d[i]=[i];for(var j=1;j<=n;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1)):j}return d[m][n]}
+function lsDedupe(k){var now=Date.now(),sim=function(o){return o!=k&&!QNAMES[o]&&(k.indexOf(o)==0||lsLev(o,k)<=2)};
+ Object.keys(lsSeen).forEach(function(o){var s=lsSeen[o];if(now-s.t>60000||!sim(o))return;var r=document.getElementById(s.id);if(r)r.remove();delete lsSeen[o]});
+ var t0=now-3*60000,n=HEARD.length;HEARD=HEARD.filter(function(e){return!(sim(baseCall(e.call))&&!e.name&&new Date(e.t.replace(" ","T")+"Z")>=t0)});if(HEARD.length!=n){hdSave();hdRender()}}
+var _lsSetName331d=lsSetName;lsSetName=function(k,nm){_lsSetName331d(k,nm);if(nm)lsDedupe(k)};
+/* a partial that never gets a final result (speech engine stopped) is kept once it has sat there 15 s, or when listening stops */
+function lsFlush(all){var now=Date.now();Object.keys(lsSeen).forEach(function(o){var s=lsSeen[o];if(!s.p)return;if(all||now-s.t>LSWIN){if(document.getElementById(s.id)){s.p=false;hdUpsert(s.c,null);lsName(s.c)}}})}
+setInterval(function(){if(LISTEN)lsFlush(false)},4000);
+var _lsStop331=lsStop;lsStop=function(){lsFlush(true);_lsStop331()};
+/* one-off tidy of the heard list: drop nameless near-copies saved in the same minute as a station QRZ found */
+(function(){if(store("hd_clean331"))return;var lev=function(a,b){var m=a.length,n=b.length,d=[];for(var i=0;i<=m;i++){d[i]=[i];for(var j=1;j<=n;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1)):j}return d[m][n]};
+ var before=HEARD.length;HEARD=HEARD.filter(function(x){return x.name||!HEARD.some(function(y){return y!==x&&y.name&&y.t==x.t&&(y.call.indexOf(x.call)==0||lev(x.call,y.call)<=2)})});
+ store("hd_clean331","1");if(HEARD.length!=before){hdSave();hdRender()}})();
 </script>
 </body></html>
