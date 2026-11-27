@@ -597,7 +597,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
 <section id="asl" hidden>
  <div class="card">
   <h2 style="margin:0 0 4px">📡 My AllStar nodes</h2>
-  <div class="mut small">Add up to 3 AllStar node numbers to watch. They're saved on this phone only – nobody else can see them.
+  <div class="mut small">Add up to 3 AllStar node numbers to watch. They're saved to your callsign, so they show on any phone or computer where you use the app with that callsign.
    Status refreshes every 30 seconds, only while this tab is open.</div>
   <div id="aslAdd" style="margin-top:10px">
    <div class="row" style="display:flex;gap:6px;flex-wrap:wrap">
@@ -607,6 +607,7 @@ main tr:has(td.f){cursor:pointer}main tr:has(td.f):active td{background:rgba(245
    </div>
   </div>
   <div id="aslMsg" class="small" style="margin-top:6px"></div>
+  <div id="aslSync" class="mut small" style="margin-top:4px"></div>
  </div>
  <div id="aslBoxes"></div>
 </section>
@@ -1192,10 +1193,10 @@ function myCall(){return String(QZ.call||"").toUpperCase()}
 function baseCall(c){return String(c||"").toUpperCase().replace(/\/[A-Z0-9]+$/,"").replace(/^[A-Z0-9]+\//,"")}
 function isMe(c){var m=myCall();return!!m&&baseCall(c)==baseCall(m)}
 function meShow(){var m=myCall();$("meBtn").hidden=!m;$("meCall").textContent=m;$("meAdm").hidden=!FB.admin}
-function setMyCall(c){c=String(c||"").trim().toUpperCase();QZ.call=c;store("qrz_cfg",JSON.stringify(QZ));$("stCall").value=c;meShow();hdRender()}
+function setMyCall(c){c=typeof rcuBaseCall=="function"?rcuBaseCall(c):String(c||"").trim().toUpperCase();QZ.call=c;store("qrz_cfg",JSON.stringify(QZ));$("stCall").value=c;meShow();hdRender()}
 function askCall(force){$("cmCall").value=myCall();$("cmMsg").textContent="";$("callModal").hidden=false;if(force!==undefined)setTimeout(function(){$("cmCall").focus()},100)}
 var cmPending=null;
-$("cmSave").onclick=function(){var c=$("cmCall").value.trim().toUpperCase();if(!/^[A-Z0-9]{1,3}[0-9][A-Z]{1,4}(\/[A-Z0-9]+)?$/.test(c)){$("cmMsg").textContent="That doesn't look like a callsign – e.g. M0PTN, 2E0ABC, M7VPE.";return}
+$("cmSave").onclick=function(){var c=$("cmCall").value.trim().toUpperCase();if(/\//.test(c)){$("cmMsg").textContent="Just your callsign please – no /P, /M or prefixes, e.g. M0PTN.";return}if(!/^[A-Z0-9]{1,3}[0-9][A-Z]{1,4}$/.test(c)){$("cmMsg").textContent="That doesn't look like a callsign – e.g. M0PTN, 2E0ABC, M7VPE.";return}
  if(store("consent")!="1"){cmPending=c;$("cmConsent").hidden=false;return}
  setMyCall(c);$("callModal").hidden=true;if(window.FB)FB.hello(true)};
 $("cmSkip").onclick=function(){$("callModal").hidden=true;$("cmConsent").hidden=true};
@@ -1353,11 +1354,11 @@ function xoRender(j,fetchedAt,cached){var d=(j&&j.stats&&j.stats.data)||null;
  var MD={T:"",R:" · listen only",C:" · connecting",L:"",M:" · listen only"};
  $("xoLinks").innerHTML=nl.length?'<div class="mut small">Linked to '+nl.length+' node'+(nl.length>1?"s":"")+':</div>'+nl.map(function(n){return'<div style="padding:3px 0;border-bottom:1px solid var(--line)">'+esc(xoLinkLabel(n))+'<span class="mut small">'+esc(MD[modes[n]]||"")+'</span></div>'}).join(""):'<div class="mut small">Not linked to any other nodes</div>';
  if(nl.length)xoLookup(nl);
- $("xoUpd").innerHTML=(cached?"No connection – showing data from "+xoAgo(Date.now()/1000-fetchedAt/1000)+" ago · ":"Updated "+new Date(fetchedAt).toTimeString().slice(0,5)+" · refreshes every minute · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+XO_NODE+'" target="_blank">stats.allstarlink.org</a>'}
+ $("xoUpd").innerHTML=(cached?"No connection – showing data from "+xoAgo(Date.now()/1000-fetchedAt/1000)+" ago · ":"Updated "+new Date(fetchedAt).toTimeString().slice(0,5)+" · refreshes every 30 s · ")+'source: <a href="https://stats.allstarlink.org/api/stats/'+XO_NODE+'" target="_blank">stats.allstarlink.org</a>'}
 function xoFetch(){fetch("https://stats.allstarlink.org/api/stats/"+XO_NODE,{cache:"no-store"}).then(function(r){if(!r.ok)throw r.status;return r.json()}).then(function(j){
   xoLast=j;xoLastT=Date.now();try{store("xo_last",JSON.stringify(j));store("xo_last_t",String(xoLastT))}catch(e){}xoRender(j,xoLastT,false)})
  .catch(function(){if(xoLast)xoRender(xoLast,xoLastT,true);else{$("xoSt").textContent="Can't reach AllStar stats – check your connection";$("xoDot").style.background="#64748b"}})}
-function xoStart(){xoStop();if(xoLast)xoRender(xoLast,xoLastT,true);xoFetch();xoTimer=setInterval(function(){if(!document.hidden)xoFetch()},60000)}
+function xoStart(){xoStop();if(xoLast)xoRender(xoLast,xoLastT,true);xoFetch();xoTimer=setInterval(function(){if(!document.hidden&&curTab=="gb3xo")xoFetch()},30000)}
 function xoStop(){if(xoTimer){clearInterval(xoTimer);xoTimer=null}}
 var _showTab21=showTab;showTab=function(t){_showTab21(t);if(t=="gb3xo")xoStart();else xoStop()};
 $("tabs").onclick=function(e){if(e.target.dataset.t)showTab(e.target.dataset.t)};
@@ -2589,5 +2590,44 @@ $("aslBoxes").onclick=function(e){var b=e.target.closest("button");if(!b)return;
   m.textContent="✓ Deleted node "+gone.n+".";aslRenderAll()}};
 $("aslNum").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});$("aslName").addEventListener("keydown",function(e){if(e.key=="Enter")$("aslAddBtn").click()});
 if(curTab=="asl")aslStart();
+
+/* ===== v3.24: AllStar nodes saved to your CALLSIGN in the database (aslnodes/<CALL>) so they show on all your devices.
+   1 read when the AllStar tab opens, 1 write when you add / edit / delete. The phone keeps a copy for offline use.
+   (Pete 27 Nov: callsign only - no PIN.) ===== */
+function aslDocId(){var parts=String(QZ.call||"").toUpperCase().split("/").map(function(x){return x.replace(/[^A-Z0-9]/g,"")}).filter(function(x){return/[A-Z]/.test(x)&&/\d/.test(x)&&x.length>=3});parts.sort(function(a,b){return b.length-a.length});var c=(parts[0]||"").slice(0,15);return c.length>=3?c:""}   /* base callsign: M0PTN/P, MM/M0PTN -> M0PTN */
+var ASLS={loadedFor:"",busy:false};
+function aslSyncMsg(t){var e=$("aslSync");if(e)e.innerHTML=t||""}
+function aslPush(){var id=aslDocId();if(!id){aslSyncMsg('Set your callsign (tap "You" at the top) to keep these on all your devices – for now they\'re only on this phone.');return}
+ var nodes=JSON.stringify(ASL.nodes.map(function(x){return{n:String(x.n).slice(0,7),name:String(x.name||"").slice(0,30)}}));
+ aslSyncMsg("Saving to "+esc(QZ.call)+"…");
+ FB.token(function(t){if(!t){aslSyncMsg('<span style="color:#f59e0b">No connection – saved on this phone, will sync next time.</span>');ASLS.dirty=true;return}
+  fbCommit([{update:{name:fbDoc("aslnodes/"+id),fields:FB.enc({nodes:nodes,by:String(QZ.call).slice(0,12)})},updateTransforms:[{fieldPath:"at",setToServerValue:"REQUEST_TIME"}]}],function(ok,st){
+   if(ok){ASLS.dirty=false;ASLS.loadedFor=id;aslSyncMsg("✓ Saved to "+esc(QZ.call)+" – shows on all your devices.")}
+   else{ASLS.dirty=true;aslSyncMsg('<span style="color:#f59e0b">Couldn\'t save to your callsign ('+(st==403?"not allowed":"error "+st)+') – kept on this phone.</span>')}})})}
+function aslPull(){var id=aslDocId();if(!id){aslSyncMsg('Set your callsign (tap "You" at the top) to keep these on all your devices – for now they\'re only on this phone.');return}
+ if(ASLS.busy)return;ASLS.busy=true;
+ FB.json(FB.base+"/aslnodes/"+encodeURIComponent(id)+"?key="+FB.key,{cache:"no-store"},function(ok,j,st){ASLS.busy=false;
+  if(ok&&j&&j.fields){var f=FB.dec(j),L=[];try{L=JSON.parse(f.nodes||"[]")}catch(e){L=[]}
+   L=L.filter(function(x){return x&&aslNumOk(String(x.n))}).slice(0,3).map(function(x){return{n:String(x.n),name:String(x.name||"").slice(0,30)}});
+   if(ASLS.dirty&&ASLS.loadedFor==id){aslPush();return}
+   var same=JSON.stringify(L)==JSON.stringify(ASL.nodes);ASL.nodes=L;aslSave();ASLS.loadedFor=id;
+   aslSyncMsg("Saved to "+esc(QZ.call)+" – shows on all your devices.");if(!same){ASL.edit=-1;ASL.menu=-1;ASL.del=-1;aslRenderAll();aslFetchAll()}return}
+  if(st==404||(ok&&!(j&&j.fields))){ASLS.loadedFor=id;if(ASL.nodes.length)aslPush();else aslSyncMsg("Saved to "+esc(QZ.call)+" – shows on all your devices.");return}
+  aslSyncMsg('<span style="color:#f59e0b">Can\'t reach the database – showing the copy on this phone.</span>')})}
+var _aslSave324=aslSave,aslSaving=false;aslSave=function(){_aslSave324()};
+/* push after every add / edit / delete */
+var _aslAdd324=$("aslAddBtn").onclick;$("aslAddBtn").onclick=function(){var n0=ASL.nodes.length;_aslAdd324.apply(this,arguments);if(ASL.nodes.length!=n0)aslPush()};
+var _aslBox324=$("aslBoxes").onclick;$("aslBoxes").onclick=function(e){var before=JSON.stringify(ASL.nodes);_aslBox324.apply(this,arguments);if(JSON.stringify(ASL.nodes)!=before)aslPush()};
+/* 1 read each time the AllStar tab is opened (not on the 30 s status timer) */
+var _showTab324=showTab;showTab=function(t){_showTab324(t);if(t=="asl")aslPull()};
+if(curTab=="asl")aslPull();
+
+/* ===== v3.24: no "/" in callsigns (Pete 27 Nov) - just the callsign, no /P, /M, MM/ etc. ===== */
+function rcuBaseCall(c){c=String(c||"").trim().toUpperCase();if(c.indexOf("/")<0)return c.replace(/[^A-Z0-9]/g,"");
+ var p=c.split("/").map(function(x){return x.replace(/[^A-Z0-9]/g,"")}).filter(function(x){return/[A-Z]/.test(x)&&/\d/.test(x)&&x.length>=3});p.sort(function(a,b){return b.length-a.length});return p[0]||""}
+["cmCall","stCall"].forEach(function(id){var el=$(id);if(!el)return;el.addEventListener("input",function(){var m=$(id=="cmCall"?"cmMsg":"stMsg");if(!m)return;
+  if(this.value.indexOf("/")>=0)m.textContent="No / please – just your callsign, e.g. M0PTN (not M0PTN/P).";else if(/^No \/ please/.test(m.textContent))m.textContent=""})});
+var _stSave324=$("stSave").onclick;$("stSave").onclick=function(){var v=$("stCall").value;if(/\//.test(v)){$("stMsg").textContent="No / please – just your callsign, e.g. "+(rcuBaseCall(v)||"M0PTN")+" (not "+v.trim().toUpperCase()+"). Not saved.";return}return _stSave324.apply(this,arguments)};
+if(QZ.call&&/\//.test(QZ.call)){var _bc=rcuBaseCall(QZ.call);if(_bc){QZ.call=_bc;store("qrz_cfg",JSON.stringify(QZ));try{$("stCall").value=_bc;meShow();hdRender()}catch(e){}}}
 </script>
 </body></html>

@@ -199,9 +199,13 @@ var EMERG_DEFAULTS = [
 // v1.0 defaults - used to carry over any frequencies the user added themselves in v1.0
 var EMERG_V10_DEFAULTS = ["51.010000|FM","28.330000|USB","28.330000|FM","14.130000|USB","7.060000|LSB"];
 
-var APP_VERSION = "3.23";
+var APP_VERSION = "3.24";
 var REDDITCH = {lat:52.306901, lon:-1.941535};
 var VERSIONS = [
+ {v:"3.24", date:"27 Nov 2026", items:[
+   "AllStar tab: your nodes are now saved to your callsign, so they show on every phone or computer where you use the app",
+   "GB3XO tab: live status now refreshes every 30 seconds (was every minute) while you're on it",
+   "Callsigns: just your callsign please – /P, /M and prefixes like MM/ are no longer accepted"]},
  {v:"3.23", date:"27 Nov 2026", items:[
    "AllStar tab now refreshes every 30 seconds (was every minute) while you're on it",
    "AllStar boxes: Edit and Delete are now tucked behind the ⋯ next to the node number"]},
