@@ -1530,7 +1530,12 @@ FB.token=function(cb){var a=FB.auth;
  var save=function(uid,id,rf,exp){FB.auth={uid:uid,idToken:id,refresh:rf,exp:Date.now()+(+exp||3600)*1000};store("fb_auth",JSON.stringify(FB.auth));
   if(IS_APP){try{prompt("rcu:xpref:uid="+uid)}catch(e){}}done(id)};
  if(a&&a.refresh){FB.json("https://securetoken.googleapis.com/v1/token?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refresh)},function(ok,j){
-  if(ok&&j&&j.id_token)save(j.user_id,j.id_token,j.refresh_token,j.expires_in);else{FB.auth=null;store("fb_auth","");FB.busy=null;FB.token(function(t){done(t)})}});return}
+  if(ok&&j&&j.id_token)return save(j.user_id,j.id_token,j.refresh_token,j.expires_in);
+  /* v3.33: only start a new sign-in if Google really rejects this one. A dropped connection, time-out or server hiccup
+     keeps the sign-in (and with it admin, your on-air listings and reports) and tries again next time. */
+  var msg=String(j&&j.error&&(j.error.message||j.error.status)||(j&&j.error_description)||"");
+  if(/TOKEN_EXPIRED|INVALID_REFRESH_TOKEN|USER_NOT_FOUND|USER_DISABLED|INVALID_GRANT|PROJECT_NUMBER_MISMATCH/i.test(msg)){var q=FB.busy;FB.auth=null;store("fb_auth","");FB.busy=null;FB.token(function(t){q.forEach(function(f){f(t)})})}   /* v3.33: waiting requests now get the new sign-in (they were dropped before) */
+  else done(null)});return}
  FB.json("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB.key,{method:"POST",headers:{"Content-Type":"application/json"},body:'{"returnSecureToken":true}'},function(ok,j){
   if(ok&&j&&j.idToken)save(j.localId,j.idToken,j.refreshToken,j.expiresIn);else done(null)})};
 FB.enc=function(o){var f={};Object.keys(o).forEach(function(k){f[k]={stringValue:String(o[k])}});return f};
